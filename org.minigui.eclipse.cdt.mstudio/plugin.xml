@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="%NewMiniGUIWizardsCategory.name"
+            id="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards">
+      </category>
+      <wizard
+            category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
+            class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIAppWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/sample.gif"
+            id="org.minigui.eclipse.cdt.mstudio.wizards.newMiniGUIAppWizard"
+            name="%MiniGUIAppProject">
+         <description>
+            %MiniGUIAppProject.desc
+         </description>
+      </wizard>
+      <wizard
+            category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
+            class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIUIFileWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/newfile_wiz.gif"
+            id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
+            name="%newMiniGUIWizards.uifile">
+         <description>
+            %NewMiniGUIWizards.uifile.desc
+         </description>
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.core.templates">
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.EmptyMiniGUIAppProject"
+            location="templates/projecttemplates/EmptyMiniGUIAppProject/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIMainWinProject"
+            location="templates/projecttemplates/MiniGUIMainWinProject/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIDialogProject"
+            location="templates/projecttemplates/MiniGUIDialogProject/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIServerProject"
+            location="templates/projecttemplates/MiniGUIServerProject/template.xml"
+            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
+      </template>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.core.templateAssociations">
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.EmptyMiniGUIAppProject">
+            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIMainWinProject">
+            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIDialogProject">
+            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+      </template>
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIServerProject">
+            <toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base"/>
+            <toolChain id="cdt.managedbuild.toolchain.gnu.solaris.base"/>
+      </template>
+   </extension>
+
+</plugin>

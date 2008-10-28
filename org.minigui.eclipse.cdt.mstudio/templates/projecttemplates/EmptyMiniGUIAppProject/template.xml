@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="ProjTempl" version="1.0" supplier="minigui.org" revision="1.0" author="sylvia" 
+copyright="Copyright (c) 2008 Feynman Software. All rights reserved."
+id="EmptyMiniGUIAppProject" label="%EmptyMiniGUIAppProject.template.label" 
+description="%EmptyMiniGUIAppProject.template.description" help="help.html">
+
+	<property-group id="basics" label="%EmptyProject.basics.label" description="%EmptyProject.basics.description" type="PAGES-ONLY" help="help.html">
+		<property id="sdkPrefix"
+				label="%EmptyProject.MiniGUISDKPrefix.label"
+				description="%EmptyProject.MiniGUISDKPrefix.description"
+				type="browsedir"
+				default="%EmptyProject.MiniGUISDKPrefix.default"
+				pattern=".*"
+				mandatory="false"
+				persist="true"/>
+
+		<property id="runmode"
+				label="%EmptyProject.miniGUIRunmode.label"
+				description="%EmptyProject.miniGUIRunmode.description"
+				type="select"
+				default="%EmptyProject.miniGUIRunmode.default"
+				pattern=".*"
+				mandatory="false"
+				persist="true">
+                <item label="Threads Mode" value="minigui_ths"/>
+                <item label="Processes Mode" value="minigui_procs"/>
+                <item label="Standalone Mode" value="minigui_sa"/>
+            </property>
+	</property-group>
+
+    <process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+        <simple name="name" value="$(projectName)" />
+        <simple name="artifactExtension" value="exe" />
+        <simple name="isCProject" value="false" />
+    </process>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.link\.option\.libs"/>
+				<simple-array name="values">
+                    <element value="$(runmode)" />
+                    <element value="pthread" />
+                    <element value="png" />
+                    <element value="jpeg" />
+                    <element value="freetype" />
+                </simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+	
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.link\.option\.paths"/>
+				<simple-array name="values">
+                    <element value="$(sdkPrefix)/lib" />
+                </simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+</template>

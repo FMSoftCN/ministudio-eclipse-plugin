@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="ProjTempl" version="1.0" supplier="minigui.org" revision="1.0" author="sylvia" 
+copyright="Copyright (c) 2008 Feynman Software. All rights reserved."
+id="MiniGUIServerProject" label="%MiniGUIServerProject.template.label" 
+description="%MiniGUIServerProject.template.description" help="help.html">
+
+	<property-group id="basics" label="%Server.basics.label" description="%Server.basics.description" type="PAGES-ONLY" help="help.html">
+		<property id="author"
+			label="%Server.author.label"
+			description="%Server.author.description"
+			type="input"
+			pattern=".*"
+			default=""
+			hidden="false"
+			persist="true"/>
+		<property id="copyright"
+			label="%Server.copyright.label"
+			description="%Server.copyright.description"
+			type="input"
+			pattern=".*"
+			default="%Server.copyright.default"
+			hidden="false"
+			persist="true"/>
+		<property id="message"
+			label="%Server.message.label"
+			description="%Server.message.description"
+			type="input"
+			pattern=".*"
+			default="%Server.message.default"
+			hidden="false"
+			persist="true"/>
+		<property id="sourceDir"
+				label="%Server.sourceDir.label"
+				description="%Server.sourceDir.description"
+				type="input"
+				default="%Server.sourceDir.default"
+				pattern="[a-zA-Z0-9]+"
+				mandatory="false"
+				persist="true"/>
+		<property id="headerDir"
+				label="%Server.headerDir.label"
+				description="%Server.headerDir.description"
+				type="input"
+				default="%Server.headerDir.default"
+				pattern="[a-zA-Z0-9]+"
+				mandatory="false"
+				persist="true"
+				hidden="true"/>
+
+		<property id="sdkPrefix"
+				label="%Server.MiniGUISDKPrefix.label"
+				description="%Server.MiniGUISDKPrefix.description"
+				type="browsedir"
+				default="%Server.MiniGUISDKPrefix.default"
+				pattern=".*"
+				mandatory="false"
+				persist="true"/>
+
+		<property id="runmode"
+				label="%Server.miniGUIRunmode.label"
+				description="%Server.miniGUIRunmode.description"
+				type="select"
+				default="%Server.miniGUIRunmode.default"
+				pattern=".*"
+				mandatory="false"
+				persist="true">
+                <item label="Threads Mode" value="minigui_ths"/>
+                <item label="Processes Mode" value="minigui_procs"/>
+                <item label="Standalone Mode" value="minigui_sa"/>
+            </property>
+
+		<property id="defaultRenderer"
+				label="%Server.miniGUIDefaultRenderer.label"
+				description="%Server.miniGUIDefaultRenderer.description"
+				type="select"
+				default="classic"
+				pattern=".*"
+				mandatory="false"
+				persist="true">
+                <item label="classic renderer" value="classic"/>
+                <item label="flat renderer" value="flat"/>
+                <item label="skin renderer" value="skin"/>
+            </property>
+	</property-group>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" /> 
+		<simple name="isCProject" value="true" /> 
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(sourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(headerDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName).c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.link\.option\.libs"/>
+				<simple-array name="values">
+                    <element value="$(runmode)" />
+                    <element value="pthread" />
+                    <element value="png" />
+                    <element value="jpeg" />
+                    <element value="freetype" />
+                </simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+	
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.link\.option\.paths"/>
+				<simple-array name="values">
+                    <element value="$(sdkPrefix)/lib" />
+                </simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+</template>
