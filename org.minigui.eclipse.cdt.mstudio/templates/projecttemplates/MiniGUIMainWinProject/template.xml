@@ -50,19 +50,6 @@ description="%MiniGUIMainWinProject.template.description" help="help.html">
 				mandatory="false"
 				persist="true"/>
 
-		<property id="runmode"
-				label="%MainWin.miniGUIRunmode.label"
-				description="%MainWin.miniGUIRunmode.description"
-				type="select"
-				default="%MainWin.miniGUIRunmode.default"
-				pattern=".*"
-				mandatory="false"
-				persist="true">
-                <item label="Threads Mode" value="minigui_ths"/>
-                <item label="Processes Mode" value="minigui_procs"/>
-                <item label="Standalone Mode" value="minigui_sa"/>
-            </property>
-
 		<property id="defaultRenderer"
 				label="%MainWin.miniGUIDefaultRenderer.label"
 				description="%MainWin.miniGUIDefaultRenderer.description"
@@ -74,6 +61,19 @@ description="%MiniGUIMainWinProject.template.description" help="help.html">
                 <item label="classic renderer" value="classic"/>
                 <item label="flat renderer" value="flat"/>
                 <item label="skin renderer" value="skin"/>
+            </property>
+
+		<property id="runmode"
+				label="%MainWin.miniGUIRunmode.label"
+				description="%MainWin.miniGUIRunmode.description"
+				type="select"
+				default="%MainWin.miniGUIRunmode.default"
+				pattern=".*"
+				mandatory="false"
+				persist="true">
+                <item label="Threads Mode" value="minigui_ths"/>
+                <item label="Processes Mode" value="minigui_procs"/>
+                <item label="Standalone Mode" value="minigui_sa"/>
             </property>
 	</property-group>
 
