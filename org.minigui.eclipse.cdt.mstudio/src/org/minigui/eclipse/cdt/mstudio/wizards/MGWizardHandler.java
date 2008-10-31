@@ -99,7 +99,6 @@ public class MGWizardHandler extends CWizardHandler {
 		private Template template;
 		private boolean initialized;
 		private boolean isValid;
-		private String projectTypeId;
 		private String templateId;
 		private IWizardPage[] templatePages;
 		private IWizardPage predatingPage;
@@ -111,9 +110,7 @@ public class MGWizardHandler extends CWizardHandler {
 		}
 		
 		public boolean isValid(){
-			System.out.println("isValid = "+isValid);
 			initialize();
-			System.out.println("isValid = "+isValid);
 			return isValid;
 		}
 
@@ -127,29 +124,23 @@ public class MGWizardHandler extends CWizardHandler {
 		}
 
 		private void initialize(){
-			System.out.println("initialize888888888888888888888888888888");
 			if(initialized)
 				return;
-			System.out.println("444444444444444444444444444 ");
 			do {
 				if(entryDescriptor == null)
 					break;
 				String path[] = entryDescriptor.getPathArray();
-				System.out.println("entryDescriptor = "+entryDescriptor);
 				if(path == null || path.length == 0)
 					break;
-				projectTypeId = path[0];
+
 
 				if(!entryDescriptor.isCategory() && 
 						path.length > 1 && (!path[0].equals(ManagedBuildWizard.OTHERS_LABEL))){
 					templateId = path[path.length - 1]; 
-					//Template templates[] = TemplateEngineUI.getDefault().getTemplates(projectTypeId);
 					Template templates[] = TemplateEngineUI.getDefault().getTemplates();
 					if(templates.length == 0)
 						break;
-					System.out.println("templateId::"+templateId);
 					for(int i = 0; i < templates.length; i++){
-						System.out.println("templates[i].getTemplateId() = "+templates[i].getTemplateId());
 						if(templates[i].getTemplateId().equals(templateId)){
 							template = templates[i];
 							break;
@@ -159,9 +150,7 @@ public class MGWizardHandler extends CWizardHandler {
 					if(template == null)
 						break;
 				}
-				System.out.println("444444444444444444444444444 ");
 				isValid = true;
-				System.out.println("init       isValid = "+isValid);
 			} while(false);
 
 			initialized = true;
@@ -335,9 +324,7 @@ public class MGWizardHandler extends CWizardHandler {
 	
 	public void handleSelection() {
 		List<String> preferred = CDTPrefUtil.getPreferredTCs();
-		System.out.println("enter handleSelection .......");
 		if (table == null) {
-			System.out.println("enter handleSelection .......111111111111111");
 			table = new Table(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 			table.getAccessible().addAccessibleListener(
 					 new AccessibleAdapter() {                       
@@ -349,7 +336,6 @@ public class MGWizardHandler extends CWizardHandler {
 				 );
 			table.setToolTipText(tooltip);
 			if (entryInfo != null) {
-				System.out.println("enter handleSelection .......2222222222222222222");
 				int counter = 0;
 				int position = 0;
 				for (String s : entryInfo.tc_filter()) {
@@ -479,87 +465,20 @@ public class MGWizardHandler extends CWizardHandler {
 		}
 		if (fConfigPage != null) fConfigPage.pagesLoaded = false;
 	}
-/*
-	public void addTc(IToolChain tc) {
-		if (tc == null) {
-			full_tcs.put(UIMessages.getString("StdProjectTypeHandler.0"), null); //$NON-NLS-1$
-		} else {
-			if (tc.isAbstract() || tc.isSystemObject()) return;
-		// 	unlike CWizardHandler, we don't check for configs
-			full_tcs.put(tc.getUniqueRealName(), tc);
-		}
-	}
-*/
-/*
-		public void createProject(IProject project, boolean defaults, boolean onFinish) throws CoreException {
-
-			ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-			ICProjectDescription des = mngr.createProjectDescription(project, false, !onFinish);
-			ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
-			ManagedProject mProj = new ManagedProject(des);
-			info.setManagedProject(mProj);
-
-			cfgs = CfgHolder.unique(fConfigPage.getCfgItems(defaults));
-			cfgs = CfgHolder.reorder(cfgs);
-				
-			for (int i=0; i<cfgs.length; i++) {
-				String s = (cfgs[i].getToolChain() == null) ? "0" : ((ToolChain)(cfgs[i].getToolChain())).getId();  //$NON-NLS-1$
-				Configuration cfg = new Configuration(mProj, (ToolChain)cfgs[i].getToolChain(), ManagedBuildManager.calculateChildId(s, null), cfgs[i].getName());
-				System.out.println("################ "+cfgs[i].getName());
-				IBuilder bld = cfg.getEditableBuilder();
-				if (bld != null) {
-					if(bld.isInternalBuilder()){
-						IConfiguration prefCfg = ManagedBuildManager.getPreferenceConfiguration(false);
-						IBuilder prefBuilder = prefCfg.getBuilder();
-						cfg.changeBuilder(prefBuilder, ManagedBuildManager.calculateChildId(cfg.getId(), null), prefBuilder.getName());
-						bld = cfg.getEditableBuilder();
-						bld.setBuildPath(null);
-					}
-					bld.setManagedBuildOn(true);
-				} else {
-					System.out.println(UIMessages.getString("StdProjectTypeHandler.3")); //$NON-NLS-1$
-				}
-				cfg.setArtifactName(removeSpaces(project.getName()));
-				CConfigurationData data = cfg.getConfigurationData();
-				des.createConfiguration(ManagedBuildManager.CFG_DATA_PROVIDER_ID, data);
-			}
-			mngr.setProjectDescription(project, des);
-			
-			doTemplatesPostProcess(project);
-			doCustom(project);
-
-	}
-*/
 
 	public void addTc(IToolChain tc) {
 		if (tc == null) {
 			full_tcs.put(UIMessages.getString("StdProjectTypeHandler.0"), null);
 			return;
 		}
-		System.out.println(" -----------------------");
 		if (tc.isAbstract() || tc.isSystemObject()) return;
-		System.out.println(" 000000000000000000000000");
-		/*
-		IConfiguration[] cfgs = null;
-		// New style managed project type. Configurations are referenced via propertyId.
-		if (propertyId != null) { 
-			System.out.println(" >>>>>>>>>>>>>>>>>>>>>>>>propertyId="+propertyId);
-			
-			ManagedBuildManager.getExtensionConfigurations(tc, ARTIFACT, propertyId);
-		// Old style managewd project type. Configs are obtained via projectType
-		} else if (pt != null) {
-			cfgs = ManagedBuildManager.getExtensionConfigurations(tc, pt);
-		} 
-		System.out.println(" <<<<<<<<<<<<<<<<<<<<<<<");
-		if (cfgs == null || cfgs.length == 0) return;
-		*/
-		System.out.println(" ++++++++++++++++++++++++");
+		
 		full_tcs.put(tc.getUniqueRealName(), tc);
 	}
 	
 		
 	public void createProject(IProject project, boolean defaults, boolean onFinish) throws CoreException {
-		System.out.println("$$$$$$$$$$          entry createProject(****)");
+
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		ICProjectDescription des = mngr.createProjectDescription(project, false, !onFinish);
 		ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
@@ -604,7 +523,7 @@ public class MGWizardHandler extends CWizardHandler {
 			if (cfgFirst == null) // select at least first configuration 
 				cfgFirst = cfgDes; 
 		}
-		System.out.println("$$$$$$$$$$ 22222222222222222222222222222222222222222222222222222222222");
+		
 		mngr.setProjectDescription(project, des);
 		doTemplatesPostProcess(project);
 		doCustom(project);
@@ -613,12 +532,12 @@ public class MGWizardHandler extends CWizardHandler {
 	protected void doTemplatesPostProcess(IProject prj) {
 		if(entryInfo == null)
 			return;
-		System.out.println("$$$$$$$$$$ qqqq entryInfo = "+ entryInfo);
+
 		Template template = entryInfo.getInitializedTemplate(getStartingPage(), getConfigPage(), getMainPageData());
-		System.out.println("$$$$$$$$$$ template = "+ template);
+
 		if(template == null)
 			return;
-		System.out.println("$$$$$$$$$$ aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
 		List<IConfiguration> configs = new ArrayList<IConfiguration>();
 		for(int i = 0; i < cfgs.length; i++){
 			configs.add((IConfiguration)cfgs[i].getConfiguration());
@@ -629,7 +548,7 @@ public class MGWizardHandler extends CWizardHandler {
 	    if (statuses.length == 1 && statuses[0].getException() instanceof ProcessFailureException) {
 	    	TemplateEngineUIUtil.showError(statuses[0].getMessage(), statuses[0].getException());
 	    }
-	    System.out.println("=--=-=--==--==--==--======++++====++++====++++");
+
 	}
 	
 	protected MGConfigWizardPage getConfigPage() {
@@ -798,10 +717,8 @@ public class MGWizardHandler extends CWizardHandler {
 	}
 	
 	public void initialize(EntryDescriptor data) throws CoreException {
-		System.out.println("initialize(EntryDescriptor data)");
 		EntryInfo info = new EntryInfo(data, full_tcs);
 		if(!info.isValid()){
-			System.out.println("info.isValid()"+info.isValid());
 			throw new CoreException(new Status(IStatus.ERROR, ManagedBuilderUIPlugin.getUniqueIdentifier(), "inappropriate descriptor")); //$NON-NLS-1$
 		}
 		entryInfo = info;

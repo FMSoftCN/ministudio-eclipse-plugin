@@ -2,48 +2,6 @@
  * 
  */
 package org.minigui.eclipse.cdt.mstudio.wizards;
-/*
-//import org.eclipse.cdt.ui.wizards.CProjectWizard;
-import org.eclipse.cdt.ui.wizards.CDTCommonProjectWizard;
-//import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-
-import org.eclipse.cdt.core.CProjectNature;
-
-public class NewMiniGUIAppWizard extends CDTCommonProjectWizard {
-	//extends CProjectWizard {
-	String title;
-	String desc;
-	
-	public NewMiniGUIAppWizard () {
-		super("MiniGUI Project","Create MiniGUI project of selected type");
-		title = "MiniGUI Project";
-		desc = "Create MiniGUI project of selected type";
-	}
-
-	public void addPages() {
-		fMainPage= new NewMiniGUIAppWizardPage("MiniGUIProjectWizard");
-		fMainPage.setTitle(title);
-		fMainPage.setDescription(desc);
-		addPage(fMainPage);
-	}
-
-	public String[] getNatures() {
-		return new String[] { CProjectNature.C_NATURE_ID };
-	}
-
-	protected IProject continueCreation(IProject prj) {
-		try {
-			CProjectNature.addCNature(prj, new NullProgressMonitor());
-		} catch (CoreException e) {}
-		return prj;
-	}
-	
-}
-*/
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -304,17 +262,6 @@ implements IExecutableExtension, IWizardWithMemory
 		try {
 			CProjectNature.addCNature(prj, new NullProgressMonitor());
 		} catch (CoreException e) {}
-		/*
-		// for testing ...
-		ICProjectDescription prjd = CoreModel.getDefault().getProjectDescription(prj, false); 
-		if (prjd == null) 
-			System.out.println("1 ----not CDT Project"); 
-		ICConfigurationDescription[] cfgs = prjd.getConfigurations();
-		if (cfgs != null && cfgs.length > 0)
-			System.out.println("2 ----is CDT Project");
-		else
-			System.out.println("2 ----not CDT Project");
-		*/
 		return prj;
 	}
 	

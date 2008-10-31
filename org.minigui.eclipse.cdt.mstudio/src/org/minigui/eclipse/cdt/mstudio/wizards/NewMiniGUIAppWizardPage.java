@@ -46,6 +46,7 @@ import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 
 import org.eclipse.cdt.internal.ui.CPluginImages;
 
+@SuppressWarnings("restriction")
 public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implements IWizardItemsListListener {
 		private static final Image IMG_CATEGORY = CPluginImages.get(CPluginImages.IMG_OBJS_SEARCHFOLDER);
 		private static final Image IMG_ITEM = CPluginImages.get(CPluginImages.IMG_OBJS_VARIABLE);
@@ -146,12 +147,7 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 	    
 
 		public IWizardPage getNextPage() {
-
-			IWizardPage pag = (h_selected == null) ? null : h_selected.getSpecificPage();
-			
-			System.out.println("NewMiniGUIAppWizardPage::GetNextPage()"+ pag);
-						
-			return pag;
+			return (h_selected == null) ? null : h_selected.getSpecificPage();
 	    }		
 
 	    public URI getProjectLocation() {
@@ -248,7 +244,6 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 			if (extensionPoint == null) return null;
 			IExtension[] extensions = extensionPoint.getExtensions();
 			if (extensions == null) return null;
-			System.out.println("before +++++++++++++++++++++++");
 			List<EntryDescriptor> items = new ArrayList<EntryDescriptor>();
 			for (int i = 0; i < extensions.length; ++i)	{
 				IConfigurationElement[] elements = extensions[i].getConfigurationElements();
@@ -265,7 +260,6 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 						}
 						if (w == null) return null;
 						w.setDependentControl(right, ls);
-						System.out.println("before createItems");
 						for (EntryDescriptor ed : w.createItems(show_sup.getSelection(), wizard)){
 							items.add(ed);
 						}
@@ -283,12 +277,11 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 					items.add(0, ed);
 					break;
 				}
-			}
-			System.out.println("qq items.size()="+ items.size());
+			};
 			// bug # 211935 : allow items filtering.
 			if (ls != null) // NULL means call from prefs
 				items = ls.filterItems(items);
-			System.out.println("items.size()="+ items.size());
+			
 			addItemsToTree(tree, items);
 			
 			if (tree.getItemCount() > 0) {
@@ -316,14 +309,11 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 		}
 
 		private static void addItemsToTree(Tree tree, List<EntryDescriptor> items) {
-		//  Sorting is disabled because of users requests	
-		//	Collections.sort(items, CDTListComparator.getInstance());
-			System.out.println("in ====== addItemsToTree(Tree tree, List<EntryDescriptor> items)");
+
 			ArrayList<TreeItem> placedTreeItemsList = new ArrayList<TreeItem>(items.size());
 			ArrayList<EntryDescriptor> placedEntryDescriptorsList = new ArrayList<EntryDescriptor>(items.size());
 			for (EntryDescriptor wd : items) {
 				if (wd.getParentId() == null) {
-					System.out.println("in ====== for if wd.getName() = "+wd.getName());
 					wd.setPath(wd.getId());
 					TreeItem ti = new TreeItem(tree, SWT.NONE);
 					ti.setText(TextProcessor.process(wd.getName()));
@@ -338,21 +328,16 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 				boolean found = false;
 				Iterator<EntryDescriptor> it2 = items.iterator();
 				while (it2.hasNext()) {
-					System.out.println("in ====== while ");
 					EntryDescriptor wd1 = it2.next();
 					if (wd1.getParentId() == null) continue;
 					for (int i = 0; i< placedEntryDescriptorsList.size(); i++) {
-						System.out.println("in ====== while-while-for  ");
 						EntryDescriptor wd2 = placedEntryDescriptorsList.get(i);
 						if (wd2.getId().equals(wd1.getParentId())) {
-							System.out.println("in ====== while-while-for-if");
 							found = true;
 							wd1.setParentId(null);
 							CWizardHandler h = wd2.getHandler();
-							System.out.println("in ====== while-while-for-if======0=");
 							if (h == null && wd1.getHandler() == null && !wd1.isCategory())
 								break;
-							System.out.println("in ====== while-while-for-if======1=");
 							wd1.setPath(wd2.getPath() + "/" + wd1.getId()); //$NON-NLS-1$
 							wd1.setParent(wd2);
 							if (h != null) {
@@ -361,8 +346,6 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 							//	if (!h.isApplicable(wd1))
 								//	break;
 							}
-							
-							System.out.println("in ====== while-while-for-if  wd1.getName()="+wd1.getName());
 							TreeItem p = placedTreeItemsList.get(i);
 							TreeItem ti = new TreeItem(p, SWT.NONE);
 							ti.setText(wd1.getName());
@@ -384,17 +367,14 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 		private void switchTo(CWizardHandler h, EntryDescriptor ed) {
 			if (h == null) 
 				h = ed.getHandler();
-			System.out.println("1111 enter switchTo .......h="+h);
 			if (ed.isCategory())
 				h = null;
-			System.out.println("enter switchTo .......h="+h);
 			try {
 				if (h != null) 
 					h.initialize(ed);
 			} catch (CoreException e) { 
 				h = null;
 			}
-			System.out.println("in switchTo .......h = "+h);
 			if (h_selected != null) 
 				h_selected.handleUnSelection();
 			h_selected = h;
@@ -413,7 +393,6 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage implem
 			right_label.setText(h_selected.getHeader());
 			if (categorySelectedLabel != null)
 				categorySelectedLabel.setVisible(false);
-			System.out.println("before ...... h_selected.handleSelection .......");
 			h_selected.handleSelection();
 			h_selected.setSupportedOnly(show_sup.getSelection());
 		}

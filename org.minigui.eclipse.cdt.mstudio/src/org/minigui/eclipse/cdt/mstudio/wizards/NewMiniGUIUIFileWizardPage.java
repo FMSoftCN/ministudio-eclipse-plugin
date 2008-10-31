@@ -35,7 +35,7 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		this.selection = selection;
 	}
 
-	@Override
+
 	public void createControl(Composite parent) {
 		// TODO Auto-generated method stub
         Composite container = new Composite(parent, SWT.NULL);
