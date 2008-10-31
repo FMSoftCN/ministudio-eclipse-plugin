@@ -1,24 +1,5 @@
 package org.minigui.eclipse.cdt.mstudio.wizards;
 
-/*
-import org.eclipse.cdt.ui.wizards.CDTMainWizardPage;
-
-import org.eclipse.swt.widgets.Composite;
-
-
-public class NewMiniGUIAppWizardPage extends CDTMainWizardPage {
-	
-	public NewMiniGUIAppWizardPage(String str) {
-	  super(str); 
-	}
-	
-  public void createControl(Composite parent) {
-    super.createControl(parent);
-    }
-
-}
-*/
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
