@@ -49,7 +49,6 @@ public class TemplateMGNewWizard extends AbstractCWizard {
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.eclipse.cdt.internal.ui.CPluginImages;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyManager;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyType;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
