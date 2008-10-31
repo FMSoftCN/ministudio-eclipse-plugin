@@ -3,8 +3,8 @@
  */
 package org.minigui.eclipse.cdt.mstudio.wizards;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileInfo;
@@ -33,34 +33,32 @@ import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.ui.CUIPlugin;
-import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 
-public class NewMiniGUIAppWizard extends BasicNewResourceWizard 
-implements IExecutableExtension, IWizardWithMemory  
-{
-	private static final String PREFIX= "CProjectWizard"; //$NON-NLS-1$
-	private static final String OP_ERROR= "CProjectWizard.op_error"; //$NON-NLS-1$
-	private static final String title= CUIPlugin.getResourceString(OP_ERROR + ".title"); //$NON-NLS-1$
-	private static final String message= CUIPlugin.getResourceString(OP_ERROR + ".message"); //$NON-NLS-1$
-	private static final String[] EMPTY_ARR = new String[0]; 
+public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
+		IExecutableExtension, IWizardWithMemory {
 	
+	private static final String PREFIX = "CProjectWizard";  
+	private static final String title = MiniGUIMessages.getString("MGProjectWizard.op_error.title");
+	private static final String message = MiniGUIMessages.getString("MGProjectWizard.op_error.message");
+	private static final String[] EMPTY_ARR = new String[0];
+
 	protected IConfigurationElement fConfigElement;
 	protected NewMiniGUIAppWizardPage fMainPage;
-	
+
 	protected IProject newProject;
 	private String wz_title;
 	private String wz_desc;
-	
+
 	private boolean existingPath = false;
 	private String lastProjectName = null;
 	private URI lastProjectLocation = null;
 	private CWizardHandler savedHandler = null;
 
 	public NewMiniGUIAppWizard() {
-		this("MiniGUI Project","Create MiniGUI project of selected type");
-	//	this(UIMessages.getString("NewModelProjectWizard.0"),UIMessages.getString("NewModelProjectWizard.1")); //$NON-NLS-1$ //$NON-NLS-2$
+		this(MiniGUIMessages.getString("NewModelProjectWizard.0"),
+				MiniGUIMessages.getString("NewModelProjectWizard.1")); 
 	}
 
 	public NewMiniGUIAppWizard(String title, String desc) {
@@ -72,10 +70,9 @@ implements IExecutableExtension, IWizardWithMemory
 		wz_title = title;
 		wz_desc = desc;
 	}
-	
-	@Override
+
 	public void addPages() {
-		fMainPage= new NewMiniGUIAppWizardPage(CUIPlugin.getResourceString(PREFIX));
+		fMainPage = new NewMiniGUIAppWizardPage(CUIPlugin.getResourceString(PREFIX));
 		fMainPage.setTitle(wz_title);
 		fMainPage.setDescription(wz_desc);
 		addPage(fMainPage);
@@ -87,15 +84,15 @@ implements IExecutableExtension, IWizardWithMemory
 
 		if (!fMainPage.getProjectName().equals(lastProjectName))
 			return true;
-			
+
 		URI projectLocation = fMainPage.getProjectLocation();
 		if (projectLocation == null) {
 			if (lastProjectLocation != null)
 				return true;
 		} else if (!projectLocation.equals(lastProjectLocation))
 			return true;
-		
-		return savedHandler.isChanged(); 
+
+		return savedHandler.isChanged();
 	}
 
 	public IProject getProject(boolean defaults) {
@@ -103,62 +100,63 @@ implements IExecutableExtension, IWizardWithMemory
 	}
 
 	public IProject getProject(boolean defaults, boolean onFinish) {
-		if (newProject != null && isChanged()) 
-			clearProject(); 
-		if (newProject == null)	{
-            existingPath = false;
-		  	try {
-		  		IFileStore fs;
+		if (newProject != null && isChanged())
+			clearProject();
+		if (newProject == null) {
+			existingPath = false;
+			try {
+				IFileStore fs;
 				URI p = fMainPage.getProjectLocation();
-			  	if (p == null) { 
-			  		fs = EFS.getStore(ResourcesPlugin.getWorkspace().getRoot().getLocationURI());
-				    fs = fs.getChild(fMainPage.getProjectName());
-			  	} else
-			  		fs = EFS.getStore(p);
-		  		IFileInfo f = fs.fetchInfo();
-		  		if (f.exists() && f.isDirectory()) {
-		  			if (fs.getChild(".project").fetchInfo().exists()) { //$NON-NLS-1$
-	                	if (!
-	                		MessageDialog.openConfirm(getShell(), 
-	        				UIMessages.getString("CDTCommonProjectWizard.0"),  //$NON-NLS-1$
-							UIMessages.getString("CDTCommonProjectWizard.1")) //$NON-NLS-1$
-							)
-	                		return null;
-	                }
-	                existingPath = true;
-		  		}
-        	} catch (CoreException e) {
-        		CUIPlugin.log(e.getStatus());
-        	}
+				if (p == null) {
+					fs = EFS.getStore(ResourcesPlugin.getWorkspace().getRoot()
+							.getLocationURI());
+					fs = fs.getChild(fMainPage.getProjectName());
+				} else
+					fs = EFS.getStore(p);
+				IFileInfo f = fs.fetchInfo();
+				if (f.exists() && f.isDirectory()) {
+					if (fs.getChild(".project").fetchInfo().exists()) { 
+						if (!MessageDialog.openConfirm(getShell(), 
+								MiniGUIMessages.getString("MGProjectWizard.0"), 
+								MiniGUIMessages.getString("MGProjectWizard.1")))
+							return null;
+					}
+					existingPath = true;
+				}
+			} catch (CoreException e) {
+				CUIPlugin.log(e.getStatus());
+			}
 			savedHandler = fMainPage.h_selected;
 			savedHandler.saveState();
 			lastProjectName = fMainPage.getProjectName();
 			lastProjectLocation = fMainPage.getProjectLocation();
 			// start creation process
-			invokeRunnable(getRunnable(defaults, onFinish)); 
-		} 
+			invokeRunnable(getRunnable(defaults, onFinish));
+		}
 		return newProject;
 	}
 
 	private void clearProject() {
-		if (lastProjectName == null) return;
+		if (lastProjectName == null)
+			return;
 		try {
-			ResourcesPlugin.getWorkspace().getRoot().getProject(lastProjectName).delete(!existingPath, true, null);
-		} catch (CoreException ignore) {}
+			ResourcesPlugin.getWorkspace().getRoot()
+					.getProject(lastProjectName).delete(!existingPath, true, null);
+		} catch (CoreException ignore) { }
 		newProject = null;
 		lastProjectName = null;
 		lastProjectLocation = null;
 	}
-	
+
 	private boolean invokeRunnable(IRunnableWithProgress runnable) {
-		IRunnableWithProgress op= new WorkspaceModifyDelegatingOperation(runnable);
+		IRunnableWithProgress op = new WorkspaceModifyDelegatingOperation(runnable);
 		try {
 			getContainer().run(true, true, op);
 		} catch (InvocationTargetException e) {
 			CUIPlugin.errorDialog(getShell(), title, message, e.getTargetException(), false);
 			clearProject();
 			return false;
-		} catch  (InterruptedException e) {
+		} catch (InterruptedException e) {
 			clearProject();
 			return false;
 		}
@@ -168,7 +166,7 @@ implements IExecutableExtension, IWizardWithMemory
 	public boolean performFinish() {
 		boolean needsPost = (newProject != null && !isChanged());
 		// create project if it is not created yet
-		if (getProject(fMainPage.isCurrent(), true) == null) 
+		if (getProject(fMainPage.isCurrent(), true) == null)
 			return false;
 		fMainPage.h_selected.postProcess(newProject, needsPost);
 		try {
@@ -181,12 +179,14 @@ implements IExecutableExtension, IWizardWithMemory
 		selectAndReveal(newProject);
 		return true;
 	}
-	
+
 	protected boolean setCreated() throws CoreException {
-		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
-		
-		ICProjectDescription des = mngr.getProjectDescription(newProject, false);
-		if(des.isCdtProjectCreating()){
+		ICProjectDescriptionManager mngr = CoreModel.getDefault()
+				.getProjectDescriptionManager();
+
+		ICProjectDescription des = mngr
+				.getProjectDescription(newProject, false);
+		if (des.isCdtProjectCreating()) {
 			des = mngr.getProjectDescription(newProject, true);
 			des.setCdtProjectCreated();
 			mngr.setProjectDescription(newProject, des, false, null);
@@ -194,48 +194,59 @@ implements IExecutableExtension, IWizardWithMemory
 		}
 		return false;
 	}
-	
-	public boolean performCancel() {
-    	clearProject();
-        return true;
-    }
 
-	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		fConfigElement= config;
+	public boolean performCancel() {
+		clearProject();
+		return true;
 	}
 
-	private IRunnableWithProgress getRunnable(boolean _defaults, final boolean onFinish) {
+	public void setInitializationData(IConfigurationElement config,
+			String propertyName, Object data) throws CoreException {
+		fConfigElement = config;
+	}
+
+	private IRunnableWithProgress getRunnable(boolean _defaults,
+			final boolean onFinish) {
 		final boolean defaults = _defaults;
 		return new IRunnableWithProgress() {
-			public void run(IProgressMonitor imonitor) throws InvocationTargetException, InterruptedException {
+			public void run(IProgressMonitor imonitor)
+					throws InvocationTargetException, InterruptedException {
 				getShell().getDisplay().syncExec(new Runnable() {
-					public void run() { 
+					public void run() {
 						try {
-							newProject = createIProject(lastProjectName, lastProjectLocation);
-							if (newProject != null) 
-								fMainPage.h_selected.createProject(newProject, defaults, onFinish);
-						} catch (CoreException e) {	CUIPlugin.log(e); }
+							newProject = createIProject(lastProjectName,
+									lastProjectLocation);
+							if (newProject != null)
+								fMainPage.h_selected.createProject(newProject,
+										defaults, onFinish);
+						} catch (CoreException e) {
+							CUIPlugin.log(e);
+						}
 					}
 				});
 			}
 		};
 	}
 
-	public IProject createIProject(final String name, final URI location) throws CoreException{
-		if (newProject != null)	return newProject;
-		
+	public IProject createIProject(final String name, final URI location)
+			throws CoreException {
+		if (newProject != null)
+			return newProject;
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		final IProject newProjectHandle = root.getProject(name);
-		
+
 		if (!newProjectHandle.exists()) {
-//			IWorkspaceDescription workspaceDesc = workspace.getDescription();
-//			workspaceDesc.setAutoBuilding(false);
-//			workspace.setDescription(workspaceDesc);
-			IProjectDescription description = workspace.newProjectDescription(newProjectHandle.getName());
-			if(location != null)
+			// IWorkspaceDescription workspaceDesc = workspace.getDescription();
+			// workspaceDesc.setAutoBuilding(false);
+			// workspace.setDescription(workspaceDesc);
+			IProjectDescription description = workspace
+					.newProjectDescription(newProjectHandle.getName());
+			if (location != null)
 				description.setLocationURI(location);
-			newProject = CCorePlugin.getDefault().createCDTProject(description, newProjectHandle, new NullProgressMonitor());
+			newProject = CCorePlugin.getDefault().createCDTProject(description,
+					newProjectHandle, new NullProgressMonitor());
 		} else {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
@@ -246,14 +257,14 @@ implements IExecutableExtension, IWizardWithMemory
 			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
 			newProject = newProjectHandle;
 		}
-        
+
 		// Open the project if we have to
 		if (!newProject.isOpen()) {
 			newProject.open(new NullProgressMonitor());
 		}
-		return continueCreation(newProject);	
+		return continueCreation(newProject);
 	}
-	
+
 	public String[] getNatures() {
 		return new String[] { CProjectNature.C_NATURE_ID };
 	}
@@ -261,24 +272,25 @@ implements IExecutableExtension, IWizardWithMemory
 	protected IProject continueCreation(IProject prj) {
 		try {
 			CProjectNature.addCNature(prj, new NullProgressMonitor());
-		} catch (CoreException e) {}
+		} catch (CoreException e) {
+		}
 		return prj;
 	}
-	
+
 	public void dispose() {
 		fMainPage.dispose();
 	}
-	
-    @Override
+
 	public boolean canFinish() {
-    	if (fMainPage.h_selected != null) {
-    		if(!fMainPage.h_selected.canFinish())
-    			return false;
-    		String s = fMainPage.h_selected.getErrorMessage();
-    		if (s != null) return false;
-    	}
-    	return super.canFinish();
-    }
+		if (fMainPage.h_selected != null) {
+			if (!fMainPage.h_selected.canFinish())
+				return false;
+			String s = fMainPage.h_selected.getErrorMessage();
+			if (s != null)
+				return false;
+		}
+		return super.canFinish();
+	}
 
 	public String getLastProjectName() {
 		return lastProjectName;
@@ -293,14 +305,15 @@ implements IExecutableExtension, IWizardWithMemory
 	}
 
 	// Methods below should provide data for language check
-	public String[] getLanguageIDs (){
+	public String[] getLanguageIDs() {
 		return EMPTY_ARR;
 	}
-	public String[] getContentTypeIDs (){
+
+	public String[] getContentTypeIDs() {
 		return EMPTY_ARR;
 	}
-	public String[] getExtensions (){
+
+	public String[] getExtensions() {
 		return EMPTY_ARR;
 	}
-	
 }

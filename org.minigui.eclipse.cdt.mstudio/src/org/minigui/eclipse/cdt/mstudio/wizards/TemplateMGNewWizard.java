@@ -9,7 +9,6 @@ import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildListComparator;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.ui.properties.Messages;
 import org.eclipse.cdt.managedbuilder.ui.wizards.AbstractCWizard;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.jface.wizard.IWizard;
@@ -20,7 +19,7 @@ import org.eclipse.cdt.core.templateengine.TemplateInfo;
 public class TemplateMGNewWizard extends AbstractCWizard {
 	
 	private static final String MG_TYPE = "org.minigui.eclipse.cdt.mstudio.projectType";
-	public static final String OTHERS_LABEL = Messages.getString("CNewWizard.0");  
+	public static final String OTHERS_LABEL = MiniGUIMessages.getString("MGNewWizard.0");  
 	public static final String EMPTY_PROJECT = "Empty MiniGUI Project";
 	
 	public EntryDescriptor[] createItems(boolean supportedOnly, IWizard wizard) {
