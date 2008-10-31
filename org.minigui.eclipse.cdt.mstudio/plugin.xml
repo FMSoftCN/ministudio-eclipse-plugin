@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.4"?>
+<?eclipse version="3.2"?>
 <plugin>
-
+  	<extension-point id="MGWizard" name="MGWizard" schema="schema/MGWizard.exsd"/>
+  	
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -31,38 +32,56 @@
          </description>
       </wizard>
    </extension>
+
+  	<extension
+        id="MiniGUITemplateEngineWizard"
+        name="MiniGUITemplate.Engine.Wizard"
+        point="org.minigui.eclipse.cdt.mstudio.MGWizard">
+     	<wizard
+            class="org.minigui.eclipse.cdt.mstudio.wizards.TemplateMGNewWizard"
+            name="MiniGUITemplate.Wizard">
+     	</wizard>
+  	</extension>
+		
    <extension
+         id="org.minigui.eclipse.cdt.mstudio.project"
+         name="minigui"
+         point="org.eclipse.cdt.managedbuilder.core.buildProperties">
+         
+     <propertyType id="org.minigui.eclipse.cdt.mstudio.projectType" name="MiniGUI project"/>
+     
+     <propertyValue 
+         property="org.minigui.eclipse.cdt.mstudio.projectType" 
+         id="org.eclipse.cdt.build.core.buildArtefactType.exe" 
+         name="MiniGUI Project"/>	
+  	</extension> 
+  	
+  	<extension 
          point="org.eclipse.cdt.core.templates">
       <template
             id="org.minigui.eclipse.cdt.mstudio.templates.EmptyMiniGUIAppProject"
             location="templates/projecttemplates/EmptyMiniGUIAppProject/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
-      </template>
-      <template
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+     	</template>
+     	<template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIMainWinProject"
             location="templates/projecttemplates/MiniGUIMainWinProject/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
-      </template>
-      <template
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+     	</template>
+     	<template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIDialogProject"
             location="templates/projecttemplates/MiniGUIDialogProject/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
-      </template>
-      <template
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+     	</template>
+     	<template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIServerProject"
             location="templates/projecttemplates/MiniGUIServerProject/template.xml"
-            projectType="org.eclipse.cdt.build.core.buildArtefactType.exe">
-      </template>
-   </extension>
-   <extension
-         point="org.eclipse.core.runtime.contentTypes">
-      <content-type
-            base-type="org.eclipse.core.runtime.xml"
-            file-extensions="ui"
-            id="org.minigui.eclipse.cdt.mstudio.ui"
-            name="%MStudio.contenttype.ui"
-            priority="high">
-      </content-type>
-   </extension>
-
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+     	</template>
+  	</extension>
+	
 </plugin>
