@@ -1,5 +1,5 @@
 
-package org.minigui.eclipse.cdt.mstudio.wizards;
+package org.minigui.eclipse.cdt.mstudio.template;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +15,9 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.cdt.ui.templateengine.Template;
 import org.eclipse.cdt.ui.templateengine.TemplateEngineUI;
 import org.eclipse.cdt.core.templateengine.TemplateInfo;
+
+import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
+import org.minigui.eclipse.cdt.mstudio.wizards.MGWizardHandler;
 
 public class TemplateMGNewWizard extends AbstractCWizard {
 	

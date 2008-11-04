@@ -8,7 +8,7 @@
  * Contributors:
  * IBM - Initial API and implementation
  *******************************************************************************/
-package org.minigui.eclipse.cdt.mstudio.wizards;
+package org.minigui.eclipse.cdt.mstudio;
 
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
@@ -19,7 +19,7 @@ import java.util.ResourceBundle;
  */
 public class MiniGUIMessages {
 	// Bundle ID
-	private static final String BUNDLE_ID = "org.minigui.eclipse.cdt.mstudio.wizards.MGResources"; //$NON-NLS-1$
+	private static final String BUNDLE_ID = "org.minigui.eclipse.cdt.mstudio.MGResources"; 
 	//Resource bundle.
 	private static ResourceBundle resourceBundle;
 

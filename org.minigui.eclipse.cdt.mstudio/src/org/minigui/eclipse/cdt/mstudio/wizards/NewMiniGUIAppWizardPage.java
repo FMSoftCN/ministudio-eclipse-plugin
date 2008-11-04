@@ -44,6 +44,8 @@ import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 
 import org.eclipse.cdt.internal.ui.CPluginImages;
+import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
+import org.minigui.eclipse.cdt.mstudio.template.TemplateMGNewWizard;
 
 @SuppressWarnings("restriction")
 public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage
@@ -192,10 +194,10 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage
 				if (f.exists()) {
 					if (f.isDirectory()) {
 						setMessage(
-								MiniGUIMessages.getString("MGMainWizardPage.7"), IMessageProvider.WARNING); //$NON-NLS-1$
+								MiniGUIMessages.getString("MGMainWizardPage.7"), IMessageProvider.WARNING); 
 						return true;
 					}
-					setErrorMessage(MiniGUIMessages.getString("MGMainWizardPage.6")); //$NON-NLS-1$
+					setErrorMessage(MiniGUIMessages.getString("MGMainWizardPage.6")); 
 					return false;
 				}
 			} catch (CoreException e) {
@@ -213,7 +215,7 @@ public class NewMiniGUIAppWizardPage extends WizardNewProjectCreationPage
 		}
 
 		if (tree.getItemCount() == 0) {
-			setErrorMessage(MiniGUIMessages.getString("MGMainWizardPage.3")); //$NON-NLS-1$
+			setErrorMessage(MiniGUIMessages.getString("MGMainWizardPage.3")); 
 			return false;
 		}
 

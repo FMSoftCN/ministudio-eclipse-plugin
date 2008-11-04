@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
 
 public class MGConfigWizardPage extends WizardPage {
 

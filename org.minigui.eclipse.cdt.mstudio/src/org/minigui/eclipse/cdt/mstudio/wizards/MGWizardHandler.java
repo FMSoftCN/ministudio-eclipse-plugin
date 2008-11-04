@@ -58,6 +58,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
+import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
+
 public class MGWizardHandler extends CWizardHandler {
 	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
 	public static final String EMPTY_STR = "";
@@ -471,8 +473,7 @@ public class MGWizardHandler extends CWizardHandler {
 	public void createProject(IProject project, boolean defaults,
 			boolean onFinish) throws CoreException {
 
-		ICProjectDescriptionManager mngr = CoreModel.getDefault()
-				.getProjectDescriptionManager();
+		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		ICProjectDescription des = mngr.createProjectDescription(project, false, !onFinish);
 		ManagedBuildInfo info = ManagedBuildManager.createBuildInfo(project);
 
@@ -483,7 +484,7 @@ public class MGWizardHandler extends CWizardHandler {
 		if (cfgs == null || cfgs.length == 0	|| cfgs[0].getConfiguration() == null) {
 			throw new CoreException(new Status(IStatus.ERROR,
 					ManagedBuilderUIPlugin.getUniqueIdentifier(),
-					MiniGUIMessages.getString("MGWizardHandler.6"))); //$NON-NLS-1$
+					MiniGUIMessages.getString("MGWizardHandler.6"))); 
 		}
 		Configuration cf = (Configuration) cfgs[0].getConfiguration();
 		ManagedProject mProj = new ManagedProject(project, cf.getProjectType());

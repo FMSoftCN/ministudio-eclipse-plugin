@@ -36,6 +36,8 @@ import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 
+import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
+
 public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 		IExecutableExtension, IWizardWithMemory {
 	
