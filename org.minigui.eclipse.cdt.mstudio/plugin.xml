@@ -38,7 +38,7 @@
         name="MiniGUITemplate.Engine.Wizard"
         point="org.minigui.eclipse.cdt.mstudio.MGWizard">
      	<wizard
-            class="org.minigui.eclipse.cdt.mstudio.wizards.TemplateMGNewWizard"
+            class="org.minigui.eclipse.cdt.mstudio.template.TemplateMGNewWizard"
             name="MiniGUITemplate.Wizard">
      	</wizard>
   	</extension>
@@ -83,5 +83,14 @@
             projectType="org.minigui.eclipse.cdt.mstudio.projectType">
      	</template>
   	</extension>
+  	
+  	<extension
+         point="org.eclipse.ui.preferencePages">
+     	<page
+            class="org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage"
+            id="org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage"
+            name="MiniGUI"/>
+  	</extension>
+  	
 	
 </plugin>
