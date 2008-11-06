@@ -37,6 +37,8 @@ import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
 
 import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
+import org.minigui.eclipse.cdt.mstudio.project.MgProject;
+import org.minigui.eclipse.cdt.mstudio.project.MgProjectNature;
 
 public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 		IExecutableExtension, IWizardWithMemory {
@@ -62,7 +64,7 @@ public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 		this(MiniGUIMessages.getString("NewModelProjectWizard.0"),
 				MiniGUIMessages.getString("NewModelProjectWizard.1")); 
 	}
-
+	
 	public NewMiniGUIAppWizard(String title, String desc) {
 		super();
 		setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
@@ -234,21 +236,17 @@ public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 			throws CoreException {
 		if (newProject != null)
 			return newProject;
-
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		final IProject newProjectHandle = root.getProject(name);
 
 		if (!newProjectHandle.exists()) {
-			// IWorkspaceDescription workspaceDesc = workspace.getDescription();
-			// workspaceDesc.setAutoBuilding(false);
-			// workspace.setDescription(workspaceDesc);
 			IProjectDescription description = workspace
 					.newProjectDescription(newProjectHandle.getName());
 			if (location != null)
 				description.setLocationURI(location);
-			newProject = CCorePlugin.getDefault().createCDTProject(description,
-					newProjectHandle, new NullProgressMonitor());
+			newProject = CCorePlugin.getDefault().createCDTProject
+								(description,	newProjectHandle, new NullProgressMonitor());
 		} else {
 			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 				public void run(IProgressMonitor monitor) throws CoreException {
@@ -259,21 +257,21 @@ public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 			workspace.run(runnable, root, IWorkspace.AVOID_UPDATE, monitor);
 			newProject = newProjectHandle;
 		}
-
 		// Open the project if we have to
 		if (!newProject.isOpen()) {
 			newProject.open(new NullProgressMonitor());
 		}
+
 		return continueCreation(newProject);
 	}
-
+	
 	public String[] getNatures() {
-		return new String[] { CProjectNature.C_NATURE_ID };
+		return new String[] { CProjectNature.C_NATURE_ID, MgProjectNature.MG_NATURE_ID};
 	}
 
 	protected IProject continueCreation(IProject prj) {
 		try {
-			CProjectNature.addCNature(prj, new NullProgressMonitor());
+			new MgProject(prj).addMgNature(new NullProgressMonitor());
 		} catch (CoreException e) {
 		}
 		return prj;
@@ -318,4 +316,5 @@ public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 	public String[] getExtensions() {
 		return EMPTY_ARR;
 	}
+	
 }

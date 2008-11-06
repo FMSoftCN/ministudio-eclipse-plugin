@@ -3,8 +3,10 @@ package org.minigui.eclipse.cdt.mstudio.preferences;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -34,6 +36,8 @@ import org.eclipse.ui.PlatformUI;
 
 import org.minigui.eclipse.cdt.mstudio.MStudioPlugin;
 import org.minigui.eclipse.cdt.mstudio.wizards.MStudioVersionWizard;
+import org.minigui.eclipse.cdt.mstudio.project.MgProject;
+import org.minigui.eclipse.cdt.mstudio.project.MgProjectNature;
 
 class MsVersionListener extends SelectionAdapter
 {
@@ -124,7 +128,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 		return (String[])versions.toArray(new String[versions.size()]);
 	}
 	
-	public static String[] getMStudioBinPath(String version) {
+	public static String getMStudioBinPath(String version) {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		if (!store.contains(PreferenceConstants.MSVERSION_COUNT))
 			return null;
@@ -144,13 +148,13 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 				binpath = store.getString(binpathKey);
 			
 			if (name.equals(version))
-				return new String[] {name, binpath};
+				return binpath;
 			if (name.equals(defaultVersionName)) {
 				defaultVersionBinPath = binpath;
 			}
 		}
 		
-		return new String[] {defaultVersionName, defaultVersionBinPath};
+		return defaultVersionBinPath;
 	}
 	
 	protected Control createContents(Composite parent) {
@@ -348,23 +352,35 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 
 		return table.getItem(index).getText(0);
 	}
+	
+	private static IProject[] getMgProjects() {
+		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		Vector<IProject> mgProjects = new Vector<IProject>();
+		for (int i = 0; i < allProjects.length; ++i) {
+			try {
+				if (allProjects[i].hasNature (MgProjectNature.MG_NATURE_ID))
+					mgProjects.add(allProjects[i]);
+			} catch (CoreException ex) {}
+		}
+		IProject[] result = new IProject[mgProjects.size()];
+		for (int i = 0; i < result.length; ++i)
+			result[i] = (IProject)mgProjects.elementAt(i);
+		return result;
+	}
 
 	public boolean performOk()
 	{
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		//TODO, for all the minigui projects rebuild...
-		/*
+		
 		// Fetch all project's Qt paths
-		IProject[] pros = QtUtils.getQtProjects();
-		QtProject[] qtProjects = new QtProject[pros.length];
+		IProject[] pros = getMgProjects();
+		MgProject[] mgProjects = new MgProject[pros.length];
 		String[] oldBinPaths = new String[pros.length];
-		String[] oldIncludePaths = new String[pros.length];
 		for (int i=0; i<pros.length; ++i) {
-			qtProjects[i] = new QtProject(pros[i]);
-			oldBinPaths[i] = qtProjects[i].getQtBinPath();
-			oldIncludePaths[i] = qtProjects[i].getQtIncludePath();
+			mgProjects[i] = new MgProject(pros[i]);
+			oldBinPaths[i] = mgProjects[i].getMStudioBinPath();
 		}
-		*/
+		
 		String defaultVersion = getDefaultMsVersionName();
 		if (defaultVersion != null)
 			store.setValue(PreferenceConstants.MSVERSION_DEFAULT, defaultVersion);
@@ -376,26 +392,25 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 			store.setValue(PreferenceConstants.MSVERSION_BINPATH + "." + Integer.toString(i),
 					table.getItem(i).getText(1));
 		}
-	/*	
+
 		// updates all the Qt projects and collect projects that need rebuild
-		Vector outdated = new Vector();
-		for (int i=0; i < qtProjects.length; ++i) {
-			qtProjects[i].updateQtDir(oldBinPaths[i], oldIncludePaths[i]);
-			if ((qtProjects[i].getQtBinPath() == null && oldBinPaths[i] != null)
-				|| (qtProjects[i].getQtBinPath() != null && !qtProjects[i].getQtBinPath().equals(oldBinPaths[i]))
-				|| (qtProjects[i].getQtIncludePath() == null && oldIncludePaths[i] != null)
-				|| (qtProjects[i].getQtIncludePath() != null && !qtProjects[i].getQtIncludePath().equals(oldIncludePaths[i]))) {
-				outdated.add(qtProjects[i]);
+		Vector<IProject> outdated = new Vector<IProject>();
+		
+		for (int i=0; i < mgProjects.length; ++i) {
+			mgProjects[i].updateMStudioDir(oldBinPaths[i]);
+			if ((mgProjects[i].getMStudioBinPath() == null && oldBinPaths[i] != null)
+				|| (mgProjects[i].getMStudioBinPath() != null && !mgProjects[i].getMStudioBinPath().equals(oldBinPaths[i]))) {
+				outdated.add((IProject)mgProjects[i]);
 			}
 		}
 		
 		if (!outdated.isEmpty())
 			askForRebuild(outdated);
-	*/	
+	
 		return true;
 	}
 	
-	private void askForRebuild(final Vector projects) {
+	private void askForRebuild(final Vector<IProject> projects) {
 		Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageDialog dialog = new MessageDialog(shell, "MStudio Versions Changed", null,
 				"Some projects' MStudio versions have changed. A rebuild of the projects is required for changes to take effect. Do a full rebuild now?", 
@@ -407,10 +422,10 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 	    			return ResourcesPlugin.FAMILY_MANUAL_BUILD.equals(family);
 	    		}
 				public IStatus runInWorkspace(IProgressMonitor monitor) {
-					Iterator i = projects.iterator();
+					Iterator<IProject> i = projects.iterator();
 					while (i.hasNext()) {
-						//QtProject project = (QtProject)i.next();
-						//project.scheduleRebuild();
+						MgProject project = (MgProject)i.next();
+						project.scheduleRebuild();
 					}
 					return Status.OK_STATUS;
 				}
@@ -420,9 +435,5 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 			rebuild.schedule();
 		}
 	}
-
-	
-	
-
 
 }
