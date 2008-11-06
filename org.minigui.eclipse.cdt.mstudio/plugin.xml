@@ -2,7 +2,15 @@
 <?eclipse version="3.2"?>
 <plugin>
   	<extension-point id="MGWizard" name="MGWizard" schema="schema/MGWizard.exsd"/>
-  	
+   
+   <extension  
+          id="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"  
+          point="org.eclipse.core.resources.natures">  
+     <runtime>  
+         <run class="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"/>  
+     </runtime> 
+   </extension>
+       	
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -92,5 +100,16 @@
             name="MiniGUI"/>
   	</extension>
   	
-	
+  	<extension
+         point="org.eclipse.ui.propertyPages">
+     <page
+            class="org.minigui.eclipse.cdt.mstudio.properties.MStudioPropertyPage"
+            id="org.minigui.eclipse.cdt.mstudio.properties.MStudioProperyPage"
+            name="MiniGUI Properties">
+			  <filter name="nature" value="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"/>
+	   </page>
+   </extension>
+   
+
+ 
 </plugin>
