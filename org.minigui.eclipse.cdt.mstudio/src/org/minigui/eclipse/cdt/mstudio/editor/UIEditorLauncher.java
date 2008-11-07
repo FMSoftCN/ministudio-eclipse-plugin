@@ -7,22 +7,41 @@ import java.util.Properties;
 
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorLauncher;
 
-public class UIEditorLauncher implements IEditorLauncher {
+import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 
-	public void open(IPath file) {
+public class UIEditorLauncher implements IEditorLauncher {
+	
+
+	
+	public UIEditorLauncher()
+	{
+		System.out.println("======================");
+	}
+	
+	public void open(IPath file) 
+	{
 
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
 		
-		String errMsg = null;
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IFile ifile = root.getFileForLocation(file); 
+		IProject project = ifile.getProject();		
+		String binPath = new MgProject(project).getMStudioBinPath();		
+		System.out.println("project= "+project +"     binPath = "+ binPath);
 		
 		//FIXME , this must be the ui-builder command ....
 		// gedit for testing ...
-		Path buildCommand = new Path("gedit");
+		Path editCommand = new Path ("gedit");
+		//Path editCommand = new Path (binPath + "/ui-builder");
 		
 		List<String> args = new ArrayList<String>();
 		
@@ -33,7 +52,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
 
-		Process p = launcher.execute(buildCommand, (String[])args.toArray(new String[args.size()]),
+		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 		if (p != null) {
 			//TODO, monitor this process ...
@@ -41,9 +60,8 @@ public class UIEditorLauncher implements IEditorLauncher {
 			System.out.println("p != null");
 			
 		} else {
-			errMsg = launcher.getErrorMessage();
+			//TODO for error ...
 		}
-
 
 	}
 	

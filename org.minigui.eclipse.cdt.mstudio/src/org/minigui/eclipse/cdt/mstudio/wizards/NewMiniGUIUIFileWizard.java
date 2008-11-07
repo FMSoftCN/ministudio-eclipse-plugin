@@ -89,11 +89,8 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 	 * the editor on the newly created file.
 	 */
 
-	private void doFinish(
-		String containerName,
-		String fileName,
-		IProgressMonitor monitor)
-		throws CoreException {
+	private void doFinish(String containerName, String fileName,	IProgressMonitor monitor)
+			throws CoreException {
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
