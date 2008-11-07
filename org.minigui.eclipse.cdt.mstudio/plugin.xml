@@ -109,6 +109,27 @@
 			  <filter name="nature" value="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"/>
 	   </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            default="false"
+            id="org.minigui.eclipse.cdt.mstudio.UIEditorLauncher"
+            launcher="org.minigui.eclipse.cdt.mstudio.editor.UIEditorLauncher"
+            name="%UIEditor.name">
+         <contentTypeBinding
+               contentTypeId="org.minigui.eclipse.cdt.mstudio.uitype">
+         </contentTypeBinding>
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            file-extensions="mui"
+            id="org.minigui.eclipse.cdt.mstudio.uitype"
+            name="%UIType.name"
+            priority="high">
+      </content-type>
+   </extension>
    
 
  

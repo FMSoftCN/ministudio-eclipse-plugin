@@ -165,8 +165,8 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		if (dotLoc != -1) {
 			ext = fileName.substring(dotLoc + 1);
 		}
-		if (ext.equalsIgnoreCase("ui") == false) {
-			updateStatus("File extension must be \"ui\"");
+		if (ext.equalsIgnoreCase("mui") == false) {
+			updateStatus("File extension must be \"mui\"");
 			return;
 		}
 		updateStatus(null);
