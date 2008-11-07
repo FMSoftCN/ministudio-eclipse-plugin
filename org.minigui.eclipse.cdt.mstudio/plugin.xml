@@ -114,18 +114,18 @@
       <content-type
             file-extensions="mui"
             id="org.minigui.eclipse.cdt.mstudio.uitype"
-            name="%UIType.name"
+            name="%MStudio.contenttype.ui"
             priority="high">
       </content-type>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            default="false"
+            default="true"
             extensions="mui"
             id="org.minigui.eclipse.cdt.mstudio.UIEditorLauncher"
             launcher="org.minigui.eclipse.cdt.mstudio.editor.UIEditorLauncher"
-            name="%UIEditor.name">
+            name="%MStudioUIeditor.name">
          <contentTypeBinding
                contentTypeId="org.minigui.eclipse.cdt.mstudio.uitype">
          </contentTypeBinding>
