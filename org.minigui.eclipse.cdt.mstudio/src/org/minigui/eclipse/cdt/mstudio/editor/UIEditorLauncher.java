@@ -88,7 +88,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 	{
 		String[] env = null;
 		List<String> envList = new ArrayList<String>();
-		Enumeration names = envProps.propertyNames();
+		Enumeration<?> names = envProps.propertyNames();
 		if (names != null) {
 			while (names.hasMoreElements()) {
 				String key = (String) names.nextElement();
@@ -98,6 +98,4 @@ public class UIEditorLauncher implements IEditorLauncher {
 		}
 		return env;
 	}
-
-
 }
