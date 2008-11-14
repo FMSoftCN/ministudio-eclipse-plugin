@@ -460,11 +460,7 @@ public class MGWizardHandler extends CWizardHandler {
 	}
 
 	public void addTc(IToolChain tc) {
-		if (tc == null) {
-			full_tcs.put(MiniGUIMessages.getString("MGProjectTypeHandler.0"),	null);
-			return;
-		}
-		if (tc.isAbstract() || tc.isSystemObject())
+		if (tc == null || tc.isAbstract() || tc.isSystemObject())
 			return;
 
 		full_tcs.put(tc.getUniqueRealName(), tc);
