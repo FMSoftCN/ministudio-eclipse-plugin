@@ -6,12 +6,14 @@ package org.minigui.eclipse.cdt.mstudio.wizards;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -33,36 +35,30 @@ import org.eclipse.ui.ide.IDE;
 public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 	private NewMiniGUIUIFileWizardPage page;
 	private ISelection selection;
-	/**
-	 * 
-	 */
+
 	public NewMiniGUIUIFileWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
-	
-	/**
-	 * Adding the page to the wizard.
-	 */
 
 	public void addPages() {
 		page = new NewMiniGUIUIFileWizardPage(selection);
 		addPage(page);
 	}
 	
-	/**
-	 * This method is called when 'Finish' button is pressed in
-	 * the wizard. We will create an operation and run it
-	 * using wizard as execution context.
-	 */
 	public boolean performFinish() {
-		final String containerName = page.getContainerName();
-		final String fileName = page.getFileName();
-
+		final String uiContainerName = page.getUiContainerName();
+		final String uiFileName = page.getUiFileName();
+		final String srcContainerName = page.getSrcContainerName();
+		final String srcFileName = page.getSrcFileName();
+		final String hdrContainerName = page.getHdrContainerName();
+		final String hdrFileName = page.getHdrFileName();
+		
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
-					doFinish(containerName, fileName, monitor);
+					doFinish(uiContainerName, uiFileName, srcContainerName, srcFileName, 
+											hdrContainerName, hdrFileName, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -82,36 +78,65 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 		}
 		return true;
 	}
-	
-	/**
-	 * The worker method. It will find the container, create the
-	 * file if missing or just replace its contents, and open
-	 * the editor on the newly created file.
-	 */
 
-	private void doFinish(String containerName, String fileName,	IProgressMonitor monitor)
-			throws CoreException {
-		// create a sample file
-		monitor.beginTask("Creating " + fileName, 2);
+	private void doFinish(String uiContainerName, String uiFileName, String srcContainerName, String srcFileName,	
+			String hdrContainerName, String hdrFileName,	IProgressMonitor monitor) throws CoreException {
+		// create the ui file
+		monitor.beginTask("Creating " + uiFileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer)) {
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
+		
+		IResource uiRes = root.findMember(new Path(uiContainerName));
+		if (!uiRes.exists() || !(uiRes instanceof IContainer)) {
+			throwCoreException("Container \"" + uiContainerName + "\" does not exist.");
 		}
-		IContainer container = (IContainer) resource;
-		final IFile file = container.getFile(new Path(fileName));
-        if (!file.exists())
-            file.create(null, true, monitor);
+		IContainer uiCon = (IContainer) uiRes;
+		if(!uiCon.exists()){
+			try {
+				((IFolder)uiCon).create(true, true, new NullProgressMonitor());
+			} catch (CoreException e){ }		
+		}
+		final IFile uiFile = uiCon.getFile(new Path(uiFileName));
+   if (!uiFile.exists())
+       uiFile.create(null, true, monitor);
 
+   //create the c file
+		IResource srcRes = root.findMember(new Path(srcContainerName));
+		if (!srcRes.exists() || !(srcRes instanceof IContainer)) {
+			throwCoreException("Container \"" + srcContainerName + "\" does not exist.");
+		}
+		IContainer srcCon = (IContainer) srcRes;		
+		if(!srcCon.exists()){
+			try {
+				((IFolder)srcCon).create(true, true, new NullProgressMonitor());
+			} catch (CoreException e){ }		
+		}
+		final IFile srcFile = srcCon.getFile(new Path(srcFileName));
+		if (!srcFile.exists())
+				srcFile.create(null, true, monitor);
+		   
+		//create the h file for resource id ...
+		IResource hdrRes = root.findMember(new Path(hdrContainerName));
+		if (!hdrRes.exists() || !(hdrRes instanceof IContainer)) {
+			throwCoreException("Container \"" + hdrContainerName + "\" does not exist.");
+		}
+		IContainer hdrCon = (IContainer) hdrRes;
+		if(!hdrCon.exists()){
+				try {
+					((IFolder)hdrCon).create(true, true, new NullProgressMonitor());
+				} catch (CoreException e){ }		
+		}
+		final IFile hdrFile = hdrCon.getFile(new Path(hdrFileName));
+		if (!hdrFile.exists())
+				hdrFile.create(null, true, monitor);
+		
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
 		getShell().getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				/* TODO: open ui builder, fileName*/   
 				IWorkbenchPage page =
                     PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
                 try {
-                    IDE.openEditor(page, file, true);
+                    IDE.openEditor(page, uiFile, true);
                 } catch (PartInitException e) {
                 }
 			}
@@ -125,11 +150,6 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 		throw new CoreException(status);
 	}
 
-	/**
-	 * We will accept the selection in the workbench to see if
-	 * we can initialize from it.
-	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
-	 */
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		this.selection = selection;
 	}

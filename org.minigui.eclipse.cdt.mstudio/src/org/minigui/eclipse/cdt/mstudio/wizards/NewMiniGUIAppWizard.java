@@ -218,11 +218,9 @@ public class NewMiniGUIAppWizard extends BasicNewResourceWizard implements
 				getShell().getDisplay().syncExec(new Runnable() {
 					public void run() {
 						try {
-							newProject = createIProject(lastProjectName,
-									lastProjectLocation);
+							newProject = createIProject(lastProjectName, lastProjectLocation);
 							if (newProject != null)
-								fMainPage.h_selected.createProject(newProject,
-										defaults, onFinish);
+								fMainPage.h_selected.createProject(newProject, defaults, onFinish);
 						} catch (CoreException e) {
 							CUIPlugin.log(e);
 						}

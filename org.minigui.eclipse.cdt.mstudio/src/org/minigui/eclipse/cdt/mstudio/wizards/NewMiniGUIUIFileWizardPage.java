@@ -2,9 +2,13 @@ package org.minigui.eclipse.cdt.mstudio.wizards;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -12,25 +16,26 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+
 
 public class NewMiniGUIUIFileWizardPage extends WizardPage {
-	private Text containerText;
-	private Text fileText;
 
+	private Text fileText;
+	
+	private String res_con;
+	private String src_con;
+	private String hdr_con;
+	private String cFileName;
+	
 	private ISelection selection;
 
 	protected NewMiniGUIUIFileWizardPage(ISelection selection) {
 		super("MiniGUIUIWizardPage");
-
 		setTitle("Create a MiniGUI UI File");
 		this.selection = selection;
 	}
@@ -40,26 +45,9 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		GridLayout layout = new GridLayout();
 		container.setLayout(layout);
 		layout.numColumns = 3;
-		layout.verticalSpacing = 9;
+		layout.verticalSpacing = 9;	
 		Label label = new Label(container, SWT.NULL);
-		label.setText("&Source Folder:");
-
-		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		containerText.setLayoutData(gd);
-		containerText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				dialogChanged();
-			}
-		});
-
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Browse...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				handleBrowse();
-			}
-		});
 
 		label = new Label(container, SWT.NULL);
 		label.setText("&File name:");
@@ -78,10 +66,6 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		setControl(container);
 	}
 
-	/**
-	 * Tests if the current workbench selection is a suitable container to use.
-	 */
-
 	private void initialize() {
 		if (selection != null && selection.isEmpty() == false
 				&& selection instanceof IStructuredSelection) {
@@ -91,73 +75,85 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 			Object obj = ssel.getFirstElement();
 			if (!(obj instanceof IResource) && (obj instanceof IAdaptable))
 				obj = ((IAdaptable) obj).getAdapter(IResource.class);
+			
 			if (obj instanceof IResource) {
-				IContainer container;
-				if (obj instanceof IContainer)
-					container = (IContainer) obj;
+				IProject project;
+				if (obj instanceof IProject)
+					project = (IProject) obj;
 				else
-					container = ((IResource) obj).getParent();
-				containerText.setText(container.getFullPath().makeRelative()
-						.toString());
+					project = ((IResource) obj).getProject();
+				
+				//res folder
+				IFolder uiFolder = project.getFolder("res");
+				
+				if (!uiFolder.exists()){
+					try {
+					uiFolder.create(true, true, new NullProgressMonitor());
+					} catch (CoreException e){ }					
+				}
+				
+				res_con = uiFolder.getFullPath().makeRelative().toString();
+				
+				// src folder
+				IFolder srcFolder = project.getFolder("src");
+				
+				if (!srcFolder.exists()){
+					try {
+					srcFolder.create(true, true, new NullProgressMonitor());
+					} catch (CoreException e){ }					
+				}
+				
+				src_con = srcFolder.getFullPath().makeRelative().toString();
+				
+				//hdr folder
+				IFolder hdrFolder = project.getFolder("header");
+				
+				if (!hdrFolder.exists()){
+					try {
+					hdrFolder.create(true, true, new NullProgressMonitor());
+					} catch (CoreException e){ }					
+				}
+				hdr_con = hdrFolder.getFullPath().makeRelative().toString();	
 			}
 		}
 		fileText.setFocus();
 	}
 
-	/**
-	 * Uses the standard container selection dialog to choose the new value for
-	 * the container field.
-	 */
-
-	private void handleBrowse() {
-		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
-				"Select source folder");
-		if (dialog.open() == ContainerSelectionDialog.OK) {
-			Object[] result = dialog.getResult();
-			if (result.length == 1) {
-				containerText.setText(((Path) result[0]).makeRelative()
-						.toString());
-			}
-		}
-	}
-
-	/**
-	 * Ensures that both text fields are set.
-	 */
-
 	private void dialogChanged() {
 		IResource container = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(new Path(getContainerName()));
-		String fileName = getFileName();
+				.findMember(new Path(res_con));
+		IResource src_container = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(new Path(src_con));
+		
+		String fileName = getUiFileName();
 
-		if (getContainerName().length() == 0) {
-			updateStatus("Source folder must be specified");
-			return;
-		}
-		if (container == null
-				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updateStatus("Source folder must exist");
-			return;
-		}
-		if (!container.isAccessible()) {
-			updateStatus("Project must be writable");
-			return;
-		}
 		if (fileName.length() == 0) {
 			updateStatus("File name must be specified");
 			return;
 		}
+
 		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
 			updateStatus("File name must be valid");
 			return;
 		}
 
-		final IFile file = ((IContainer) container).getFile(new Path(fileName));
-		updateStatus(file.toString());
-		if (file.exists()) {
-			updateStatus("File already exists");
-			return;
+		if (container != null && container.exists()){
+			final IFile file = ((IContainer) container).getFile(new Path(fileName));
+			updateStatus(file.toString());
+			if (file.exists()) {
+				updateStatus("File already exists");
+				return;
+			}		
+		}
+
+		if(src_container != null && src_container.exists()){
+			int dotL = fileName.lastIndexOf('.');
+			cFileName = fileName.substring(0,dotL)+".c";
+			final IFile c_file = ((IContainer) src_container).getFile(new Path(cFileName));
+			if (c_file.exists()) {
+				updateStatus("File already exists");
+				return;
+			}
 		}
 
 		String ext = "";
@@ -169,6 +165,7 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 			updateStatus("File extension must be \"mui\"");
 			return;
 		}
+
 		updateStatus(null);
 	}
 
@@ -177,11 +174,28 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	public String getContainerName() {
-		return containerText.getText();
+	public String getUiContainerName() {
+		return res_con;
 	}
 
-	public String getFileName() {
+	public String getUiFileName() {
 		return fileText.getText();
 	}
+	
+	public String getSrcContainerName() {
+		return src_con;
+	}
+
+	public String getSrcFileName() {
+		return cFileName;
+	}
+
+	public String getHdrContainerName() {
+		return hdr_con;
+	}
+
+	public String getHdrFileName() {
+		return "mrc_id.h";
+	}
+	
 }
