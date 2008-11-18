@@ -5,18 +5,13 @@ package org.minigui.eclipse.cdt.mstudio.wizards;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
@@ -48,18 +43,13 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 	}
 	
 	public boolean performFinish() {
-		final String uiContainerName = page.getUiContainerName();
-		final String uiFileName = page.getUiFileName();
-		final String srcContainerName = page.getSrcContainerName();
-		final String srcFileName = page.getSrcFileName();
-		final String hdrContainerName = page.getHdrContainerName();
-		final String hdrFileName = page.getHdrFileName();
-		
+		final String uiFileName = page.getFileName();
+		final IProject project = page.getSelectProject();
+	
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {
-					doFinish(uiContainerName, uiFileName, srcContainerName, srcFileName, 
-											hdrContainerName, hdrFileName, monitor);
+					doFinish(project, uiFileName, monitor);
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {
@@ -80,54 +70,41 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 		return true;
 	}
 
-	private void doFinish(String uiContainerName, String uiFileName, String srcContainerName, String srcFileName,	
-			String hdrContainerName, String hdrFileName,	IProgressMonitor monitor) throws CoreException {
+	private void doFinish(IProject project, String uiFileName,	IProgressMonitor monitor) throws CoreException {
 		// create the ui file
-		monitor.beginTask("Creating " + uiFileName, 2);
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		
-		IResource uiRes = root.findMember(new Path(uiContainerName));
-		if (!uiRes.exists() || !(uiRes instanceof IContainer)) {
-			throwCoreException("Container \"" + uiContainerName + "\" does not exist.");
-		}
-		IContainer uiCon = (IContainer) uiRes;
-		if(!uiCon.exists()){
+		monitor.beginTask("Creating " + uiFileName, 2);		
+		IFolder uiFolder = project.getFolder("res");
+		if(!uiFolder.exists()){
 			try {
-				((IFolder)uiCon).create(true, true, new NullProgressMonitor());
+				uiFolder.create(true, true, new NullProgressMonitor());
 			} catch (CoreException e){ }		
 		}
-		final IFile uiFile = uiCon.getFile(new Path(uiFileName));
+		final IFile uiFile = uiFolder.getFile(new Path(uiFileName));
    if (!uiFile.exists())
        uiFile.create(null, true, monitor);
 
    //create the c file
-		IResource srcRes = root.findMember(new Path(srcContainerName));
-		if (!srcRes.exists() || !(srcRes instanceof IContainer)) {
-			throwCoreException("Container \"" + srcContainerName + "\" does not exist.");
-		}
-		IContainer srcCon = (IContainer) srcRes;		
-		if(!srcCon.exists()){
+		IFolder srcFolder = project.getFolder("src");
+		if(!srcFolder.exists()){
 			try {
-				((IFolder)srcCon).create(true, true, new NullProgressMonitor());
+				srcFolder.create(true, true, new NullProgressMonitor());
 			} catch (CoreException e){ }		
 		}
-		final IFile srcFile = srcCon.getFile(new Path(srcFileName));
+		int dotL = uiFileName.lastIndexOf('.');
+		String cFileName = uiFileName.substring(0,dotL)+".c";
+		final IFile srcFile = srcFolder.getFile(new Path(cFileName));
 		if (!srcFile.exists()){
 				ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
 				srcFile.create(stream, true, monitor);
 		}
 		//create the h file for resource id ...
-		IResource hdrRes = root.findMember(new Path(hdrContainerName));
-		if (!hdrRes.exists() || !(hdrRes instanceof IContainer)) {
-			throwCoreException("Container \"" + hdrContainerName + "\" does not exist.");
-		}
-		IContainer hdrCon = (IContainer) hdrRes;
-		if(!hdrCon.exists()){
+		IFolder hdrFolder = project.getFolder("header");
+		if(!hdrFolder.exists()){
 				try {
-					((IFolder)hdrCon).create(true, true, new NullProgressMonitor());
+					hdrFolder.create(true, true, new NullProgressMonitor());
 				} catch (CoreException e){ }		
 		}
-		final IFile hdrFile = hdrCon.getFile(new Path(hdrFileName));
+		final IFile hdrFile = hdrFolder.getFile(new Path("mrc_id.h"));
 		if (!hdrFile.exists()){
 				ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
 				hdrFile.create(stream, true, monitor);
@@ -146,12 +123,6 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 			}
 		});
 		monitor.worked(1);
-	}
-	
-	private void throwCoreException(String message) throws CoreException {
-		IStatus status =
-			new Status(IStatus.ERROR, "org.minigui.eclipse.cdt.mstudio", IStatus.OK, message, null);
-		throw new CoreException(status);
 	}
 
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
