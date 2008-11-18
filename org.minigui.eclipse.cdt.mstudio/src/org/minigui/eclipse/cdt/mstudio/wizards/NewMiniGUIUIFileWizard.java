@@ -3,6 +3,7 @@
  */
 package org.minigui.eclipse.cdt.mstudio.wizards;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -111,9 +112,10 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 			} catch (CoreException e){ }		
 		}
 		final IFile srcFile = srcCon.getFile(new Path(srcFileName));
-		if (!srcFile.exists())
-				srcFile.create(null, true, monitor);
-		   
+		if (!srcFile.exists()){
+				ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
+				srcFile.create(stream, true, monitor);
+		}
 		//create the h file for resource id ...
 		IResource hdrRes = root.findMember(new Path(hdrContainerName));
 		if (!hdrRes.exists() || !(hdrRes instanceof IContainer)) {
@@ -126,8 +128,10 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 				} catch (CoreException e){ }		
 		}
 		final IFile hdrFile = hdrCon.getFile(new Path(hdrFileName));
-		if (!hdrFile.exists())
-				hdrFile.create(null, true, monitor);
+		if (!hdrFile.exists()){
+				ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
+				hdrFile.create(stream, true, monitor);
+		}
 		
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
