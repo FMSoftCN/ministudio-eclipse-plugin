@@ -1,5 +1,8 @@
 package org.minigui.eclipse.cdt.mstudio.wizards;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -10,6 +13,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -18,6 +22,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -27,6 +32,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import org.minigui.eclipse.cdt.mstudio.project.MgProjectNature;
+import org.minigui.eclipse.cdt.mstudio.MStudioPlugin;
 
 public class NewMiniGUIUIFileWizardPage extends WizardPage {
 
@@ -35,6 +41,16 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 	private String cFileName;
 	private IProject selProject=null;
 	private ISelection selection;
+	private static URL imgURL;
+	private static Image itemImage;
+	
+	static {
+		try {
+			imgURL= new URL(MStudioPlugin.getDefault().getBundle().getEntry("/"), "icons/mgproject.gif" );
+			ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(imgURL); 
+			itemImage = imageDescriptor.createImage();  
+		} catch (MalformedURLException e) {	}
+	}	
 
 	protected NewMiniGUIUIFileWizardPage(ISelection selection) {
 		super("MiniGUIUIWizardPage");
@@ -71,7 +87,7 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 		
 		tree = new Tree(container, SWT.SINGLE | SWT.BORDER);
 		GridData gd3 = new GridData(GridData.FILL_BOTH);
-		gd3.horizontalSpan = 3;
+		gd3.horizontalSpan = 2;
 		tree.setLayoutData(gd3);
 		tree.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -120,6 +136,7 @@ public class NewMiniGUIUIFileWizardPage extends WizardPage {
 								TreeItem ti = new TreeItem(tree, SWT.NONE);
 								ti.setText(pro.getName());
 								ti.setData(pro);
+								ti.setImage(itemImage);
 								if(selProject != null && pro.equals(selProject))
 									tree.setSelection(ti);
 						}
