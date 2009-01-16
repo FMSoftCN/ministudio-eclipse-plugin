@@ -15,15 +15,15 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IEditorLauncher;
 
+import org.minigui.eclipse.cdt.mstudio.MStudioSocketServerThread;
 import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 
-public class UIEditorLauncher implements IEditorLauncher {
-	
 
-	
+public class UIEditorLauncher implements IEditorLauncher {
+
 	public UIEditorLauncher()
 	{
-		System.out.println("======================");
+		//System.out.println("======================");
 	}
 	
 	public void open(IPath file) 
@@ -57,12 +57,18 @@ public class UIEditorLauncher implements IEditorLauncher {
 		if (p != null) {
 			//TODO, monitor this process ...
 			
-			System.out.println("p != null");
+			//System.out.println("p != null");
 			
 		} else {
 			//TODO for error ...
 		}
-
+		
+		MStudioSocketServerThread instance = 
+			MStudioSocketServerThread.getInstance();
+		/* This server thread starts only once. */
+		if (instance.socket == null) { 
+			instance.start();
+		}
 	}
 	
 	private static String getFileName(IPath path, boolean noextension) {
