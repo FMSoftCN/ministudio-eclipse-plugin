@@ -25,7 +25,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 	public MStudioVersionWizardPage(String pageName) {
 		super(pageName);
 		setTitle("MStudio veriosn Select");
-		setDescription("Specify the Name and Bin of the UI-builder.");
+		setDescription("Specify the Name and Bin of the guibuilder.");
 	}
 
 	public void createControl(Composite parent) {
@@ -77,7 +77,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 		*/
 		new Label(composite, SWT.NULL);
 		Label binPathDescription = new Label(composite, SWT.NULL);
-		binPathDescription.setText("Path containing tools 'UI-builder','ui2c',etc.\n");
+		binPathDescription.setText("Path containing tools 'guibuilder','ui2c',etc.\n");
 
 		new Label(composite, SWT.NULL);
 		new Label(composite, SWT.NULL);
@@ -93,8 +93,8 @@ public class MStudioVersionWizardPage extends WizardPage {
 	}
 
 	private boolean isBinPathValid() {
-		//TODO , for ui-builder ,ui2c,...
-		String subElement = "UI-builder";
+		//TODO , for guibuilder ,ui2c,...
+		String subElement = "guibuilder";
 		Path subElementPath = new Path(binPath.getStringValue());
 		String subElementOSString = subElementPath.append(subElement)
 				.toOSString();

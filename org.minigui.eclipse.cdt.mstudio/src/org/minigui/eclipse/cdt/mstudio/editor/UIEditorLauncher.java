@@ -20,6 +20,11 @@ import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 
 
 public class UIEditorLauncher implements IEditorLauncher {
+	static
+	{
+		//TODO
+		System.out.println("==========  static  ============");
+	}
 
 	public UIEditorLauncher()
 	{
@@ -28,7 +33,6 @@ public class UIEditorLauncher implements IEditorLauncher {
 	
 	public void open(IPath file) 
 	{
-
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
 		
@@ -36,29 +40,31 @@ public class UIEditorLauncher implements IEditorLauncher {
 		IFile ifile = root.getFileForLocation(file); 
 		IProject project = ifile.getProject();		
 		String binPath = new MgProject(project).getMStudioBinPath();		
-		System.out.println("project= "+project +"     binPath = "+ binPath);
+		System.out.println("project= "+ project.toString() +"     binPath = "+ binPath);
 		
-		//FIXME , this must be the ui-builder command ....
-		// gedit for testing ...
-		Path editCommand = new Path ("gedit");
-		//Path editCommand = new Path (binPath + "/ui-builder");
+		Path editCommand = new Path (binPath+"/"+"guibuilder");
 		
 		List<String> args = new ArrayList<String>();
 		
-		args.add(getFileName(file, false));
-		IPath workingDir = removeFileName(file);
+		//args.add(getFileName(file, false));
+		
+		IPath workingDir = removeFileName(file).removeLastSegments(1);
+		args.add(workingDir.toOSString());
+		//args.add(file.toString());
+		args.add("res/"+getFileName(file, false));
 		
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
-
+		
+		for (int i = 0 ; i < args.size(); i++){
+			System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
+		}
+		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 		if (p != null) {
 			//TODO, monitor this process ...
-			
-			//System.out.println("p != null");
-			
 		} else {
 			//TODO for error ...
 		}
