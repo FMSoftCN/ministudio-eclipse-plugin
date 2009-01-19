@@ -23,7 +23,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 	static
 	{
 		//TODO
-		System.out.println("==========  static  ============");
+		//System.out.println("==========  static  ============");
 	}
 
 	public UIEditorLauncher()
@@ -46,12 +46,12 @@ public class UIEditorLauncher implements IEditorLauncher {
 		
 		List<String> args = new ArrayList<String>();
 		
+		args.add(file.toString());
 		//args.add(getFileName(file, false));
 		
 		IPath workingDir = removeFileName(file).removeLastSegments(1);
-		args.add(workingDir.toOSString());
-		//args.add(file.toString());
-		args.add("res/"+getFileName(file, false));
+		//args.add(workingDir.toOSString());
+		//args.add("res/"+getFileName(file, false));
 		
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
