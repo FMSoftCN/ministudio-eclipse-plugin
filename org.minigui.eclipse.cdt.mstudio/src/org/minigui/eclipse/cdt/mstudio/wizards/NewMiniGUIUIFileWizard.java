@@ -104,7 +104,9 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 					hdrFolder.create(true, true, new NullProgressMonitor());
 				} catch (CoreException e){ }		
 		}
-		final IFile hdrFile = hdrFolder.getFile(new Path("mrc_id.h"));
+		String idFile = project.getName() + "_id.h";
+		
+		final IFile hdrFile = hdrFolder.getFile(new Path(idFile));
 		if (!hdrFile.exists()){
 				ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
 				hdrFile.create(stream, true, monitor);
