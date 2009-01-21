@@ -20,11 +20,6 @@ import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 
 
 public class UIEditorLauncher implements IEditorLauncher {
-	static
-	{
-		//TODO
-		//System.out.println("==========  static  ============");
-	}
 
 	public UIEditorLauncher()
 	{
@@ -63,6 +58,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
+				
 		if (p != null) {
 			//TODO, monitor this process ...
 		} else {

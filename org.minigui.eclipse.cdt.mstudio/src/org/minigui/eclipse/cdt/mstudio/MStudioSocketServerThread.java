@@ -114,6 +114,7 @@ public class MStudioSocketServerThread extends Thread {
         }
 
         content = new String(request);
+    	request.delete(0, request.length());
 
         if (content.startsWith("GUISEND")) {
         	UIJob refreshJob = new UIJob(content) {
