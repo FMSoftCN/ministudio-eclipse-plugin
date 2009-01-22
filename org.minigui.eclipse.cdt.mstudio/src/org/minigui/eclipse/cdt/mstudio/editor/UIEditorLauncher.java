@@ -68,11 +68,12 @@ public class UIEditorLauncher implements IEditorLauncher {
 		MStudioSocketServerThread instance = 
 			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
-		if (instance.socket == null) { 
+		if (instance.Started == 0) {
+			System.out.println("socket server thread. \n");
 			instance.start();
 		}
 	}
-	
+/*	
 	private static String getFileName(IPath path, boolean noextension) {
 		if (path == null)
 			return null;
@@ -83,7 +84,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 		
 		return path.lastSegment();
 	}
-	
+*/	
 	private static IPath removeFileName(IPath path) {
 		if (path == null)
 			return null;

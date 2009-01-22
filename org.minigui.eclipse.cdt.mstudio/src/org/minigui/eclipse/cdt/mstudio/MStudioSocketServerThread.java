@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.Status;
 
 public class MStudioSocketServerThread extends Thread {
     public Socket           socket;
+    public int				Started = 0;
     private static int		port = 5010;			
 
 	private ServerSocket    server;
@@ -60,6 +61,8 @@ public class MStudioSocketServerThread extends Thread {
     
     public void run() 
     {    	
+    	Started = 1;
+    	
         try {
             while (true) {
                 socket = server.accept();
