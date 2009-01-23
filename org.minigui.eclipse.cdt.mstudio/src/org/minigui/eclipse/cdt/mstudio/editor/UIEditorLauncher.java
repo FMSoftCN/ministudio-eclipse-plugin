@@ -35,7 +35,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 		IFile ifile = root.getFileForLocation(file); 
 		IProject project = ifile.getProject();		
 		String binPath = new MgProject(project).getMStudioBinPath();		
-		System.out.println("project= "+ project.toString() +"     binPath = "+ binPath);
+		//System.out.println("project= "+ project.toString() +"     binPath = "+ binPath);
 		
 		Path editCommand = new Path (binPath+"/"+"guibuilder");
 		
@@ -52,9 +52,9 @@ public class UIEditorLauncher implements IEditorLauncher {
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
 		
-		for (int i = 0 ; i < args.size(); i++){
-			System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
-		}
+		//for (int i = 0 ; i < args.size(); i++){
+		//	System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
+		//}
 		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
@@ -69,7 +69,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
 		if (instance.Started == 0) {
-			System.out.println("socket server thread. \n");
+			//System.out.println("socket server thread. \n");
 			instance.start();
 		}
 	}
