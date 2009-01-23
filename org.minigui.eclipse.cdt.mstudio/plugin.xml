@@ -21,7 +21,7 @@
             category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
             class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIAppWizard"
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
-            icon="icons/sample.gif"
+            icon="icons/mgproject.gif"
             id="org.minigui.eclipse.cdt.mstudio.wizards.newMiniGUIAppWizard"
             name="%MiniGUIAppProject">
          <description>
