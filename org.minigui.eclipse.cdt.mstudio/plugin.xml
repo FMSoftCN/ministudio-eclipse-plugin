@@ -32,7 +32,7 @@
             category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
             class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIUIFileWizard"
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
-            icon="icons/newfile_wiz.gif"
+            icon="icons/mgnewfile.gif"
             id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
             name="%newMiniGUIWizards.uifile">
          <description>
