@@ -73,6 +73,12 @@
             projectType="org.minigui.eclipse.cdt.mstudio.projectType">
      	</template>
      	<template
+            id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIProjectWithNcs"
+            location="templates/projecttemplates/MiniGUIProjectWithNCS/template.xml"
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+      </template>
+     	<template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIMainWinProject"
             location="templates/projecttemplates/MiniGUIMainWinProject/template.xml"
             filterPattern=".*"
