@@ -24,9 +24,7 @@
             icon="icons/mgproject.gif"
             id="org.minigui.eclipse.cdt.mstudio.wizards.newMiniGUIAppWizard"
             name="%MiniGUIAppProject">
-         <description>
-            %MiniGUIAppProject.desc
-         </description>
+         <description>%MiniGUIAppProject.desc</description>
       </wizard>
       <wizard
             category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
@@ -34,10 +32,17 @@
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
             icon="icons/mgnewfile.gif"
             id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
-            name="%newMiniGUIWizards.uifile">
-         <description>
-            %NewMiniGUIWizards.uifile.desc
-         </description>
+            name="%NewMiniGUIWizards.uifile">
+         <description>%NewMiniGUIWizards.uifile.desc</description>
+     	</wizard>
+            <wizard
+            category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
+            class="org.minigui.eclipse.cdt.mstudio.wizards.NewRdrResWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/mgnewfile.gif"
+            id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
+            name="%NewRdrResWizard.file">
+         <description>%NewRdrResWizards.file.desc</description>
       </wizard>
    </extension>
 
