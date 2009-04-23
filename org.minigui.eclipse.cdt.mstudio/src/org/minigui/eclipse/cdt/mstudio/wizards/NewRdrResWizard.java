@@ -27,17 +27,17 @@ import org.eclipse.ui.ide.IDE;
  * @author xwyan
  *
  */
-public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
-	private NewMiniGUIUIFileWizardPage page;
+public class NewRdrResWizard extends Wizard implements INewWizard {
+	private NewRdrResWizardPage page;
 	private ISelection selection;
 
-	public NewMiniGUIUIFileWizard() {
+	public NewRdrResWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 	}
 
 	public void addPages() {
-		page = new NewMiniGUIUIFileWizardPage(selection);
+		page = new NewRdrResWizardPage(selection);
 		addPage(page);
 	}
 	
@@ -70,9 +70,9 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 	}
 
 	private void doFinish(IProject project, String uiFileName,	IProgressMonitor monitor) throws CoreException {
-		// create the ui file
+		// create the renderer res folder and file ...
 		monitor.beginTask("Creating " + uiFileName, 2);		
-		IFolder uiFolder = project.getFolder("res/ui");
+		IFolder uiFolder = project.getFolder("res/rdr");
 		if(!uiFolder.exists()){
 			try {
 				uiFolder.create(true, true, new NullProgressMonitor());
@@ -81,6 +81,7 @@ public class NewMiniGUIUIFileWizard extends Wizard implements INewWizard {
 		final IFile uiFile = uiFolder.getFile(new Path(uiFileName));
    if (!uiFile.exists())
        uiFile.create(null, true, monitor);
+
 		
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
