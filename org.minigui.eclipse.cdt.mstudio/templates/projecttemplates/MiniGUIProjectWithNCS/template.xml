@@ -2,66 +2,66 @@
 
 <template type="ProjTempl" version="1.0" supplier="minigui.org" revision="1.0" author="sylvia" 
 copyright="Copyright (c) 2008 Feynman Software. All rights reserved."
-id="MiniGUIServerProject" label="%MiniGUIServerProject.template.label" 
-description="%MiniGUIServerProject.template.description" help="help.html">
+id="MGProjectWithNCS" label="%MiniGUINcsProject.template.label" 
+description="%MiniGUINcsProject.template.description" help="help.html">
 
-	<property-group id="basics" label="%Server.basics.label" description="%Server.basics.description" type="PAGES-ONLY" help="help.html">
+	<property-group id="basics" label="%Ncs.basics.label" description="%Ncs.basics.description" type="PAGES-ONLY" help="help.html">
 		<property id="author"
-			label="%Server.author.label"
-			description="%Server.author.description"
+			label="%Ncs.author.label"
+			description="%Ncs.author.description"
 			type="input"
 			pattern=".*"
 			default=""
 			hidden="false"
 			persist="true"/>
 		<property id="copyright"
-			label="%Server.copyright.label"
-			description="%Server.copyright.description"
+			label="%Ncs.copyright.label"
+			description="%Ncs.copyright.description"
 			type="input"
 			pattern=".*"
-			default="%Server.copyright.default"
+			default="%Ncs.copyright.default"
 			hidden="false"
 			persist="true"/>
 		<property id="message"
-			label="%Server.message.label"
-			description="%Server.message.description"
+			label="%Ncs.message.label"
+			description="%Ncs.message.description"
 			type="input"
 			pattern=".*"
-			default="%Server.message.default"
+			default="%Ncs.message.default"
 			hidden="false"
 			persist="true"/>
 		<property id="sourceDir"
-			label="%Server.sourceDir.label"
-			description="%Server.sourceDir.description"
+			label="%Ncs.sourceDir.label"
+			description="%Ncs.sourceDir.description"
 			type="input"
-			default="%Server.sourceDir.default"
+			default="%Ncs.sourceDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"/>
 		<property id="headerDir"
-			label="%Server.headerDir.label"
-			description="%Server.headerDir.description"
+			label="%Ncs.headerDir.label"
+			description="%Ncs.headerDir.description"
 			type="input"
-			default="%Server.headerDir.default"
+			default="%Ncs.headerDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"
 			hidden="true"/>
 
 		<property id="sdkPrefix"
-			label="%Server.MiniGUISDKPrefix.label"
-			description="%Server.MiniGUISDKPrefix.description"
+			label="%Ncs.MiniGUISDKPrefix.label"
+			description="%Ncs.MiniGUISDKPrefix.description"
 			type="browsedir"
-			default="%Server.MiniGUISDKPrefix.default"
+			default="%Ncs.MiniGUISDKPrefix.default"
 			pattern=".*"
 			mandatory="false"
 			persist="true"/>
 
 		<property id="runmode"
-			label="%Server.miniGUIRunmode.label"
-			description="%Server.miniGUIRunmode.description"
+			label="%Ncs.miniGUIRunmode.label"
+			description="%Ncs.miniGUIRunmode.description"
 			type="select"
-			default="%Server.miniGUIRunmode.default"
+			default="%Ncs.miniGUIRunmode.default"
 			pattern=".*"
 			mandatory="false"
 			persist="true">
@@ -71,8 +71,8 @@ description="%MiniGUIServerProject.template.description" help="help.html">
            </property>
 
 		<property id="defaultRenderer"
-			label="%Server.miniGUIDefaultRenderer.label"
-			description="%Server.miniGUIDefaultRenderer.description"
+			label="%Ncs.miniGUIDefaultRenderer.label"
+			description="%Ncs.miniGUIDefaultRenderer.description"
 			type="select"
 			default="classic"
 			pattern=".*"
@@ -93,6 +93,11 @@ description="%MiniGUIServerProject.template.description" help="help.html">
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">
 		<simple name="projectName" value="$(projectName)"/>
 		<simple name="path" value="$(sourceDir)"/>
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="res/" />
 	</process>
 
 	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
@@ -122,6 +127,7 @@ description="%MiniGUIServerProject.template.description" help="help.html">
                     <element value="png" />
                     <element value="jpeg" />
                     <element value="freetype" />
+                    <element value="minictrl"/>
                 </simple-array>
 				<simple name="path" value=""/>
 			</element>
