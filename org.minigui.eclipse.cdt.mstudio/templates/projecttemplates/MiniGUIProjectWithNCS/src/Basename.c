@@ -20,7 +20,7 @@
 #include <minictrl/mctrls.h>
 #include <minictrl/mresmanager.h>
 
-#include "../include/resource.h"
+#include "resource.h"
 
 extern int start_wnd_id;
 extern NCS_EVENT_HANDLERS start_wnd_handlers[];

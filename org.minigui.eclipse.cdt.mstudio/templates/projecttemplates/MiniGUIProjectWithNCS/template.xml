@@ -141,14 +141,14 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 		<complex-array name="resourcePaths">
 			<element>
 				<simple name="id" value=".*c\.link\.option\.libs"/>
-				<simple-array name="values">
-                    <element value="$(runmode)" />
-                    <element value="pthread" />
-                    <element value="png" />
-                    <element value="jpeg" />
-                    <element value="freetype" />
-                    <element value="minictrl"/>
-                </simple-array>
+					<simple-array name="values">
+         <element value="$(runmode)" />
+         <element value="pthread" />
+         <element value="png" />
+         <element value="jpeg" />
+         <element value="freetype" />
+         <element value="minictrl"/>
+        </simple-array>
 				<simple name="path" value=""/>
 			</element>
 		</complex-array>
@@ -159,11 +159,26 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 		<complex-array name="resourcePaths">
 			<element>
 				<simple name="id" value=".*c\.link\.option\.paths"/>
-				<simple-array name="values">
-                    <element value="$(sdkPrefix)/lib" />
-                </simple-array>
+					<simple-array name="values">
+         <element value="$(sdkPrefix)/lib" />
+       	</simple-array>
 				<simple name="path" value=""/>
 			</element>
 		</complex-array>
 	</process>
+	
+	<process type="org.eclipse.cdt.managedbuilder.core.AppendToMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
+					<simple-array name="values">
+         <element value="/usr/include/"/>
+         <element value="/usr/local/include/"/>
+       	</simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+	
 </template>
