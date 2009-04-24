@@ -26,6 +26,7 @@
             name="%MiniGUIAppProject">
          <description>%MiniGUIAppProject.desc</description>
       </wizard>
+    <!--  
       <wizard
             category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
             class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIUIFileWizard"
@@ -44,6 +45,7 @@
             name="%NewRdrResWizard.file">
          <description>%NewRdrResWizards.file.desc</description>
       </wizard>
+      -->
    </extension>
 
   	<extension

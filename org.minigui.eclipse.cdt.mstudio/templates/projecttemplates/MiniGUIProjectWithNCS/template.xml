@@ -113,6 +113,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 				<simple name="target" value="$(sourceDir)/$(projectName).c"/>
 				<simple name="replaceable" value="true"/>
 			</element>
+			<element>
+				<simple name="source" value="src/base.mrc"/>
+				<simple name="target" value="res/$(projectName).mrc"/>
+				<simple name="replaceable" value="true"/>
+			</element>
 		</complex-array>
 	</process>
 
