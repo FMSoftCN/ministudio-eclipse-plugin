@@ -131,6 +131,7 @@
             priority="high">
       </content-type>
    </extension>
+   
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -145,6 +146,29 @@
       </editor>
    </extension>
    
+   <extension
+         point="org.eclipse.core.runtime.contentTypes">
+      <content-type
+            file-extensions="mrc"
+            id="org.minigui.eclipse.cdt.mstudio.mrctype"
+            name="%MStudio.contenttype.mrc"
+            priority="high">
+      </content-type>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            extensions="mrc"
+            id="org.minigui.eclipse.cdt.mstudio.MrcEditorLauncher"
+            launcher="org.minigui.eclipse.cdt.mstudio.editor.MrcEditorLauncher"
+            name="%MStudioMRCeditor.name">
+         <contentTypeBinding
+               contentTypeId="org.minigui.eclipse.cdt.mstudio.mrctype">
+         </contentTypeBinding>
+      </editor>
+   </extension>
 
  
 </plugin>
