@@ -41,20 +41,25 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		
 		List<String> args = new ArrayList<String>();
 		
-		args.add(file.toString());
+		//args.add(file.toString());
 		//args.add(getFileName(file, false));
 		
-		IPath workingDir = removeFileName(file).removeLastSegments(1);
-		//args.add(workingDir.toOSString());
+		IPath projectDir = removeFileName(file).removeLastSegments(1);
+
+		args.add(new String("-project"));
+		args.add(projectDir.toOSString());
 		//args.add("res/"+getFileName(file, false));
 		
+		IPath workingDir = projectDir;		
+		//IPath workingDir = new Path(binPath).removeLastSegments(1);
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
 		
-		//for (int i = 0 ; i < args.size(); i++){
-		//	System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
-		//}
+		System.out.println(editCommand.toString());
+		for (int i = 0 ; i < args.size(); i++){
+			System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
+		}
 		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);

@@ -6,6 +6,7 @@ id="MGProjectWithNCS" label="%MiniGUINcsProject.template.label"
 description="%MiniGUINcsProject.template.description" help="help.html">
 
 	<property-group id="basics" label="%Ncs.basics.label" description="%Ncs.basics.description" type="PAGES-ONLY" help="help.html">
+		
 		<property id="author"
 			label="%Ncs.author.label"
 			description="%Ncs.author.description"
@@ -14,6 +15,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default=""
 			hidden="false"
 			persist="true"/>
+		
 		<property id="copyright"
 			label="%Ncs.copyright.label"
 			description="%Ncs.copyright.description"
@@ -22,6 +24,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.copyright.default"
 			hidden="false"
 			persist="true"/>
+		
 		<property id="message"
 			label="%Ncs.message.label"
 			description="%Ncs.message.description"
@@ -30,6 +33,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.message.default"
 			hidden="false"
 			persist="true"/>
+		
 		<property id="sourceDir"
 			label="%Ncs.sourceDir.label"
 			description="%Ncs.sourceDir.description"
@@ -38,11 +42,22 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"/>
+		
 		<property id="headerDir"
 			label="%Ncs.headerDir.label"
 			description="%Ncs.headerDir.description"
 			type="input"
 			default="%Ncs.headerDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="true"
+			hidden="true"/>
+			
+		<property id="resourceDir"
+			label="%Ncs.resourceDir.label"
+			description="%Ncs.resourceDir.description"
+			type="input"
+			default="%Ncs.resourceDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"
@@ -97,7 +112,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 	
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">
 		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="res/" />
+		<simple name="path" value="$(resourceDir)" />
 	</process>
 
 	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">

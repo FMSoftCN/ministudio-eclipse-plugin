@@ -16,44 +16,41 @@
 #include <minigui/minigui.h>
 #include <minigui/gdi.h>
 #include <minigui/window.h>
-#include <minigui/control.h>
 
 #include <minictrl/mctrls.h>
 #include <minictrl/mresmanager.h>
 
-#include "../header/id.h"
+#include "../include/resource.h"
+
+extern int start_wnd_id;
+extern NCS_EVENT_HANDLERS start_wnd_handlers[];
 
 const char *project_path = "$(location)";
-
-//extern NCS_EVENT_HANDLERS mainwnd_Test_handlers[];
-
-extern int start_wnd_id ;
 
 int MiniGUIMain(int argc, const char* argv[])
 {
 	MSG Msg;
-    char f_package[MAX_PATH];
+	char f_package[MAX_PATH];
 
 	RegisterMiniControls();
 
-    sprintf(f_package, "%s/%s", project_path, "res/$(projectName).res");
+	sprintf(f_package, "%s/%s", project_path, "res/$(projectName).res");
 
-    HPACKAGE hPkg = LoadResPackage (f_package);
+	HPACKAGE hPkg = LoadResPackage (f_package);
 
-    mMainWnd *mWin = CreateMainWindowIndirectFromID
-        (hPkg, start_wnd_id , HWND_DESKTOP, 0, 0,
-         NULL);
-        //mainwnd_Test_handlers);
+	mMainWnd *mWin = CreateMainWindowIndirectFromID
+		(hPkg, start_wnd_id , HWND_DESKTOP, 0, 0, start_wnd_handlers);
 
-    while(GetMessage(&Msg, mWin->hwnd))
+	while(GetMessage(&Msg, mWin->hwnd))
 	{
 		TranslateMessage(&Msg);
 		DispatchMessage(&Msg);
 	}
 
 	MainWindowThreadCleanup(mWin->hwnd);
-    UnloadResPackage(hPkg);
-    return 0;
+	UnloadResPackage(hPkg);
+
+	return 0;
 }
 
 #ifdef _MGRM_THREADS
