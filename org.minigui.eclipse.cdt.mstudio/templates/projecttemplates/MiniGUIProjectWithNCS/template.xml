@@ -105,37 +105,6 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 		<simple name="isCProject" value="true" /> 
 	</process>
 
-	<process type="org.eclipse.cdt.core.CreateSourceFolder">
-		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(sourceDir)"/>
-	</process>
-	
-	<process type="org.eclipse.cdt.core.CreateSourceFolder">
-		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(resourceDir)" />
-	</process>
-
-	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
-		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(headerDir)"/>
-	</process>
-
-	<process type="org.eclipse.cdt.core.AddFiles">
-		<simple name="projectName" value="$(projectName)"/>
-		<complex-array name="files">
-			<element>
-				<simple name="source" value="src/Basename.c"/>
-				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
-				<simple name="source" value="src/base.project"/>
-				<simple name="target" value="res/res.project"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-		</complex-array>
-	</process>
-
 	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
 		<simple name="projectName" value="$(projectName)"/>
 		<complex-array name="resourcePaths">
@@ -151,12 +120,6 @@ description="%MiniGUINcsProject.template.description" help="help.html">
         </simple-array>
 				<simple name="path" value=""/>
 			</element>
-		</complex-array>
-	</process>
-	
-	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
-		<simple name="projectName" value="$(projectName)"/>
-		<complex-array name="resourcePaths">
 			<element>
 				<simple name="id" value=".*c\.link\.option\.paths"/>
 					<simple-array name="values">
@@ -164,12 +127,6 @@ description="%MiniGUINcsProject.template.description" help="help.html">
        	</simple-array>
 				<simple name="path" value=""/>
 			</element>
-		</complex-array>
-	</process>
-	
-	<process type="org.eclipse.cdt.managedbuilder.core.AppendToMBSStringListOptionValues">
-		<simple name="projectName" value="$(projectName)"/>
-		<complex-array name="resourcePaths">
 			<element>
 				<simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
 					<simple-array name="values">
@@ -177,6 +134,37 @@ description="%MiniGUINcsProject.template.description" help="help.html">
          <element value="/usr/local/include/"/>
        	</simple-array>
 				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+	
+	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(headerDir)"/>
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(sourceDir)"/>
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name="path" value="$(resourceDir)" />
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="src/base.project"/>
+				<simple name="target" value="res/res.project"/>
+				<simple name="replaceable" value="true"/>
 			</element>
 		</complex-array>
 	</process>
