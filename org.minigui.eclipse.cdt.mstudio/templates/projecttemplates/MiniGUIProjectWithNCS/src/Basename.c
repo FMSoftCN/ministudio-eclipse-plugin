@@ -34,7 +34,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	RegisterMiniControls();
 
-	sprintf(f_package, "%s/%s", project_path, "res/$(projectName).res");
+	sprintf(f_package, "%s/%s", project_path, "$(projectName)/res/$(projectName).res");
 
 	HPACKAGE hPkg = LoadResPackage (f_package);
 

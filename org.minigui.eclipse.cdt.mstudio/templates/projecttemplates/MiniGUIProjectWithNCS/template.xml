@@ -125,12 +125,12 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 		<complex-array name="files">
 			<element>
 				<simple name="source" value="src/Basename.c"/>
-				<simple name="target" value="$(sourceDir)/$(projectName).c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
 				<simple name="replaceable" value="true"/>
 			</element>
 			<element>
-				<simple name="source" value="src/base.mrc"/>
-				<simple name="target" value="res/$(projectName).mrc"/>
+				<simple name="source" value="src/base.project"/>
+				<simple name="target" value="res/res.project"/>
 				<simple name="replaceable" value="true"/>
 			</element>
 		</complex-array>

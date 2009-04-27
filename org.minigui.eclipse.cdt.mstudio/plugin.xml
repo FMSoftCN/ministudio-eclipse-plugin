@@ -73,19 +73,20 @@
   	
   	<extension 
          point="org.eclipse.cdt.core.templates">
-      <template
-            id="org.minigui.eclipse.cdt.mstudio.templates.EmptyMiniGUIAppProject"
-            location="templates/projecttemplates/EmptyMiniGUIAppProject/template.xml"
-            filterPattern=".*"
-            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
-     	</template>
+
      	<template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIProjectWithNcs"
             location="templates/projecttemplates/MiniGUIProjectWithNCS/template.xml"
             filterPattern=".*"
             projectType="org.minigui.eclipse.cdt.mstudio.projectType">
       </template>
-     	<template
+      <template
+            id="org.minigui.eclipse.cdt.mstudio.templates.EmptyMiniGUIAppProject"
+            location="templates/projecttemplates/EmptyMiniGUIAppProject/template.xml"
+            filterPattern=".*"
+            projectType="org.minigui.eclipse.cdt.mstudio.projectType">
+      </template>
+     	<!--template
             id="org.minigui.eclipse.cdt.mstudio.templates.MiniGUIMainWinProject"
             location="templates/projecttemplates/MiniGUIMainWinProject/template.xml"
             filterPattern=".*"
@@ -102,7 +103,7 @@
             location="templates/projecttemplates/MiniGUIServerProject/template.xml"
             filterPattern=".*"
             projectType="org.minigui.eclipse.cdt.mstudio.projectType">
-     	</template>
+     	</template-->
   	</extension>
   	
   	<extension
@@ -149,7 +150,7 @@
    <extension
          point="org.eclipse.core.runtime.contentTypes">
       <content-type
-            file-extensions="mrc"
+            file-extensions="project"
             id="org.minigui.eclipse.cdt.mstudio.mrctype"
             name="%MStudio.contenttype.mrc"
             priority="high">
@@ -160,7 +161,7 @@
          point="org.eclipse.ui.editors">
       <editor
             default="true"
-            extensions="mrc"
+            extensions="project"
             id="org.minigui.eclipse.cdt.mstudio.MrcEditorLauncher"
             launcher="org.minigui.eclipse.cdt.mstudio.editor.MrcEditorLauncher"
             name="%MStudioMRCeditor.name">
