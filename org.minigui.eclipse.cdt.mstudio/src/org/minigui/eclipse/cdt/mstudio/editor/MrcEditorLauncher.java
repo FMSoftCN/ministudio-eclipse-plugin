@@ -48,6 +48,9 @@ public class MrcEditorLauncher implements IEditorLauncher {
 
 		args.add(new String("-project"));
 		args.add(projectDir.toOSString());
+		args.add(new String("-project-name"));
+		args.add(projectDir.lastSegment());
+		
 		//args.add("res/"+getFileName(file, false));
 		
 		IPath workingDir = projectDir;		
