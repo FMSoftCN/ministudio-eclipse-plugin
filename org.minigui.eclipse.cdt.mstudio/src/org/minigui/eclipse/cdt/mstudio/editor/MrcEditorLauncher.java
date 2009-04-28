@@ -33,37 +33,27 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IFile ifile = root.getFileForLocation(file); 
-		IProject project = ifile.getProject();		
-		String binPath = new MgProject(project).getMStudioBinPath();		
-		//System.out.println("project= "+ project.toString() +"     binPath = "+ binPath);
-		
+		IProject project = ifile.getProject();	
+		String binPath = new MgProject(project).getMStudioBinPath();
 		Path editCommand = new Path (binPath+"/"+"guibuilder");
 		
-		List<String> args = new ArrayList<String>();
-		
-		//args.add(file.toString());
-		//args.add(getFileName(file, false));
-		
+		List<String> args = new ArrayList<String>();	
 		IPath projectDir = removeFileName(file).removeLastSegments(1);
-
 		args.add(new String("-project"));
 		args.add(projectDir.toOSString());
 		args.add(new String("-project-name"));
 		args.add(projectDir.lastSegment());
 		
-		//args.add("res/"+getFileName(file, false));
-		
-		IPath workingDir = projectDir;		
-		//IPath workingDir = new Path(binPath).removeLastSegments(1);
+		IPath workingDir = projectDir;
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
-		
+/*		
 		System.out.println(editCommand.toString());
 		for (int i = 0 ; i < args.size(); i++){
 			System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
 		}
-		
+*/		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 				
