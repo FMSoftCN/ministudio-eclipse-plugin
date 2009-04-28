@@ -166,6 +166,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 				<simple name="target" value="res/res.project"/>
 				<simple name="replaceable" value="true"/>
 			</element>
+			<element>
+				<simple name="source" value="src/resource.h"/>
+				<simple name="target" value="include/resource.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
 		</complex-array>
 	</process>
 	
