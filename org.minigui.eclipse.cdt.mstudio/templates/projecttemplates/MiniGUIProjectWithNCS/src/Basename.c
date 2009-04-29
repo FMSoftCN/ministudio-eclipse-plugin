@@ -23,7 +23,7 @@
 #include "resource.h"
 
 extern int start_wnd_id;
-extern NCS_EVENT_HANDLERS start_wnd_handlers[];
+extern NCS_EVENT_HANDLERS *start_wnd_handlers;
 
 const char *project_path = "$(location)";
 

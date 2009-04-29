@@ -41,7 +41,8 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.sourceDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
-			persist="true"/>
+			persist="true"
+			hidden="true"/>
 		
 		<property id="headerDir"
 			label="%Ncs.headerDir.label"
