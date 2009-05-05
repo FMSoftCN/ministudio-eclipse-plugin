@@ -42,7 +42,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"
-			hidden="true"/>
+			hidden="false"/>
 		
 		<property id="headerDir"
 			label="%Ncs.headerDir.label"
@@ -51,7 +51,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.headerDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
-			persist="true"
+			persist="false"
 			hidden="true"/>
 			
 		<property id="resourceDir"
@@ -61,7 +61,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.resourceDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
-			persist="true"
+			persist="false"
 			hidden="true"/>
 
 		<property id="sdkPrefix"

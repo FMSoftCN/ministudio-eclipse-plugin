@@ -29,51 +29,49 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.core.runtime.Status;
 
 public class MStudioSocketServerThread extends Thread {
-    public Socket           socket;
-    public int				Started = 0;
-    private static int		port = 5010;			
-
-	private ServerSocket    server;
-    private InputStream     input;
-    private OutputStream    output;
-    private StringBuffer    request = new StringBuffer();
-    private String          content;
-    private byte            crlf13 = (byte)13; //'\r'
-    private byte            crlf10 = (byte)10;  //'\n'
-    
-    private static MStudioSocketServerThread instance = 
-    	new MStudioSocketServerThread(port);
-    
-    private MStudioSocketServerThread(int port)
-    {
-        try {
-            server = new ServerSocket(port);
-        }
-      	catch (IOException e) {
-         	e.printStackTrace();
-      	}
-    }
+	public Socket					socket;
+	public int							Started = 0;
+	private static int	port = 5010;			
 	
-    public static MStudioSocketServerThread getInstance()
-    {
-    	return instance;
-    }
+	private ServerSocket    server;
+	private InputStream     input;
+	private OutputStream    output;
+	private StringBuffer    request = new StringBuffer();
+	private String          content;
+	private byte            crlf13 = (byte)13; //'\r'
+	private byte            crlf10 = (byte)10;  //'\n'
+	
+	private static MStudioSocketServerThread instance = new MStudioSocketServerThread(port);
     
-    public void run() 
-    {    	
-    	Started = 1;
-    	
-        try {
-            while (true) {
-                socket = server.accept();
-               	parseData();       
-                socket.close();
-            }
-        }
-      	catch (IOException e) {
-         	e.printStackTrace();
-      	}
-    }
+	private MStudioSocketServerThread(int port)
+	{
+		try {
+			server = new ServerSocket(port);
+	  }catch (IOException e) {
+		  e.printStackTrace();
+	  	}
+	}
+	
+	public static MStudioSocketServerThread getInstance()
+	{
+		return instance;
+	}
+    
+	public void run() 
+	{    	
+		Started = 1;
+			
+		try {
+			while (true) 
+			{
+	    socket = server.accept();
+	   	parseData();       
+	    socket.close();
+			}
+		}catch (IOException e) {
+			e.printStackTrace();
+		 }
+	}
 
    /*
     GUISEND\r\n
@@ -81,55 +79,53 @@ public class MStudioSocketServerThread extends Thread {
     key:int MiniGUIMain(\r\n
     \r\n
     */
-    private void parseData() {
-        byte[] crlf = new byte[1];
-        int crlfnum = 0;
-
-        try {
-            input = socket.getInputStream();
-            output = socket.getOutputStream();
-
-            while (input.read(crlf)!=-1) {
-                if (crlf[0] == crlf13 || crlf[0] == crlf10) {
-                    crlfnum ++;
-                }
-                else
-                    crlfnum = 0;
-
-                request = request.append (new String (crlf, 0, 1));
-
-                if (crlfnum == 4) {
-                	processData();
-                }
-            }
-            
-        } catch (IOException e) {
-         	e.printStackTrace();
-        }
+	private void parseData() 
+    {
+		byte[] crlf = new byte[1];
+		int crlfnum = 0;
+		
+		try {
+			input = socket.getInputStream();
+			output = socket.getOutputStream();
+			
+			while (input.read(crlf)!=-1) {
+				if (crlf[0] == crlf13 || crlf[0] == crlf10) {
+					crlfnum ++;
+			  } else {
+				  crlfnum = 0;
+			  }
+			 request = request.append (new String (crlf, 0, 1));
+			
+			 if (crlfnum == 4) {
+				 processData();
+			 	}
+		    }
+		} catch (IOException e) {
+     	e.printStackTrace();
+		}
     }
 
-    private void processData () {
-        try {
-            sendAck();
-            recvAck();
-        } catch (IOException e) {
-         	e.printStackTrace();
-        }
-
-        content = new String(request);
-    	request.delete(0, request.length());
-
-        if (content.startsWith("GUISEND")) {
-        	UIJob refreshJob = new UIJob(content) {
-        		public IStatus runInUIThread(IProgressMonitor monitor) {
-                    GoToFunc(getFunc(), getFileName());     
-                    return Status.OK_STATUS;
-                    
-        		}
-        	};
-        	refreshJob.schedule();
-        }
-    }
+	private void processData () 
+	{
+		try {
+			sendAck();
+		  recvAck();
+		} catch (IOException e) {
+			e.printStackTrace();
+		 }
+	
+	  content = new String(request);
+	  request.delete(0, request.length());
+	
+	  if (content.startsWith("GUISEND")) {
+		  UIJob refreshJob = new UIJob(content) {
+			  public IStatus runInUIThread(IProgressMonitor monitor) {
+				  GoToFunc(getFunc(), getFileName());     
+				  return Status.OK_STATUS;}
+		    };
+			refreshJob.schedule();
+	    }
+	}
     
 	private void GoToFunc (String func, String fileName)
 	{
@@ -144,22 +140,20 @@ public class MStudioSocketServerThread extends Thread {
          	e.printStackTrace();
 		}
 		
-		IWorkbenchPage page = 
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 
-        try {
-        	ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, true);
-        	editor.selectAndReveal(offset, 0);
-        } 
-        catch (PartInitException e) {
-         	e.printStackTrace();
-        }
+		try {
+			ITextEditor editor = (ITextEditor)IDE.openEditor(page, file, true);
+			editor.selectAndReveal(offset, 0);
+		} 
+		catch (PartInitException e) {
+		 	e.printStackTrace();
+		}
         
 	}
 
 	private int indexOfInFile(String func, IFile file) throws CoreException, IOException {
-		Reader reader = 
-			new BufferedReader(new InputStreamReader(file.getContents(), file.getCharset()));
+		Reader reader = new BufferedReader(new InputStreamReader(file.getContents(), file.getCharset()));
 
 		try {
 			int c = 0;
@@ -189,56 +183,57 @@ public class MStudioSocketServerThread extends Thread {
 		}
 	}
 
-    private String getFileName() {
-        return getString ("file:", content);
-    }
+	private String getFileName() {
+		return getString ("file:", content);
+	}
 
-    private String getFunc() {
-        return getString ("key:", content);
-    }
+	private String getFunc() {
+		return getString ("key:", content);
+	}
 
-    private String getString (String key, String content) {
+	private String getString (String key, String content) {
+	
+		int index = content.indexOf(key);
+		byte req[] = content.getBytes();
+		
+		if (index != -1) {
+			StringBuffer sb = new StringBuffer();
+			
+			for (int i = (index + key.length()); ; i++) {
+				if (req[i] != (byte)13 && req[i] != (byte)10) {
+				    sb.append ((char)req[i]);
+				}
+				else
+				    break;
+			}
+			System.out.println(key + sb.toString());
+			
+			return sb.toString ();
+		}
+		
+		return null;
+	}
 
-        int index = content.indexOf(key);
-        byte req[] = content.getBytes();
-
-        if (index != -1) {
-            StringBuffer sb = new StringBuffer();
-
-            for (int i = (index + key.length()); ; i++) {
-                if (req[i] != (byte)13 && req[i] != (byte)10) {
-                    sb.append ((char)req[i]);
-                }
-                else
-                    break;
-            }
-            System.out.println(key + sb.toString());
-
-            return sb.toString ();
-        }
-        
-        return null;
-    }
-
-    private void sendAck() throws IOException
+	private void sendAck() throws IOException
     {
-        int ack = 0;
-        output.write(ack);
-        output.flush();
+		int ack = 0;
+		output.write(ack);
+		output.flush();
     }
 
-    private void recvAck() throws IOException 
+	private void recvAck() throws IOException 
     {
-        input.read();
+  	input.read();
     }
     
-    public void closeSocket()
+	public void closeSocket()
     {
-    	try {
-        	socket.close();
-    	}
-    	catch (IOException e) {
-         	e.printStackTrace();
-    	}
+		try {
+	    	socket.close();
+		}
+		catch (IOException e) {
+	     	e.printStackTrace();
+		}
     }
+	
 }
