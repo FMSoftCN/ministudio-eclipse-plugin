@@ -36,6 +36,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	sprintf(f_package, "%s/%s", project_path, "$(projectName)/res/$(projectName).res");
 
+	SetResPath("./");
 	HPACKAGE hPkg = LoadResPackage (f_package);
 
 	mMainWnd *mWin = CreateMainWindowIndirectFromID
