@@ -25,15 +25,6 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			hidden="false"
 			persist="true"/>
 		
-		<property id="message"
-			label="%Ncs.message.label"
-			description="%Ncs.message.description"
-			type="input"
-			pattern=".*"
-			default="%Ncs.message.default"
-			hidden="false"
-			persist="true"/>
-		
 		<property id="sourceDir"
 			label="%Ncs.sourceDir.label"
 			description="%Ncs.sourceDir.description"
@@ -42,13 +33,13 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="true"
-			hidden="false"/>
+			hidden="true"/>
 		
-		<property id="headerDir"
-			label="%Ncs.headerDir.label"
-			description="%Ncs.headerDir.description"
+		<property id="incDir"
+			label="%Ncs.incDir.label"
+			description="%Ncs.incDir.description"
 			type="input"
-			default="%Ncs.headerDir.default"
+			default="%Ncs.incDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
 			persist="false"
@@ -95,7 +86,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			mandatory="false"
 			persist="true">
                <item label="classic renderer" value="classic"/>
-               <item label="flat renderer" value="flat"/>
+               <item label="fashion renderer" value="fashion"/>
                <item label="skin renderer" value="skin"/>
            </property>
 	</property-group>
@@ -141,7 +132,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 	
 	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
 		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(headerDir)"/>
+		<simple name="path" value="$(incDir)"/>
 	</process>
 	
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">

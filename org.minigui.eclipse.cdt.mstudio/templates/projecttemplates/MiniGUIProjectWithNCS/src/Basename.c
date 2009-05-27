@@ -31,15 +31,20 @@ int MiniGUIMain(int argc, const char* argv[])
 {
 	MSG Msg;
 	char f_package[MAX_PATH];
+	mMainWnd *mWin;
+	HPACKAGE hPkg;
 
 	RegisterMiniControls();
-
 	sprintf(f_package, "%s/%s", project_path, "$(projectName)/res/$(projectName).res");
-
 	SetResPath("./");
-	HPACKAGE hPkg = LoadResPackage (f_package);
 
-	mMainWnd *mWin = CreateMainWindowIndirectFromID
+	hPkg = LoadResPackage (f_package);
+	if (hPkg == HPACKAGE_NULL)
+		return 1;
+
+	SetDefaultWindowElementRenderer(GetString(hPkg, MGRM_SYSSTR_DEFRDR));
+
+	mWin = CreateMainWindowIndirectFromID
 		(hPkg, start_wnd_id , HWND_DESKTOP, 0, 0, start_wnd_handlers);
 
 	while(GetMessage(&Msg, mWin->hwnd))
