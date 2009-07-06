@@ -27,6 +27,7 @@ const char *project_path = "$(location)";
 
 int MiniGUIMain(int argc, const char* argv[])
 {
+#ifdef ntStartWindowEx
 	MSG Msg;
 	char f_package[MAX_PATH];
 	mMainWnd *mWin;
@@ -52,6 +53,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	MainWindowThreadCleanup(mWin->hwnd);
 	UnloadResPackage(hPkg);
+#endif
 
 	return 0;
 }

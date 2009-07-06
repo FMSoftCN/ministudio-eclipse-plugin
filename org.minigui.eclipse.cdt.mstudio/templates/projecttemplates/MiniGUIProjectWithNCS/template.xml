@@ -149,6 +149,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 		<simple name="projectName" value="$(projectName)"/>
 		<complex-array name="files">
 			<element>
+				<simple name="source" value="include/Basename.h"/>
+				<simple name="target" value="$(incDir)/ncs-windows.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
 				<simple name="source" value="src/Basename.c"/>
 				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
 				<simple name="replaceable" value="true"/>
@@ -159,7 +164,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 				<simple name="replaceable" value="true"/>
 			</element>
 			<element>
-				<simple name="source" value="src/resource.h"/>
+				<simple name="source" value="include/resource.h"/>
 				<simple name="target" value="include/resource.h"/>
 				<simple name="replaceable" value="true"/>
 			</element>
