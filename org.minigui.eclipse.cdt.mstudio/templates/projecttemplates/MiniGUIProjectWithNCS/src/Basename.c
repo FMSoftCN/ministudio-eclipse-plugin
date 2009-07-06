@@ -17,13 +17,11 @@
 #include <minigui/gdi.h>
 #include <minigui/window.h>
 
-#include <minictrl/mctrls.h>
-#include <minictrl/mresmanager.h>
+#include <mgncs/mgncs.h>
+#include <mgncs/mgncs_resmanager.h>
 
 #include "resource.h"
-
-extern int start_wnd_id;
-extern NCS_EVENT_HANDLERS *start_wnd_handlers;
+#include "ncs-windows.h"
 
 const char *project_path = "$(location)";
 
@@ -44,8 +42,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	SetDefaultWindowElementRenderer(GetString(hPkg, MGRM_SYSSTR_DEFRDR));
 
-	mWin = CreateMainWindowIndirectFromID
-		(hPkg, start_wnd_id , HWND_DESKTOP, 0, 0, start_wnd_handlers);
+	mWin = ntStartWindowEx(hPkg, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
 
 	while(GetMessage(&Msg, mWin->hwnd))
 	{
