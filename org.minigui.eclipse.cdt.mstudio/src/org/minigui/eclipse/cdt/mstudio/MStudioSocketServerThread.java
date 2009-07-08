@@ -125,7 +125,18 @@ public class MStudioSocketServerThread extends Thread {
             UIJob refreshJob = new UIJob(content) {
                 public IStatus runInUIThread(IProgressMonitor monitor) {
                     try {
-                        GoToFunc(getFunc(), getFileName());     
+                    	String tmp = getMsgType();
+                    	int type = Integer.parseInt(tmp);
+                    	if (type == 0) {
+                    		//skip code
+                            GoToFunc(getFunc(), getFileName()); 
+                    	}
+                    	else if (type == 1) {
+                    		//sync project
+                    		IProject project =
+                    			ResourcesPlugin.getWorkspace().getRoot().getProject(getPrjName());
+                            project.refreshLocal(IResource.DEPTH_INFINITE, null);
+                    	}
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -186,6 +197,12 @@ public class MStudioSocketServerThread extends Thread {
         }
     }
 
+    private String getPrjName() {
+    	return getString ("prjname:", content);
+    }
+    private String getMsgType() {
+        return getString ("type:", content);
+    }
     private String getFileName() {
         return getString ("file:", content);
     }
