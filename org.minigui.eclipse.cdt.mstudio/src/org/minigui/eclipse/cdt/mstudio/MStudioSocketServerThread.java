@@ -159,7 +159,7 @@ public class MStudioSocketServerThread extends Thread {
 
     private int indexOfInFile(String func, IFile file) throws CoreException, IOException {
         Reader reader = new BufferedReader(new InputStreamReader(file.getContents(), file.getCharset()));
-
+        boolean found = false;
         try {
             int c = 0;
             int offset = 0;
@@ -167,19 +167,17 @@ public class MStudioSocketServerThread extends Thread {
 
             while ((c=reader.read()) >= 0) {
                 buf.append((char)c);
+                if (found == true)
+                	return offset;
                 if (c == '\n') {
                     int idx = buf.indexOf(func);
                     if (idx >= 0) {
-                        return idx+offset;
+                    	found = true;
+                        //return idx+offset;
                     }
                     offset+=buf.length();
                     buf.setLength(0);
                 }
-            }
-
-            int idx = buf.indexOf(func);
-            if (idx >= 0) {
-                return idx+offset;
             }
             return -1;
         }
