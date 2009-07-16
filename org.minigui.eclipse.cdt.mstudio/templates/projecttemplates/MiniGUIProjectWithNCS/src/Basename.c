@@ -33,7 +33,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	mMainWnd *mWin;
 	HPACKAGE hPkg;
 
-	RegisterMiniControls();
+	ncsRegisterCtrls();
 	sprintf(f_package, "%s/%s", project_path, "$(projectName)/res/$(projectName).res");
 	SetResPath("./");
 
