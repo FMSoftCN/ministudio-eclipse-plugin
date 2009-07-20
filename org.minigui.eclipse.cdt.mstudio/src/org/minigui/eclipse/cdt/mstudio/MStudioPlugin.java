@@ -3,6 +3,7 @@ package org.minigui.eclipse.cdt.mstudio;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.minigui.eclipse.cdt.mstudio.MStudioSocketServerThread;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -36,6 +37,13 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
+    	
+		MStudioSocketServerThread instance = 
+			MStudioSocketServerThread.getInstance();
+		/* This server thread starts only once. */
+		if ( instance.Started != 0 ) {
+			instance.closeSocket();
+		}
 		super.stop(context);
 	}
 

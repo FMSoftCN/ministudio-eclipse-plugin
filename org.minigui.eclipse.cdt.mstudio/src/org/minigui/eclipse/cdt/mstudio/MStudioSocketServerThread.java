@@ -58,19 +58,18 @@ public class MStudioSocketServerThread extends Thread {
     {
         return instance;
     }
-    
+
     public void run() 
     {
         Started = 1;
-
         try {
-            while (true) 
-            {
-                socket = server.accept();
-                parseData();       
-                socket.close();
-            }
+        	while ( (socket = server.accept()) != null ) 
+        	{
+        	    parseData();       
+        	    socket.close();
+        	}
         } catch (IOException e) {
+        	closeSocket();
             e.printStackTrace();
         }
     }
@@ -225,7 +224,6 @@ public class MStudioSocketServerThread extends Thread {
                 else
                     break;
             }
-        //System.out.println(key + sb.toString());
 
             return sb.toString ();
         }
@@ -245,10 +243,31 @@ public class MStudioSocketServerThread extends Thread {
 
     public void closeSocket() {
         try {
+        	sendQuitCmd();
             socket.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void sendQuitCmd() throws IOException
+    {
+    	String str = "GUIRECV\r\nquit\r\n\r\n";
+    	ByteArrayOutputStream bytestream;
+    	bytestream = new ByteArrayOutputStream(str.length());
+    	
+    	DataOutputStream out;
+    	out = new DataOutputStream(bytestream);
+    	System.out.println(str);
+    	for ( int i = 0; i < str.length(); i++ ) {
+    		out.write( (byte)str.charAt(i));
+    	}
+    	output.write( bytestream.toByteArray(), 0, bytestream.size());
+    	output.flush();
+    	/* for common string, need:
+    	recvAck();
+    	sendAck();
+    	*/
     }
 }
