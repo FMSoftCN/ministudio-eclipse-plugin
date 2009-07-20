@@ -259,7 +259,6 @@ public class MStudioSocketServerThread extends Thread {
     	
     	DataOutputStream out;
     	out = new DataOutputStream(bytestream);
-    	System.out.println(str);
     	for ( int i = 0; i < str.length(); i++ ) {
     		out.write( (byte)str.charAt(i));
     	}
