@@ -95,6 +95,9 @@ public class MStudioSocketServerThread<jint> extends Thread {
             input = socket.getInputStream();
             output = socket.getOutputStream();
 
+            if ( socket.isClosed() || socket.isInputShutdown() )
+            	return;
+            
             while (input.read(crlf)!=-1) {
 
                 if (crlf[0] == crlf13 || crlf[0] == crlf10) {

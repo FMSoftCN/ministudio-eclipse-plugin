@@ -56,18 +56,19 @@ public class MrcEditorLauncher implements IEditorLauncher {
 */		
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
+
+		MStudioSocketServerThread instance = 
+			MStudioSocketServerThread.getInstance();
 				
 		if (p != null) {
+			instance.setBuiderProcs(p);
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...
 		}
 		
-		MStudioSocketServerThread instance = 
-			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
 		if (instance.Started == 0) {
-			instance.setBuiderProcs(p);
 			//System.out.println("socket server thread. \n");
 			instance.start();
 		}
