@@ -1,5 +1,6 @@
 package org.minigui.eclipse.cdt.mstudio.editor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -60,6 +61,7 @@ public class UIEditorLauncher implements IEditorLauncher {
 				createEnvStringList(envProps), workingDir);
 				
 		if (p != null) {
+//			p.destroy();
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...
@@ -69,6 +71,8 @@ public class UIEditorLauncher implements IEditorLauncher {
 			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
 		if (instance.Started == 0) {
+			if ( p != null )
+				instance.setBuiderProcs(p);
 			//System.out.println("socket server thread. \n");
 			instance.start();
 		}

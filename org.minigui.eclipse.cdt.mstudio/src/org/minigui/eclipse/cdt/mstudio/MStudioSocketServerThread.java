@@ -30,7 +30,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.core.runtime.Status;
 
-public class MStudioSocketServerThread extends Thread {
+public class MStudioSocketServerThread<jint> extends Thread {
     public Socket           socket;
     public int              Started = 0;
     private static int      port = 5010;			
@@ -42,7 +42,8 @@ public class MStudioSocketServerThread extends Thread {
     private String          content;
     private byte            crlf13 = (byte)13; //'\r'
     private byte            crlf10 = (byte)10;  //'\n'
-
+    private Process			builder_process = null;
+    
     private static MStudioSocketServerThread instance = new MStudioSocketServerThread(port);
 
     private MStudioSocketServerThread(int port)
@@ -59,12 +60,17 @@ public class MStudioSocketServerThread extends Thread {
         return instance;
     }
 
+    public void setBuiderProcs(Process p) {
+    	builder_process = p;
+    }
+    
     public void run() 
     {
         Started = 1;
         try {
-        	while ( (socket = server.accept()) != null ) 
+        	while ( true )
         	{
+        		socket = server.accept();
         	    parseData();       
         	    socket.close();
         	}
@@ -243,30 +249,13 @@ public class MStudioSocketServerThread extends Thread {
 
     public void closeSocket() {
         try {
-        	sendQuitCmd();
+        	if ( builder_process != null ) {
+        		builder_process.destroy();
+        	}
             socket.close();
         }
         catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
-    }
-    
-    public void sendQuitCmd() throws IOException
-    {
-    	String str = "GUIRECV\r\nquit\r\n\r\n";
-    	ByteArrayOutputStream bytestream;
-    	bytestream = new ByteArrayOutputStream(str.length());
-    	
-    	DataOutputStream out;
-    	out = new DataOutputStream(bytestream);
-    	for ( int i = 0; i < str.length(); i++ ) {
-    		out.write( (byte)str.charAt(i));
-    	}
-    	output.write( bytestream.toByteArray(), 0, bytestream.size());
-    	output.flush();
-    	/* for common string, need:
-    	recvAck();
-    	sendAck();
-    	*/
     }
 }

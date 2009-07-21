@@ -67,6 +67,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
 			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
 		if (instance.Started == 0) {
+			instance.setBuiderProcs(p);
 			//System.out.println("socket server thread. \n");
 			instance.start();
 		}
