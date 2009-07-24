@@ -13,6 +13,9 @@ package org.minigui.eclipse.cdt.mstudio;
 
 import java.net.*;
 import java.io.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -30,7 +33,7 @@ import org.eclipse.ui.progress.UIJob;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.core.runtime.Status;
 
-public class MStudioSocketServerThread<jint> extends Thread {
+public class MStudioSocketServerThread extends Thread {
 	
     public class MStudioParseDataThread extends Thread {
         public Socket           socket;
@@ -45,44 +48,58 @@ public class MStudioSocketServerThread<jint> extends Thread {
         	this.socket = sock;
         }
 
+        public void run() 
+        {
+            try {
+                input = socket.getInputStream();
+                output = socket.getOutputStream();         
+                
+                while ( true ) {
+                	
+                    if ( socket.isClosed() 
+                    		|| socket.isInputShutdown() || socket.isOutputShutdown() )
+                    {
+                    	if (!socket.isClosed())
+                    		socket.close();
+                    	return;
+                    }
+                    
+            	    parseData();  
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            } 
+        }
+
+
         /*
         GUISEND\r\n
         file:test.java\r\n
         key:int MiniGUIMain(\r\n
         \r\n
         */
-        private void parseData() 
+        private void parseData() throws IOException
         {
             byte[] crlf = new byte[1];
             int crlfnum = 0;
+            while (input.read(crlf)!=-1) {
 
-            try {
-                input = socket.getInputStream();
-                output = socket.getOutputStream();
-
-                if ( socket.isClosed() || socket.isInputShutdown() )
-                	return;
-                
-                while (input.read(crlf)!=-1) {
-
-                    if (crlf[0] == crlf13 || crlf[0] == crlf10) {
-                        crlfnum ++;
-                    } else {
-                        crlfnum = 0;
-                    }
-
-                    request = request.append (new String (crlf, 0, 1));
-
-                    if (crlfnum == 4) {
-                        processData();
-                    }
+                if (crlf[0] == crlf13 || crlf[0] == crlf10) {
+                    crlfnum ++;
+                } else {
+                    crlfnum = 0;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+
+                request = request.append (new String (crlf, 0, 1));
+
+                if (crlfnum == 4) {
+                    processData();
+                }
             }
         }
 
-        private void processData () 
+        private void processData () throws IOException
         {
             try {
                 sendAck();
@@ -167,17 +184,6 @@ public class MStudioSocketServerThread<jint> extends Thread {
             input.read();
         }
 
-        //parse data
-        public void run() 
-        {
-    	    parseData();       
-    	    try {
-        	    socket.close();
-    	    } catch (IOException e) {
-                //e.printStackTrace();
-    	    }
-        }
-
         private void GoToFunc (String func, String fileName) throws CoreException, IOException 
         {
             Path path = new Path(fileName);
@@ -235,7 +241,8 @@ public class MStudioSocketServerThread<jint> extends Thread {
     private static int      port = 5010;			
 
     private ServerSocket    server;
-    private Process			builder_process = null;
+    private Set<Socket>		socketList = new HashSet<Socket>();
+    private Set<Process>	procsList = new HashSet<Process>();
     
     private static MStudioSocketServerThread instance = new MStudioSocketServerThread(port);
 
@@ -253,8 +260,8 @@ public class MStudioSocketServerThread<jint> extends Thread {
         return instance;
     }
 
-    public void setBuiderProcs(Process p) {
-    	builder_process = p;
+    public void addBuilderProcs(Process p) {
+   		procsList.add(p);
     }
     
     public void run() 
@@ -264,18 +271,40 @@ public class MStudioSocketServerThread<jint> extends Thread {
         	while ( true )
         	{
         		socket = server.accept();
+        		socketList.add(socket);
         		MStudioParseDataThread dataThread = new MStudioParseDataThread(socket);    
         		dataThread.start();
         	}
         } catch (IOException e) {
-        	closeSocket();
+        	try {
+            	closeServer();
+        	}catch (IOException f) {
+                f.printStackTrace();
+        	}
             e.printStackTrace();
         }
     }
     
-    public void closeSocket() {
-    	if ( builder_process != null ) {
-    		builder_process.destroy();
+    public void closeServer() throws IOException {
+    	//close related GUIBuilder process
+    	Iterator<Process> iter = procsList.iterator();
+    	Process p;
+    	
+    	while (iter.hasNext()) {
+    		p = iter.next();
+    		if (p != null)
+    			p.destroy();
+    	}
+
+    	//close related socket
+    	Iterator<Socket> it = socketList.iterator();
+    	Socket sock;
+    	
+    	while (it.hasNext()) {
+    		sock = it.next();
+    		
+    		if (!sock.isClosed())
+    			sock.close();
     	}
     }
 }

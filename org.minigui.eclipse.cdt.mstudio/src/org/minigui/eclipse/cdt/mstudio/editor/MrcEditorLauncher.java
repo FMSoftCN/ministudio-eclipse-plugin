@@ -61,7 +61,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
 			MStudioSocketServerThread.getInstance();
 				
 		if (p != null) {
-			instance.setBuiderProcs(p);
+			instance.addBuilderProcs(p);
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...

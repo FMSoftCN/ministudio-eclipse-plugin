@@ -42,7 +42,7 @@ public class MStudioPlugin extends AbstractUIPlugin {
 			MStudioSocketServerThread.getInstance();
 		/* This server thread starts only once. */
 		if ( instance.Started != 0 ) {
-			instance.closeSocket();
+			instance.closeServer();
 		}
 		super.stop(context);
 	}
