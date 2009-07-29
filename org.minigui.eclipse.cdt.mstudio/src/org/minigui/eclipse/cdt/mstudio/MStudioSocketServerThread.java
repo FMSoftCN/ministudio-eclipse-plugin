@@ -55,19 +55,19 @@ public class MStudioSocketServerThread extends Thread {
                 output = socket.getOutputStream();         
                 
                 while ( true ) {
+                	if (socket.isClosed())
+                		return;
                 	
-                    if ( socket.isClosed() 
-                    		|| socket.isInputShutdown() || socket.isOutputShutdown() )
+                    if ( !socket.isConnected() || socket.isInputShutdown() )
                     {
-                    	if (!socket.isClosed())
-                    		socket.close();
+                        closeSocket(socket);
                     	return;
                     }
                     
             	    parseData();  
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 return;
             } 
         }
@@ -75,16 +75,17 @@ public class MStudioSocketServerThread extends Thread {
 
         /*
         GUISEND\r\n
+        type:0\r\n  //0 for goto code, 1 for sync project
         file:test.java\r\n
-        key:int MiniGUIMain(\r\n
-        \r\n
+        key:int MiniGUIMain(\r\n\r\n
         */
         private void parseData() throws IOException
         {
             byte[] crlf = new byte[1];
-            int crlfnum = 0;
-            while (input.read(crlf)!=-1) {
+            int crlfnum = 0, count = 0;
 
+        	while (input.read(crlf)!=-1) {
+        		count ++;
                 if (crlf[0] == crlf13 || crlf[0] == crlf10) {
                     crlfnum ++;
                 } else {
@@ -97,6 +98,9 @@ public class MStudioSocketServerThread extends Thread {
                     processData();
                 }
             }
+    		if (count == 0) {
+            	closeSocket(socket);
+    		}
         }
 
         private void processData () throws IOException
@@ -105,7 +109,7 @@ public class MStudioSocketServerThread extends Thread {
                 sendAck();
                 recvAck();
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
             content = new String(request);
@@ -129,7 +133,7 @@ public class MStudioSocketServerThread extends Thread {
                         	}
                         }
                         catch (Exception e){
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                         return Status.OK_STATUS;
                     }
@@ -200,7 +204,7 @@ public class MStudioSocketServerThread extends Thread {
                 editor.selectAndReveal(offset, 0);
             } 
             catch (PartInitException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
 
@@ -251,7 +255,7 @@ public class MStudioSocketServerThread extends Thread {
         try {
             server = new ServerSocket(port);
         }catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 	
@@ -279,10 +283,23 @@ public class MStudioSocketServerThread extends Thread {
         	try {
             	closeServer();
         	}catch (IOException f) {
-                f.printStackTrace();
+                //f.printStackTrace();
         	}
-            e.printStackTrace();
+            //e.printStackTrace();
         }
+    }
+    
+    public void closeSocket(Socket sock) throws IOException
+    {
+		if (!sock.isClosed()) {
+
+			if (!sock.isInputShutdown()) {
+				sock.getInputStream().close();
+			}
+
+			sock.close();
+			socketList.remove(sock);
+		}
     }
     
     public void closeServer() throws IOException {
@@ -302,9 +319,7 @@ public class MStudioSocketServerThread extends Thread {
     	
     	while (it.hasNext()) {
     		sock = it.next();
-    		
-    		if (!sock.isClosed())
-    			sock.close();
+    		closeSocket(sock);
     	}
     }
 }
