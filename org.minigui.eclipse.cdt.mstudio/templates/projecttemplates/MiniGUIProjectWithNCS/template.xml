@@ -98,36 +98,41 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 	</process>
 
 	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
-		<simple name="projectName" value="$(projectName)"/>
-		<complex-array name="resourcePaths">
-			<element>
-				<simple name="id" value=".*c\.link\.option\.libs"/>
-					<simple-array name="values">
-         <element value="$(runmode)" />
-         <element value="pthread" />
-         <element value="png" />
-         <element value="jpeg" />
-         <element value="freetype" />
-         <element value="mgncs"/>
-        </simple-array>
-				<simple name="path" value=""/>
-			</element>
-			<element>
-				<simple name="id" value=".*c\.link\.option\.paths"/>
-					<simple-array name="values">
-         <element value="$(sdkPrefix)/lib" />
-       	</simple-array>
-				<simple name="path" value=""/>
-			</element>
-			<element>
-				<simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
-					<simple-array name="values">
-         <element value="/usr/include/"/>
-         <element value="/usr/local/include/"/>
-       	</simple-array>
-				<simple name="path" value=""/>
-			</element>
-		</complex-array>
+        <simple name="projectName" value="$(projectName)"/>
+        <complex-array name="resourcePaths">
+            <element>
+                <simple name="id" value=".*c\.link\.option\.libs"/>
+                <simple-array name="values">
+                    <element value="mgncs"/>
+                    <element value="mgutils"/>
+                    <element value="mgplus"/>
+                    <element value="stdc++"/>
+                    <element value="$(runmode)" />
+                    <element value="pthread" />
+                    <element value="png" />
+                    <element value="jpeg" />
+                    <element value="freetype" />
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+
+            <element>
+                <simple name="id" value=".*c\.link\.option\.paths"/>
+                <simple-array name="values">
+                    <element value="$(sdkPrefix)/lib" />
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+
+            <element>
+                <simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
+                <simple-array name="values">
+                    <element value="/usr/include/"/>
+                    <element value="/usr/local/include/"/>
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+        </complex-array>
 	</process>
 	
 	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
