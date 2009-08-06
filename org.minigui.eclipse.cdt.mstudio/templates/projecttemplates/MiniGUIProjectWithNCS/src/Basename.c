@@ -23,8 +23,6 @@
 #include "resource.h"
 #include "ncs-windows.h"
 
-const char *project_path = "$(location)";
-
 int MiniGUIMain(int argc, const char* argv[])
 {
 #ifdef ntStartWindowEx
@@ -34,7 +32,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	HPACKAGE hPkg;
 
 	ncsRegisterCtrls();
-	sprintf(f_package, "%s/%s", project_path, "$(projectName)/res/$(projectName).res");
+	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
 	hPkg = LoadResPackage (f_package);

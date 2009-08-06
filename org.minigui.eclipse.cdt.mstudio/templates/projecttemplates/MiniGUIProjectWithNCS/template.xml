@@ -129,25 +129,26 @@ description="%MiniGUINcsProject.template.description" help="help.html">
                 <simple-array name="values">
                     <element value="/usr/include/"/>
                     <element value="/usr/local/include/"/>
+                    <element value="../include/"/>
                 </simple-array>
                 <simple name="path" value=""/>
             </element>
         </complex-array>
 	</process>
 	
-	<process type="org.eclipse.cdt.managedbuilder.core.CreateIncludeFolder">
-		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(incDir)"/>
-	</process>
-	
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">
 		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(sourceDir)"/>
+        <simple name ="path" value="$(incDir)"/>
 	</process>
-	
+
 	<process type="org.eclipse.cdt.core.CreateSourceFolder">
 		<simple name="projectName" value="$(projectName)"/>
-		<simple name="path" value="$(resourceDir)" />
+        <simple name ="path" value="$(sourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+        <simple name ="path" value="$(resourceDir)"/>
 	</process>
 
 	<process type="org.eclipse.cdt.core.AddFiles">
@@ -170,7 +171,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			</element>
 			<element>
 				<simple name="source" value="include/resource.h"/>
-				<simple name="target" value="include/resource.h"/>
+				<simple name="target" value="$(incDir)/resource.h"/>
 				<simple name="replaceable" value="true"/>
 			</element>
 		</complex-array>
