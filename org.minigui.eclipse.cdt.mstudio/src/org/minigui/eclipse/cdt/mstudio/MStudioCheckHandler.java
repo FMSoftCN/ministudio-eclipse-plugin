@@ -18,7 +18,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	
 	private static String getUrl() {	
 		String baseurl = "http://www.minigui.org";
-		return baseurl;
+		return baseurl + "";
 	}
 	
 	@Override

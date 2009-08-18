@@ -196,6 +196,19 @@
             name="%MStudioUpdateCommand.name">
       </command>
    </extension>
+   <extension
+         point="org.eclipse.ui.exportWizards">
+      <category
+            id="org.minigui.eclipse.cdt.mstudio.exportcategory"
+            name="%MStudioExportWizardCategory.name">
+      </category>
+      <wizard
+            category="org.minigui.eclipse.cdt.mstudio.exportcategory"
+            class="org.minigui.eclipse.cdt.mstudio.wizards.MStudioDeployWizard"
+            id="org.minigui.eclipse.cdt.mstudio.deploywizard"
+            name="%MStudioDeployWizard.name">
+      </wizard>
+   </extension>
 
  
 </plugin>
