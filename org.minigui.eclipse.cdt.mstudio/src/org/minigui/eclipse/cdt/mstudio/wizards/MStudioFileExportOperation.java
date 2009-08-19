@@ -37,6 +37,8 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 	private IOverwriteQuery overwriteCallback;
 	private IResource resource;
 	private List errorTable = new ArrayList(1);
+	private List cfgFilesList = new ArrayList();
+	private List needSaveFiles;
 	
 	private static final int DEFAULT_BUFFER_SIZE = 16*1024;   
 
@@ -132,6 +134,13 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 		}
 	}
 	
+	public void setNeedSaveTargetFilesList(List saveFilesName) {
+		this.needSaveFiles = saveFilesName;
+	}
+	
+	public List getTargetFilesList()	{
+		return cfgFilesList;
+	}
 	protected void exportFile(IFile file, IPath location) 
 			throws InterruptedException {
 		IPath fullPath = location.append(file.getName());
@@ -177,6 +186,8 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 
 		try {
 			write(file, fullPath);
+			if (needSaveFiles.indexOf(fullPath.lastSegment()) != -1) //need save
+				cfgFilesList.add(fullPath.toOSString());
 		} catch (IOException e) {
 			errorTable.add(new Status(IStatus.ERROR, PlatformUI.PLUGIN_ID, 0, 
 					NLS.bind("deploy error", fullPath, e.getMessage()), e));

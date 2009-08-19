@@ -7,9 +7,11 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -49,7 +51,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.dialogs.WizardDataTransferPage;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -78,14 +79,19 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	private Combo resPackNameField;
 	private Button resPackBrowseButton;
 
-	private Text ialNameField;
-	private Text galNameField;
-	private Text resolutionNameField;
+	private Combo ialNameField;
+	private Combo galNameField;
+	private Combo resolutionNameField;
+	private Object checkedObject;
 	
 	private static final String STORE_TARGET_NAMES_ID = "MStudioDeployWizardPage.STORE_TARGET_NAMES_ID";
 	private static final String STORE_BINARY_NAMES_ID = "MStudioDeployWizardPage.STORE_BINARY_NAMES_ID";
 	private static final String STORE_RESPACKAGE_NAMES_ID = "MStudioDeployWizardPage.STORE_RESPACKAGE_NAMES_ID";
+	private static final String STORE_IAL_NAMES_ID = "MStudioDeployWizardPage.STORE_IAL_NAMES_ID";
+	private static final String STORE_GAL_NAMES_ID = "MStudioDeployWizardPage.STORE_GAL_NAMES_ID";
+	private static final String STORE_RESOLUTION_NAMES_ID = "MStudioDeployWizardPage.STORE_RESOLUTION_NAMES_ID";
 
+	private static final Map saveIDField = new HashMap();
 	private static final String MINIGUI_CONFIG_FILE = "MiniGUI.cfg";
 	private static final String MSTUDIO_IMAGEID_FILE = "res/image/id.xml";
 	
@@ -100,6 +106,15 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		setDescription(MiniGUIMessages.getString("MStudioDeployWizardPage.desc"));
 	}
 
+	private void initMapInfo() {
+		saveIDField.put("STORE_TARGET_NAMES_ID", destNameField);
+		saveIDField.put("STORE_BINARY_NAMES_ID", binNameField);
+		saveIDField.put("STORE_RESPACKAGE_NAMES_ID", resPackNameField);
+		saveIDField.put("STORE_IAL_NAMES_ID", ialNameField);
+		saveIDField.put("STORE_GAL_NAMES_ID", galNameField);
+		saveIDField.put("STORE_RESOLUTION_NAMES_ID", resolutionNameField);
+	}
+	
 	@Override
 	protected boolean allowNewContainerName() {
 		// TODO Auto-generated method stub
@@ -114,12 +129,14 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		updatePageCompletion();
 	}
 	
-	protected void createDirectoryDialog(Combo field, String message, String text)
+	protected void createDirectoryDialog(Combo field, String text, String message)
 	{
         DirectoryDialog dialog = new DirectoryDialog(getContainer().getShell(),
                 SWT.SAVE);
 
-        dialog.setMessage(message);
+        if (message != null)
+            dialog.setMessage(message);
+
         dialog.setText(text);
         dialog.setFilterPath(getComboValue(field));
         String selectedDirectoryName = dialog.open();
@@ -130,22 +147,6 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         }
 	}
 	
-    protected String makeRelativePath(String file) {
-        IPath rootPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-        IPath testPath = new Path(file);
-
-        if(testPath.equals(rootPath))
-            return rootPath.lastSegment();
-
-        if(testPath.matchingFirstSegments(rootPath) == rootPath.segmentCount()){
-            IPath relativePath = testPath.removeFirstSegments(rootPath.segmentCount());
-            return relativePath.toString();
-        }
-
-        return null;
-    }
-
-    
 	protected void createFileDialog(Combo field, 
 			String text, String[] filterNames,
 			String[] filterExt, boolean multi) {
@@ -168,26 +169,22 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         if (selectedFileName != null) {
         	if (!multi) {
                 setErrorMessage(null);
-                String filename = makeRelativePath(selectedFileName);
-                System.out.println(filename);
-                if (filename != null)
-                	setComboValue(field, File.separatorChar + filename);
+                setComboValue(field, selectedFileName);
         	} else {
             	String[] selFiles = dialog.getFileNames();
             	String curFilterPath = dialog.getFilterPath();
                 StringBuffer binValue = new StringBuffer();
 
-            	for (int i =1; i < selFiles.length; i++) {
-            		binValue.append(curFilterPath);
-            		if (binValue.charAt(binValue.length() - 1) != File.separatorChar) {
-            			binValue.append(File.separatorChar);
-            		}
-            		binValue.append(selFiles[i]);
-            		binValue.append(" ");
+                if (curFilterPath.charAt(curFilterPath.length() - 1) != File.separatorChar) {
+                	curFilterPath += File.separatorChar;
+                }
+                
+            	for (int i = 0; i < selFiles.length; i++) {
+            		binValue.append(curFilterPath + selFiles[i]+";");
             	}
             	
                 setErrorMessage(null);
-        		setComboValue(field, binValue.toString());
+                setComboValue(field, binValue.toString());
         	}
         }
 	}
@@ -195,7 +192,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	protected void handleBrowseButtonPressed(Widget source) {
 		
 		if (source == destBrowseButton) {
-			createDirectoryDialog(destNameField, "Select a target directory", "Target Directory");
+			createDirectoryDialog(destNameField, "Select target directory", null);
 			
 		} else if (source == binBrowseButton) {
 	        String[] filterNames = {"Binary Files(*)", "Executable Files(*.exe)", "All Files(*.*)"};
@@ -205,7 +202,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		} else if (source == resPackBrowseButton) {
 	        String[] filterNames = {"Resource Package Files(*.res)", "All Files(*.*)"};
 	        String[] filterExt = {"*.res", "*.*"};
-	        createFileDialog(resPackNameField, "Select Resource Packages", filterNames, filterExt, false);
+	        createFileDialog(resPackNameField, "Select Resource Package", filterNames, filterExt, false);
 		}
 	}
 
@@ -220,23 +217,28 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 				| GridData.HORIZONTAL_ALIGN_FILL));
 		composite.setFont(parent.getFont());
 		
-		createSourceGroup(composite);
-		createDestinationGroup(composite);
-		
+		createProjectsGroup(composite);
+		createTargetDirGroup(composite);
+		initMapInfo();
+
 		restoreWidgetValues();
 		if (fInitialSelection != null) {
 			setupBasedOnInitialSelections();
 		}
 		
-		updateWidgetEnablements();
 		setPageComplete(determinePageCompletion());
+		updateWidgetEnablements();
 		setErrorMessage(null);
 		
 		setControl(composite);
 		giveFocusToCombo(destNameField);
 	}
 	
-	private void createSourceGroup(Composite parent) {
+    protected void updateWidgetEnablements() {
+        updatePageCompletion();
+    }
+    
+	private void createProjectsGroup(Composite parent) {
 		Composite resourcesGroup = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		resourcesGroup.setLayout(layout);
@@ -253,9 +255,32 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		
 
 		ICheckStateListener checkListener = new ICheckStateListener() {
+			private void tableItemChecked(Object listElement, boolean state) {
+				//System.out.println("============+++++++==============");
+				
+				if (state) {
+					//System.out.println("====checked: " + listElement.toString());
+					if (checkedObject != null) {
+						fProjectViewer.setChecked(checkedObject, false);
+						//System.out.println("old checked object: " +checkedObject.toString());
+
+					}
+					checkedObject = listElement;
+					//System.out.println("new checked object: " +checkedObject.toString());
+
+				} else {
+					//System.out.println("====unchecked: " + listElement.toString());
+					if (checkedObject != null && checkedObject == listElement) {
+						checkedObject = null;
+					}
+				}
+			}
+			
 			@Override
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				// TODO Auto-generated method stub
+				//get old selected item	
+				tableItemChecked(event.getElement(), event.getChecked());
 				updateWidgetEnablements();
 			}
 		};
@@ -266,10 +291,61 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		initProjects();
 	}
 	
+	protected String fileInProject(String project, String file, boolean needPath) {
+        IPath projPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+        IPath testPath = new Path(file);
+
+        projPath = projPath.append(project);
+
+        if(testPath.matchingFirstSegments(projPath) == projPath.segmentCount()){
+        	if (needPath) {
+                IPath relativePath = testPath.removeFirstSegments(projPath.segmentCount());
+                return relativePath.toString();
+        	}
+        	return "";
+        }
+		return null;
+	}
+
     protected boolean validateSourceGroup() {
+    	if (checkedObject == null) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyProject"));	
+    	    return false;
+    	}
+
+        if (getComboValue(ialNameField).length() == 0) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyIAL"));	
+    	    return false;
+        }
+    		
+        if (getComboValue(galNameField).length() == 0) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyGAL"));	
+    	    return false;
+        }
+
+        if (getComboValue(resolutionNameField).length() == 0) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyResolution"));	
+    	    return false;
+        }
+
+        if (getComboValue(resPackNameField).length() == 0) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyResPack"));	
+    	    return false;
+        }
+        
+        if (getComboValue(binNameField).length() == 0) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyBinaryFile"));	
+    	    return false;
+        }
+
         return true;
     }
     
+	protected boolean valueIsFile(Combo field) {
+		return new File(getComboValue(field)).isFile();
+	}
+
+
 	private void initProjects() {
 		ArrayList<ICProject> input = new ArrayList<ICProject>();
 		ICProject[] projects;
@@ -314,43 +390,68 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		};
 	}
 
-    private Text createTargetInfoEditor(Composite parent, String initLabel) {
-		new Label(parent, SWT.RIGHT).setText(initLabel);
-		return new Text(parent, SWT.SINGLE | SWT.BORDER | SWT.CENTER);
-    }
-
     private void createTargetInfoGroup(Composite parent) {
 		Composite targetGroup = new Composite(parent, SWT.NONE);
 		targetGroup.setFont(parent.getFont());
 		
-		GridLayout layout2 = new GridLayout(4, true);
-		targetGroup.setLayout(layout2);
+		GridLayout layout = new GridLayout();
+        layout.numColumns = 6;
+		targetGroup.setLayout(layout);
 		targetGroup.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL
 				| GridData.HORIZONTAL_ALIGN_FILL));
 
-		ialNameField = createTargetInfoEditor(targetGroup, "ial:");
-		galNameField = createTargetInfoEditor(targetGroup, "gal:");
-		//targetNameField = createTargetInfoEditor(targetGroup, "target name:");
-		resolutionNameField = createTargetInfoEditor(targetGroup, "resolution(bpp):");
+		new Label(targetGroup, SWT.RIGHT).setText(
+			getMessage("MStudioDeployWizardPage.ial.label"));
+		ialNameField = new Combo(targetGroup, SWT.SINGLE | SWT.BORDER);
+        setComboGroup(targetGroup, ialNameField);
+
+		new Label(targetGroup, SWT.RIGHT).setText(
+				getMessage("MStudioDeployWizardPage.gal.label"));
+		galNameField = new Combo(targetGroup, SWT.SINGLE | SWT.BORDER);
+        setComboGroup(targetGroup, galNameField);
+
+		new Label(targetGroup, SWT.RIGHT).setText(
+				getMessage("MStudioDeployWizardPage.resolution.label"));
+		resolutionNameField = new Combo(targetGroup, SWT.SINGLE | SWT.BORDER);
+        setComboGroup(targetGroup, resolutionNameField);
+        resolutionNameField.setTextLimit(2);
+        resolutionNameField.addListener(SWT.Verify, new Listener() {
+        	public void handleEvent(Event e) {
+        		String string = e.text;
+        		char [] chars = new char[string.length()];
+        		string.getChars(0, chars.length, chars, 0);
+        		
+        		for (int i = 0; i < chars.length; i++) {
+        			if (!('0' <= chars[i] && chars[i] <= '9')) {
+        				e.doit = false;
+        				return;
+        			}
+        		}
+        	}
+        });
+    }
+
+    private void setComboGroup(Composite parent, Combo field) {
+        setComboGroup(parent, field, null, null);
     }
 
     private void setComboGroup(Composite parent,
             Combo field, Button browseButton, String buttonText) {
-        Font font = parent.getFont();
-
         field.addListener(SWT.Modify, this);
         field.addListener(SWT.Selection, this);
         GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL
                 | GridData.GRAB_HORIZONTAL);
         data.widthHint = SIZING_TEXT_FIELD_WIDTH;
         field.setLayoutData(data);
-        field.setFont(font);
+        field.setFont(parent.getFont());
 
         // browse button
-        browseButton.setText(buttonText);
-        browseButton.addListener(SWT.Selection, this);
-        browseButton.setFont(font);
-        setButtonLayoutData(browseButton);
+        if (browseButton != null) {
+            browseButton.setText(buttonText);
+            browseButton.addListener(SWT.Selection, this);
+            browseButton.setFont(parent.getFont());
+            setButtonLayoutData(browseButton);
+        }
     }
 
     private void createLabel(Composite parent, String text) {
@@ -361,7 +462,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         }
     }
     
-	private void createDestinationGroup(Composite parent) {
+	private void createTargetDirGroup(Composite parent) {
         Font font = parent.getFont();
         Composite destSelectionGroup = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -371,44 +472,52 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
                 GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
         destSelectionGroup.setFont(font);
 
-        createLabel(destSelectionGroup, "Resource Package");
+        createLabel(destSelectionGroup, 
+        		getMessage("MStudioDeployWizardPage.respackage.label"));
         resPackNameField = new Combo(destSelectionGroup, SWT.SINGLE | SWT.BORDER);
         resPackBrowseButton = new Button(destSelectionGroup, SWT.PUSH);
         setComboGroup(destSelectionGroup, 
-                resPackNameField, resPackBrowseButton, "Browse");
+                resPackNameField, resPackBrowseButton, 
+        		getMessage("MStudioDeployWizardPage.browse.label"));
 
-        createLabel(destSelectionGroup, "Binary File");
+        createLabel(destSelectionGroup, 
+        		getMessage("MStudioDeployWizardPage.binary.label"));
+        
         binNameField = new Combo(destSelectionGroup, SWT.SINGLE | SWT.BORDER);
         binBrowseButton = new Button(destSelectionGroup, SWT.PUSH);
         setComboGroup(destSelectionGroup, 
-                binNameField, binBrowseButton, "Browse");
+                binNameField, binBrowseButton, 
+        		getMessage("MStudioDeployWizardPage.browse.label"));
 
-        createLabel(destSelectionGroup, "Target Directory");
+        createLabel(destSelectionGroup, 
+        		getMessage("MStudioDeployWizardPage.target.label"));
         destNameField = new Combo(destSelectionGroup, SWT.SINGLE | SWT.BORDER);
         destBrowseButton = new Button(destSelectionGroup, SWT.PUSH);
-        setComboGroup(destSelectionGroup, 
-                destNameField, destBrowseButton, "Browse");
+        setComboGroup(destSelectionGroup, destNameField, destBrowseButton, 
+        		getMessage("MStudioDeployWizardPage.browse.label"));
         
         new Label(destSelectionGroup, SWT.NONE); // vertical spacer
 	}
 	
-	protected String destinationEmptyMessage() {
-		return MiniGUIMessages.getString(
-				"MStudioDeployWizardPage.deployErrors.target.EmptyDirectory");
+	private String getMessage(String id) {
+		return MiniGUIMessages.getString(id);
 	}
 
     protected boolean validateDestinationGroup() {
 		String destinationValue = getComboValue(destNameField);
 		if (destinationValue.length() == 0) {
-			setMessage(destinationEmptyMessage());
+			setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyTargetDirectory"));
 			return false;
 		}
 
 		String threatenedContainer = getOverlappingProjectName(destinationValue);
-		if (threatenedContainer == null)
+		if (threatenedContainer == null) {
 			setMessage(null);
-		else 
-			setMessage(NLS.bind("Warning: Deploy damage", threatenedContainer), WARNING);
+        }
+		else {
+			setMessage(NLS.bind("Warning: damage container", threatenedContainer), WARNING);
+        }
+
 		return true;
     }
 
@@ -438,21 +547,30 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 
 	protected void restoreWidgetValues() {
 		IDialogSettings settings = getDialogSettings();
-		internalRestoreWidgetValues(settings, STORE_TARGET_NAMES_ID, destNameField);
-		internalRestoreWidgetValues(settings, STORE_BINARY_NAMES_ID, binNameField);
-		internalRestoreWidgetValues(settings, STORE_RESPACKAGE_NAMES_ID, resPackNameField);
+		Iterator keyValuePairs = saveIDField.entrySet().iterator();
+		int mapSize = saveIDField.size();
+		
+		for (int i = 0; i < mapSize; i++) {
+			Map.Entry entry = (Map.Entry) keyValuePairs.next();
+			internalRestoreWidgetValues(settings, 
+					(String)entry.getKey(), (Combo)entry.getValue());
+		}
 	}
 	
     protected void saveWidgetValues() {
     	super.saveWidgetValues();
-    	
 		IDialogSettings settings = getDialogSettings();
-		internalSaveWidgetValues(settings, STORE_TARGET_NAMES_ID, destNameField);
-		internalSaveWidgetValues(settings, STORE_BINARY_NAMES_ID, binNameField);
-		internalSaveWidgetValues(settings, STORE_RESPACKAGE_NAMES_ID, resPackNameField);
+		Iterator keyValuePairs = saveIDField.entrySet().iterator();
+		int mapSize = saveIDField.size();
+		
+		for (int i = 0; i < mapSize; i++) {
+			Map.Entry entry = (Map.Entry) keyValuePairs.next();
+			internalSaveComboValues(settings, 
+					(String)entry.getKey(), (Combo)entry.getValue());
+		}
     }
     
-	protected void internalSaveWidgetValues(IDialogSettings settings,
+	protected void internalSaveComboValues(IDialogSettings settings,
 			String nameID, Combo field)
 	{
 		if (settings != null) {
@@ -499,31 +617,24 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 			ICProject prj = (ICProject) element;
 			if (names.contains(prj.getElementName())) {
 				fProjectViewer.setChecked(prj, true);
+				//only one selection support
+				checkedObject = prj;
+				break;
 			}
 		}
 	}
 
 	public boolean finish() {
+        if (!ensureFileIsValid()) {
+            return false;
+        }
+
 		if (!ensureDirectoryIsValid(destNameField)) {
 			return false;
 		}
-		/*
-		if (!ensureFileIsValid(binNameField)) {
-			return false;
-		}
-		
-		if (!ensureFileIsValid(resPackNameField)) {
-			return false;
-		}
-		*/
 		
 		ICProject[] projectsToExport = getCheckedElements();
-
 		saveWidgetValues();
-		System.out.println(getTextValue(ialNameField));
-		System.out.println(getTextValue(galNameField));
-		System.out.println(getTextValue(resolutionNameField));
-
 		List resourcesToExport = getAllDeployFiles(projectsToExport);
 
 		return executeExportOperation(new MStudioFileExportOperation(null,
@@ -550,41 +661,27 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		}
 	}
 
-	private List getDeployFilesList(IProject project) {
-		List list = new ArrayList();
-		list.add(MINIGUI_CONFIG_FILE);
-		
-		String binFile = getRelativeBinFile(project);
+	private void addComboFileToList(IProject project, Combo field, List list) {
+		String binFile = fileInProject(project.getName(), getComboValue(field), true);
+        System.out.println(project.getLocation());
 		if (binFile != null) {
-	        System.out.println("binary file =" + binFile);
+	        System.out.println("file =" + binFile);
 			list.add(binFile);
 		}
+	}
+	
+	private List getDeployFilesList(IProject project) {
+		List list = new ArrayList();
+
+		list.add(MINIGUI_CONFIG_FILE);
+		addComboFileToList(project, binNameField, list);
+		addComboFileToList(project, resPackNameField, list);
 		addImagesToList(project, list);
 		addFontsToList(project, list);
 		
 		return list;
 	}
 	
-    protected String getRelativeBinFile(IProject project) {
-    	String testFile = getComboValue(binNameField);  	
-        IPath testPath = new Path(testFile);
-        
-        String projName = project.getName();
-        IPath projPath = project.getFullPath();
-        System.out.println(projName);
-        System.out.println(projPath.toString());
-        
-        if(testPath.equals(projPath))
-            return null;
-
-        if(testPath.matchingFirstSegments(projPath) == projPath.segmentCount()){
-            IPath relativePath = testPath.removeFirstSegments(projPath.segmentCount());
-            return relativePath.toString();
-        }
-
-        return null;
-    }
-
 	private void addImagesToList(IProject project, Collection result) {
 		IFile imageFile = project.getFile(MSTUDIO_IMAGEID_FILE);
 		if (imageFile.isAccessible()) {
@@ -647,28 +744,31 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	}
 	
 	private void targetMiniGUICfg(String cfgFile) {
-
+		System.out.println("in targetMiniGUICfg =" + cfgFile);
 	    MStudioParserIniFile iniObj = new MStudioParserIniFile(cfgFile);
 	    
 	    String galEngine = iniObj.getStringProperty("system", "gal_engine");
-	    System.out.println("gal_engine=" + galEngine);
+	    String newGalEngine= new String(getComboValue(galNameField));
+	    iniObj.setStringProperty("system", "gal_engine", newGalEngine, null);
+	    //System.out.println("gal_engine=" + galEngine);
 	    
-        //800x600-16bpp  format:%sx%s-%sbpp [0-9][x][0-9][-][0-9]x
-        String defaultMode = iniObj.getStringProperty("system", "defaultmode");
+	    String ialEngine = iniObj.getStringProperty("system", "ial_engine");
+	    iniObj.setStringProperty("system", 
+	    		"ial_engine", getComboValue(ialNameField), null);
+	    //System.out.println("ial_engine=" + ialEngine);
+
+	    //800x600-16bpp  format:%sx%s-%sbpp [0-9][x][0-9][-][0-9]x
+        String defaultMode = iniObj.getStringProperty(galEngine, "defaultmode");
 	    System.out.println("defaultmode=" + defaultMode);
 	    String[] modes = defaultMode.split("[-]");
-	    
+	    /*
 	    for (int i = 0; i < modes.length; i++) {
     		System.out.println(modes[i]);
-	    }
-	    String newMode = String.format("%s-%sbpp", modes[0], getTextValue(resolutionNameField));
+	    }*/
+	    String newMode = String.format("%s-%sbpp", modes[0], getComboValue(resolutionNameField));
+	    iniObj.setStringProperty(newGalEngine, "defaultmode", newMode, null);
 	    System.out.println("new mode value = " + newMode);
-        String ialEngine = iniObj.getStringProperty("system", "ial_engine");
-	    System.out.println("ial_engine=" + ialEngine);
-	}
-	
-	private String getTextValue(Text field) {
-		return field.getText().trim();
+	    iniObj.save();
 	}
 	
 	private ICProject[] getCheckedElements() {
@@ -678,31 +778,25 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		return prjs;
 	}
 	
+    protected boolean ensureFileIsValid() {
+        if (!valueIsFile(resPackNameField) || !valueIsFile(binNameField)) {
+        	setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.InputFileName"));
+            return false;
+        }  
 
-	protected boolean ensureFileIsValid(File file) {
-		if (file.exists() && !file.isFile()) {
-			return false;
-		}
-		
-		if (!file.exists()) {
-			displayErrorDialog(
-					MiniGUIMessages.getString("MStudioDeployWizardPage.deployErrors.NoSuchFile"));
-			return false;
-		}
-		
-		return true;
-	}
-	
-	protected boolean ensureFileIsValid(Combo field) {
-		// for single selection
-		File targetFile = new File(getComboValue(field));
-		if (!ensureFileIsValid(targetFile)) {
-			giveFocusToCombo(field);
-			return false;
-		}
-		return true;
-	}
-	
+        if (null == fileInProject(checkedObject.toString(), getComboValue(binNameField), false)) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.SelectProperBinFile"));	
+            return false;
+        }
+
+        if (null == fileInProject(checkedObject.toString(), getComboValue(resPackNameField), false)) {
+    	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.SelectProperResFile"));	
+            return false;
+        }
+
+        return true;
+    }
+
 	protected boolean ensureDirectoryIsValid(Combo field) {
 		File targetDirectory = new File(getComboValue(field));		
 
@@ -739,6 +833,10 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		op.setCreateLeadupStructure(true);
 		op.setOverwriteFiles(true);
 		
+		List files = new ArrayList();
+		files.add(MINIGUI_CONFIG_FILE);
+		op.setNeedSaveTargetFilesList(files);
+		
 		try {
 			getContainer().run(true, true, op);
 		} catch (InterruptedException e) {
@@ -757,7 +855,12 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 			return false;
 		}
 		
-        targetMiniGUICfg(MINIGUI_CONFIG_FILE);
+		//for MINIGUI_CONFIG_FILE
+		Iterator it = op.getTargetFilesList().iterator();
+		while (it.hasNext()) {
+			targetMiniGUICfg(it.next().toString());
+		}
+		
 		return true;
 	}
 }

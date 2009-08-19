@@ -1,12 +1,15 @@
 package org.minigui.eclipse.cdt.mstudio.wizards;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.IExportWizard;
 import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
+import org.minigui.eclipse.cdt.mstudio.MStudioPlugin;
 import org.minigui.eclipse.cdt.mstudio.MiniGUIMessages;
 
 public class MStudioDeployWizard extends Wizard implements IExportWizard {
@@ -17,10 +20,10 @@ public class MStudioDeployWizard extends Wizard implements IExportWizard {
 	
 	public MStudioDeployWizard() {
 		// TODO Auto-generated constructor stub
-		IDialogSettings workbenchSettings = WorkbenchPlugin.getDefault().getDialogSettings();
-		IDialogSettings section = workbenchSettings.getSection(DIALOG_SETTINGS_SECTION);
+		IDialogSettings mstudioSettings = MStudioPlugin.getDefault().getDialogSettings();
+		IDialogSettings section = mstudioSettings.getSection(DIALOG_SETTINGS_SECTION);
 		if (section == null) {
-			section = workbenchSettings.addNewSection(DIALOG_SETTINGS_SECTION);
+			section = mstudioSettings.addNewSection(DIALOG_SETTINGS_SECTION);
 		}
 		setDialogSettings(section);
 	}
@@ -43,8 +46,12 @@ public class MStudioDeployWizard extends Wizard implements IExportWizard {
 		// TODO Auto-generated method stub
 		this.selection = selection;
 		setWindowTitle(MiniGUIMessages.getString("MStudioDeployWizard.title"));
-		setDefaultPageImageDescriptor(IDEWorkbenchPlugin.getIDEImageDescriptor("wizban/exportdir_wiz.png"));
+		
+		try {
+			URL imgUrl = new URL(MStudioPlugin.getDefault().getBundle().getEntry("/"), "icons/mgproject.gif");
+			setDefaultPageImageDescriptor(ImageDescriptor.createFromURL(imgUrl));
+		} catch (MalformedURLException e) {	}
+		
 		setNeedsProgressMonitor(true);
 	}
-
 }

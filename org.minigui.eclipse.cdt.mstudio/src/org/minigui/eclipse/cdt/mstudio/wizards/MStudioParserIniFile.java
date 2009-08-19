@@ -658,7 +658,7 @@ public class MStudioParserIniFile {
                 objSec = (MStudioParserIniSection) this.mhmapSections.get(strName);
                 strTemp = objSec.toString();
                 objWriter.write(strTemp);
-                objWriter.write("\r\n");
+                objWriter.write(System.getProperty("line.separator"));
                 objSec = null;
             }
             blnRet = true;
@@ -795,7 +795,7 @@ public class MStudioParserIniFile {
                             else if (strRemarks.length() == 0)
                                 strRemarks = strLine.substring(1);
                             else
-                                strRemarks = strRemarks + "\r\n" + strLine.substring(1);
+                                strRemarks = strRemarks + System.getProperty("line.separator") + strLine.substring(1);
                         }
                         else if (strLine.startsWith("[") && strLine.endsWith("]"))
                         {
@@ -1008,7 +1008,7 @@ public class MStudioParserIniFile {
         while (intPos >= 0)
         {
             intLen = 2;
-            intPos = pstrSrc.indexOf("\r\n", intPrev);
+            intPos = pstrSrc.indexOf(System.getProperty("line.separator"), intPrev);
             if (intPos < 0)
             {
                 intLen = 1;
@@ -1017,7 +1017,7 @@ public class MStudioParserIniFile {
             }
             if (intPos == 0)
             {
-                pstrSrc = ";\r\n" + pstrSrc.substring(intPos + intLen);
+                pstrSrc = "#" + System.getProperty("line.separator") + pstrSrc.substring(intPos + intLen);
                 intPrev = intPos + intLen + 1;
             }
             else if (intPos > 0)
@@ -1029,13 +1029,13 @@ public class MStudioParserIniFile {
                 else if (strRight.length() == 0)
                     pstrSrc = strLeft;
                 else
-                    pstrSrc = strLeft + "\r\n;" + strRight;
+                    pstrSrc = strLeft + System.getProperty("line.separator") + "#" + strRight;
                 intPrev = intPos + intLen + 1;
             }
         }
-        if (!pstrSrc.substring(0, 1).equals(";"))
-            pstrSrc = ";" + pstrSrc;
-        pstrSrc = pstrSrc + "\r\n";
+        if (!pstrSrc.substring(0, 1).equals("#"))
+            pstrSrc = "#" + pstrSrc;
+        pstrSrc = pstrSrc + System.getProperty("line.separator");
         return pstrSrc;
     }
 /*------------------------------------------------------------------------------
@@ -1239,9 +1239,10 @@ public class MStudioParserIniFile {
             MStudioParserIniProperty  objProp = null;
             StringBuffer objBuf  = new StringBuffer();
 
+            objBuf.append(System.getProperty("line.separator"));
             if (this.mstrComment != null)
                 objBuf.append(addRemChars(this.mstrComment));
-            objBuf.append("[" + this.mstrName + "]\r\n");
+            objBuf.append("[" + this.mstrName + "]" + System.getProperty("line.separator"));
             colKeys = this.mhmapProps.keySet();
             if (colKeys != null)
             {
@@ -1252,7 +1253,7 @@ public class MStudioParserIniFile {
                     {
                         objProp = (MStudioParserIniProperty) this.mhmapProps.get(iter.next());
                         objBuf.append(objProp.toString());
-                        objBuf.append("\r\n");
+                        objBuf.append(System.getProperty("line.separator"));
                         objProp = null;
                     }
                 }
@@ -1392,7 +1393,7 @@ public class MStudioParserIniFile {
 
             if (this.mstrComments != null)
                 strRet = addRemChars(mstrComments);
-            strRet = strRet + this.mstrName + " = " + this.mstrValue;
+            strRet = strRet + this.mstrName + "=" + this.mstrValue;
             return strRet;
         }
     }
