@@ -147,6 +147,14 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         }
 	}
 	
+	protected Object getCheckedProject() {
+		return checkedObject;
+	}
+	
+	protected void setCheckedProject(Object o) {
+		checkedObject = o;
+	}
+	
 	protected void createFileDialog(Combo field, 
 			String text, String[] filterNames,
 			String[] filterExt, boolean multi) {
@@ -157,6 +165,14 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         
         if (multi)
         	style |= SWT.MULTI;
+        
+        Object checkedProj = getCheckedProject();
+        if (checkedProj != null) {
+            if (filterPath.charAt(filterPath.length() - 1) != File.separatorChar) {
+            	filterPath += File.separatorChar;
+            }
+        	filterPath += checkedProj.toString();
+        }
         
         FileDialog dialog = new FileDialog(getContainer().getShell(), style);
         
@@ -256,22 +272,15 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 
 		ICheckStateListener checkListener = new ICheckStateListener() {
 			private void tableItemChecked(Object listElement, boolean state) {
-				//System.out.println("============+++++++==============");
-				
+				Object checked = getCheckedProject();
 				if (state) {
-					//System.out.println("====checked: " + listElement.toString());
-					if (checkedObject != null) {
-						fProjectViewer.setChecked(checkedObject, false);
-						//System.out.println("old checked object: " +checkedObject.toString());
-
+					if (checked != null) {
+						fProjectViewer.setChecked(checked, false);
 					}
-					checkedObject = listElement;
-					//System.out.println("new checked object: " +checkedObject.toString());
-
+					setCheckedProject(listElement);
 				} else {
-					//System.out.println("====unchecked: " + listElement.toString());
-					if (checkedObject != null && checkedObject == listElement) {
-						checkedObject = null;
+					if (checked != null && checked == listElement) {
+						setCheckedProject(null);
 					}
 				}
 			}
@@ -308,7 +317,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	}
 
     protected boolean validateSourceGroup() {
-    	if (checkedObject == null) {
+    	if (getCheckedProject() == null) {
     	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.EmptyProject"));	
     	    return false;
     	}
@@ -618,7 +627,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 			if (names.contains(prj.getElementName())) {
 				fProjectViewer.setChecked(prj, true);
 				//only one selection support
-				checkedObject = prj;
+				setCheckedProject(prj);
 				break;
 			}
 		}
@@ -663,9 +672,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 
 	private void addComboFileToList(IProject project, Combo field, List list) {
 		String binFile = fileInProject(project.getName(), getComboValue(field), true);
-        System.out.println(project.getLocation());
 		if (binFile != null) {
-	        System.out.println("file =" + binFile);
 			list.add(binFile);
 		}
 	}
@@ -738,36 +745,27 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		    for(int i = 0; i < iniObj.getIntegerProperty(fontKey[j], "font_number"); i++) {
 	            String font = iniObj.getStringProperty(fontKey[j], "fontfile"+i);
 	            result.add(font);
-		    	System.out.println(fontKey[j] + ", fontfile"+i +"=" + font);	    	
 		    }
 	    }
 	}
 	
 	private void targetMiniGUICfg(String cfgFile) {
-		System.out.println("in targetMiniGUICfg =" + cfgFile);
 	    MStudioParserIniFile iniObj = new MStudioParserIniFile(cfgFile);
 	    
 	    String galEngine = iniObj.getStringProperty("system", "gal_engine");
 	    String newGalEngine= new String(getComboValue(galNameField));
 	    iniObj.setStringProperty("system", "gal_engine", newGalEngine, null);
-	    //System.out.println("gal_engine=" + galEngine);
 	    
 	    String ialEngine = iniObj.getStringProperty("system", "ial_engine");
 	    iniObj.setStringProperty("system", 
 	    		"ial_engine", getComboValue(ialNameField), null);
-	    //System.out.println("ial_engine=" + ialEngine);
 
-	    //800x600-16bpp  format:%sx%s-%sbpp [0-9][x][0-9][-][0-9]x
+	    //800x600-16bpp  format:%sx%s-%sbpp
         String defaultMode = iniObj.getStringProperty(galEngine, "defaultmode");
-	    System.out.println("defaultmode=" + defaultMode);
 	    String[] modes = defaultMode.split("[-]");
-	    /*
-	    for (int i = 0; i < modes.length; i++) {
-    		System.out.println(modes[i]);
-	    }*/
 	    String newMode = String.format("%s-%sbpp", modes[0], getComboValue(resolutionNameField));
+
 	    iniObj.setStringProperty(newGalEngine, "defaultmode", newMode, null);
-	    System.out.println("new mode value = " + newMode);
 	    iniObj.save();
 	}
 	
@@ -784,12 +782,12 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
             return false;
         }  
 
-        if (null == fileInProject(checkedObject.toString(), getComboValue(binNameField), false)) {
+        if (null == fileInProject(getCheckedProject().toString(), getComboValue(binNameField), false)) {
     	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.SelectProperBinFile"));	
             return false;
         }
 
-        if (null == fileInProject(checkedObject.toString(), getComboValue(resPackNameField), false)) {
+        if (null == fileInProject(getCheckedProject().toString(), getComboValue(resPackNameField), false)) {
     	    setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.SelectProperResFile"));	
             return false;
         }

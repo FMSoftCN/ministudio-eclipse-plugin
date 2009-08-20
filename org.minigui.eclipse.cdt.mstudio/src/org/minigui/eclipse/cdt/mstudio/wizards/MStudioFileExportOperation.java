@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -326,7 +327,6 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 		throws IOException, CoreException {
 		OutputStream output = null;
 		InputStream contentStream = null;
-		
 		try {
 			contentStream = new BufferedInputStream(file.getContents(false));
 			output = new BufferedOutputStream (
@@ -353,10 +353,13 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 			}
 			if (output != null) {
 				output.close();
+				if (new File(file.getLocation().toOSString()).canExecute()) {
+					new File(destinationPath.toOSString()).setExecutable(true);
+				}
 			}
 		}
 	}
-	
+
 	protected void writeResource(IResource resource, IPath destinationPath)
 		throws CoreException, IOException {
 		if (resource.getType() == IResource.FILE) {
