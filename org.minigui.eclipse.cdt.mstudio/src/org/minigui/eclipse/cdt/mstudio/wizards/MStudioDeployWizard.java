@@ -48,7 +48,7 @@ public class MStudioDeployWizard extends Wizard implements IExportWizard {
 		setWindowTitle(MiniGUIMessages.getString("MStudioDeployWizard.title"));
 		
 		try {
-			URL imgUrl = new URL(MStudioPlugin.getDefault().getBundle().getEntry("/"), "icons/mgproject.gif");
+			URL imgUrl = new URL(MStudioPlugin.getDefault().getBundle().getEntry("/"), "icons/deploy_wiz.png");
 			setDefaultPageImageDescriptor(ImageDescriptor.createFromURL(imgUrl));
 		} catch (MalformedURLException e) {	}
 		
