@@ -400,7 +400,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 			mgProjects[i].updateMStudioDir(oldBinPaths[i]);
 			if ((mgProjects[i].getMStudioBinPath() == null && oldBinPaths[i] != null)
 				|| (mgProjects[i].getMStudioBinPath() != null && !mgProjects[i].getMStudioBinPath().equals(oldBinPaths[i]))) {
-				outdated.add((IProject)mgProjects[i]);
+				outdated.add(mgProjects[i].getProject());
 			}
 		}
 		

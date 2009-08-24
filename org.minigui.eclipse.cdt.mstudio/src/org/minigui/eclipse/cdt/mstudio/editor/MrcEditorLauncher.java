@@ -1,5 +1,6 @@
 package org.minigui.eclipse.cdt.mstudio.editor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -21,10 +22,7 @@ import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 
 public class MrcEditorLauncher implements IEditorLauncher {
 
-	public MrcEditorLauncher()
-	{
-		//System.out.println("======================");
-	}
+	public MrcEditorLauncher() { }
 	
 	public void open(IPath file) 
 	{
@@ -35,14 +33,24 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		IFile ifile = root.getFileForLocation(file); 
 		IProject project = ifile.getProject();	
 		String binPath = new MgProject(project).getMStudioBinPath();
-		Path editCommand = new Path (binPath+"/"+"guibuilder");
-		
+		Path editCommand = new Path (binPath+ File.separatorChar +"guibuilder");
 		List<String> args = new ArrayList<String>();	
+		
 		IPath projectDir = removeFileName(file).removeLastSegments(1);
-		args.add(new String("-project"));
+		args.add("-project");
 		args.add(projectDir.toOSString());
-		args.add(new String("-project-name"));
+		args.add("-project-name");
 		args.add(projectDir.lastSegment());
+		
+		//add port information
+		MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();
+		if (serverThread != null) {
+			args.add("-addr");
+			args.add(serverThread.getAddress());
+			args.add("-port");
+			args.add(Integer.toString(serverThread.getPort()));
+			System.out.println(args);
+		}
 		
 		IPath workingDir = projectDir;
 		Properties envProps = EnvironmentReader.getEnvVars();
@@ -57,34 +65,15 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 
-		MStudioSocketServerThread instance = 
-			MStudioSocketServerThread.getInstance();
-				
 		if (p != null) {
-			instance.addBuilderProcs(p);
+			if (serverThread != null)
+				serverThread.addBuilderProcs(p);
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...
 		}
-		
-		/* This server thread starts only once. */
-		if (instance.Started == 0) {
-			//System.out.println("socket server thread. \n");
-			instance.start();
-		}
 	}
-/*	
-	private static String getFileName(IPath path, boolean noextension) {
-		if (path == null)
-			return null;
-		if (path.hasTrailingSeparator())
-			return "";
-		if (noextension)
-			path = path.removeFileExtension();
-		
-		return path.lastSegment();
-	}
-*/	
+
 	private static IPath removeFileName(IPath path) {
 		if (path == null)
 			return null;

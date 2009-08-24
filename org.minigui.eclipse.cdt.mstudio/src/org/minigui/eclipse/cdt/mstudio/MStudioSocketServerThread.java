@@ -240,28 +240,56 @@ public class MStudioSocketServerThread extends Thread {
 
     }
 
-    public Socket           socket;
-    public int              Started = 0;
-    private static int      port = 5010;			
-
     private ServerSocket    server;
     private Set<Socket>		socketList = new HashSet<Socket>();
     private Set<Process>	procsList = new HashSet<Process>();
     
-    private static MStudioSocketServerThread instance = new MStudioSocketServerThread(port);
+    private volatile static MStudioSocketServerThread _instance;
 
-    private MStudioSocketServerThread(int port)
+    private MStudioSocketServerThread()
     {
         try {
-            server = new ServerSocket(port);
+            server = new ServerSocket(5010); //for test
         }catch (IOException e) {
             //e.printStackTrace();
         }
     }
-	
+
+    public static MStudioSocketServerThread get()
+    {
+    	return _instance;
+    }
+    
+    public int getPort()
+    {
+    	return (server != null) ? server.getLocalPort() : 0;
+    }
+    
+    //public InetAddress getInetAddress()
+    public String getAddress()
+    {
+		if (server != null) {
+	    	try {
+	    		InetAddress addr = server.getInetAddress().getLocalHost();
+	        	//System.out.println(addr);
+	        	return addr.getHostAddress();
+	    	} catch (UnknownHostException e)  {
+	    	}
+		} 
+		return "127.0.0.1";
+    }
+    
     public static MStudioSocketServerThread getInstance()
     {
-        return instance;
+    	if (_instance == null) {
+    		synchronized(MStudioSocketServerThread.class) {
+    			if (_instance == null) {
+    				_instance = new MStudioSocketServerThread();
+    				_instance.start();
+    			}
+    		}
+    	}
+        return _instance;
     }
 
     public void addBuilderProcs(Process p) {
@@ -270,26 +298,21 @@ public class MStudioSocketServerThread extends Thread {
     
     public void run() 
     {
-        Started = 1;
         try {
         	while ( true )
         	{
-        		socket = server.accept();
+        		Socket socket = server.accept();
         		socketList.add(socket);
         		MStudioParseDataThread dataThread = new MStudioParseDataThread(socket);    
         		dataThread.start();
         	}
         } catch (IOException e) {
-        	try {
-            	closeServer();
-        	}catch (IOException f) {
-                //f.printStackTrace();
-        	}
             //e.printStackTrace();
         }
+        closeServer();
     }
     
-    public void closeSocket(Socket sock) throws IOException
+    private void closeSocket(Socket sock) throws IOException
     {
 		if (!sock.isClosed()) {
 
@@ -302,7 +325,7 @@ public class MStudioSocketServerThread extends Thread {
 		}
     }
     
-    public void closeServer() throws IOException {
+    public void closeServer() {
     	//close related GUIBuilder process
     	Iterator<Process> iter = procsList.iterator();
     	Process p;
@@ -319,7 +342,18 @@ public class MStudioSocketServerThread extends Thread {
     	
     	while (it.hasNext()) {
     		sock = it.next();
-    		closeSocket(sock);
+    		try {
+    			closeSocket(sock);
+    		} catch (IOException e) {
+    			
+    		}
+    	}
+    	if (server != null) {
+    		try {
+        		server.close();
+    		} catch (IOException e) {
+    			
+    		}
     	}
     }
 }

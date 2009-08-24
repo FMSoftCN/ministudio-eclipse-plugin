@@ -23,7 +23,6 @@ public class UIEditorLauncher implements IEditorLauncher {
 
 	public UIEditorLauncher()
 	{
-		//System.out.println("======================");
 	}
 	
 	public void open(IPath file) 
@@ -35,23 +34,28 @@ public class UIEditorLauncher implements IEditorLauncher {
 		IFile ifile = root.getFileForLocation(file); 
 		IProject project = ifile.getProject();		
 		String binPath = new MgProject(project).getMStudioBinPath();		
-		//System.out.println("project= "+ project.toString() +"     binPath = "+ binPath);
 		
 		Path editCommand = new Path (binPath+"/"+"guibuilder");
-		
 		List<String> args = new ArrayList<String>();
 		
 		args.add(file.toString());
 		//args.add(getFileName(file, false));
+		//add port information
+		MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();
+		if (serverThread != null) {
+			args.add(" -addr ");
+			args.add(serverThread.getAddress());
+			args.add(" -port ");
+			args.add(Integer.toString(serverThread.getPort()));
+			System.out.println(args);
+		}
 		
 		IPath workingDir = removeFileName(file).removeLastSegments(1);
-		//args.add(workingDir.toOSString());
-		//args.add("res/"+getFileName(file, false));
 		
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
-		
+
 		//for (int i = 0 ; i < args.size(); i++){
 		//	System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
 		//}
@@ -59,34 +63,15 @@ public class UIEditorLauncher implements IEditorLauncher {
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 
-		MStudioSocketServerThread instance = 
-			MStudioSocketServerThread.getInstance();
-				
 		if (p != null) {
-			instance.addBuilderProcs(p);
+			if (serverThread != null)
+				serverThread.addBuilderProcs(p);
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...
 		}
-		
-		/* This server thread starts only once. */
-		if (instance.Started == 0) {
-			//System.out.println("socket server thread. \n");
-			instance.start();
-		}
 	}
-/*	
-	private static String getFileName(IPath path, boolean noextension) {
-		if (path == null)
-			return null;
-		if (path.hasTrailingSeparator())
-			return "";
-		if (noextension)
-			path = path.removeFileExtension();
-		
-		return path.lastSegment();
-	}
-*/	
+
 	private static IPath removeFileName(IPath path) {
 		if (path == null)
 			return null;

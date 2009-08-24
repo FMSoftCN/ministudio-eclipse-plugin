@@ -174,6 +174,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 				<simple name="target" value="$(incDir)/resource.h"/>
 				<simple name="replaceable" value="true"/>
 			</element>
+			<element>
+				<simple name="source" value="etc/mgcfg.base"/>
+				<simple name="target" value="MiniGUI.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
 		</complex-array>
 	</process>
 	

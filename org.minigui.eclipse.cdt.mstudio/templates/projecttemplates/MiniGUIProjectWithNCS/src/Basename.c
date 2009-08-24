@@ -23,25 +23,26 @@
 #include "resource.h"
 #include "ncs-windows.h"
 
+HPACKAGE hPackage = HPACKAGE_NULL;
+
 int MiniGUIMain(int argc, const char* argv[])
 {
 #ifdef ntStartWindowEx
 	MSG Msg;
 	char f_package[MAX_PATH];
 	mMainWnd *mWin;
-	HPACKAGE hPkg;
 
 	ncsRegisterCtrls();
 	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
-	hPkg = LoadResPackage (f_package);
-	if (hPkg == HPACKAGE_NULL)
+	hPackage = LoadResPackage (f_package);
+	if (hPackage == HPACKAGE_NULL)
 		return 1;
 
-	SetDefaultWindowElementRenderer(GetString(hPkg, MGRM_SYSSTR_DEFRDR));
+	SetDefaultWindowElementRenderer(GetString(hPackage, MGRM_SYSSTR_DEFRDR));
 
-	mWin = ntStartWindowEx(hPkg, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
+	mWin = ntStartWindowEx(hPackage, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
 
 	while(GetMessage(&Msg, mWin->hwnd))
 	{
@@ -50,7 +51,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	}
 
 	MainWindowThreadCleanup(mWin->hwnd);
-	UnloadResPackage(hPkg);
+	UnloadResPackage(hPackage);
 #endif
 
 	return 0;

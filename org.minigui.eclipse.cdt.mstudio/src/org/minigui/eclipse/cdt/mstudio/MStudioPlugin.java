@@ -36,15 +36,12 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-    	
-		MStudioSocketServerThread instance = 
-			MStudioSocketServerThread.getInstance();
-		/* This server thread starts only once. */
-		if ( instance.Started != 0 ) {
-			instance.closeServer();
+		MStudioSocketServerThread serverSocket = MStudioSocketServerThread.get();
+		if (serverSocket != null) {
+			serverSocket.closeServer();
 		}
 		super.stop(context);
+		plugin = null;
 	}
 
 	/**
