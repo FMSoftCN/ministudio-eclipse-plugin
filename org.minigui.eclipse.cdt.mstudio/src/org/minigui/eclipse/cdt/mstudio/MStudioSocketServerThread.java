@@ -13,8 +13,10 @@ package org.minigui.eclipse.cdt.mstudio;
 
 import java.net.*;
 import java.io.*;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -242,14 +244,14 @@ public class MStudioSocketServerThread extends Thread {
 
     private ServerSocket    server;
     private Set<Socket>		socketList = new HashSet<Socket>();
-    private Set<Process>	procsList = new HashSet<Process>();
-    
+    //key:project name; value: process
+    private Map<String, Process>	procsList = new HashMap<String, Process>();
     private volatile static MStudioSocketServerThread _instance;
 
     private MStudioSocketServerThread()
     {
         try {
-            server = new ServerSocket(5010); //for test
+            server = new ServerSocket(0); //for test
         }catch (IOException e) {
             //e.printStackTrace();
         }
@@ -265,14 +267,12 @@ public class MStudioSocketServerThread extends Thread {
     	return (server != null) ? server.getLocalPort() : 0;
     }
     
-    //public InetAddress getInetAddress()
     public String getAddress()
     {
 		if (server != null) {
 	    	try {
-	    		InetAddress addr = server.getInetAddress().getLocalHost();
-	        	//System.out.println(addr);
-	        	return addr.getHostAddress();
+	    		InetAddress addr = InetAddress.getLocalHost();
+	    		return addr.getHostAddress();
 	    	} catch (UnknownHostException e)  {
 	    	}
 		} 
@@ -292,8 +292,8 @@ public class MStudioSocketServerThread extends Thread {
         return _instance;
     }
 
-    public void addBuilderProcs(Process p) {
-   		procsList.add(p);
+    public void addBuilderProcs(String projname, Process p) {
+    	procsList.put(projname, p);
     }
     
     public void run() 
@@ -325,17 +325,27 @@ public class MStudioSocketServerThread extends Thread {
 		}
     }
     
+    public void closeProject(String key) {
+    	Process p = procsList.get(key);
+    	if (p != null) {
+    		p.destroy();
+    		try {
+        		p.waitFor();
+        	    procsList.remove(key);
+    		} catch (InterruptedException e) { }
+    	}
+    }
+    
     public void closeServer() {
     	//close related GUIBuilder process
-    	Iterator<Process> iter = procsList.iterator();
+    	Iterator<Process> iter = procsList.values().iterator();
     	Process p;
-    	
     	while (iter.hasNext()) {
-    		p = iter.next();
+    		p = (Process)iter.next();
     		if (p != null)
     			p.destroy();
     	}
-
+    	procsList.clear();
     	//close related socket
     	Iterator<Socket> it = socketList.iterator();
     	Socket sock;
@@ -348,6 +358,7 @@ public class MStudioSocketServerThread extends Thread {
     			
     		}
     	}
+    	socketList.clear();
     	if (server != null) {
     		try {
         		server.close();

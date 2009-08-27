@@ -56,18 +56,13 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		Properties envProps = EnvironmentReader.getEnvVars();
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
-/*		
-		System.out.println(editCommand.toString());
-		for (int i = 0 ; i < args.size(); i++){
-			System.out.println("args "+ i + " : " + ((String[])args.toArray(new String[args.size()]))[i]);
-		}
-*/		
+	
 		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 
 		if (p != null) {
 			if (serverThread != null)
-				serverThread.addBuilderProcs(p);
+				serverThread.addBuilderProcs(projectDir.lastSegment(), p);
 			//TODO, monitor this process ...
 		} else {
 			//TODO for error ...

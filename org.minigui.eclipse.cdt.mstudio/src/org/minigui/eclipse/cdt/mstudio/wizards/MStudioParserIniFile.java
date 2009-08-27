@@ -34,13 +34,14 @@ public class MStudioParserIniFile {
     private String mstrTimeStampFmt = "yyyy-MM-dd HH:mm:ss";
 
     /** Variable to denote the successful load operation. */
-    private boolean mblnLoaded = false;
+    @SuppressWarnings("unused")
+	private boolean mblnLoaded = false;
 
     /** Variable to hold the ini file name and full path */
     private String mstrFile;
 
     /** Variable to hold the sections in an ini file. */
-    private LinkedHashMap mhmapSections;
+    private LinkedHashMap<String, MStudioParserIniSection> mhmapSections;
 
     /** Variable to hold environment variables **/
     private Properties mpropEnv;
@@ -52,7 +53,7 @@ public class MStudioParserIniFile {
 	public MStudioParserIniFile(String iniFile) {
 		// TODO Auto-generated constructor stub
         this.mpropEnv = getEnvVars();
-        this.mhmapSections = new LinkedHashMap();
+        this.mhmapSections = new LinkedHashMap<String, MStudioParserIniSection>();
         this.mstrFile = iniFile;
         // Load the specified INI file.
         if (checkFile(iniFile)) loadFile();
@@ -540,7 +541,7 @@ public class MStudioParserIniFile {
     public String[] getAllSectionNames()
     {
         int        iCntr  = 0;
-        Iterator   iter   = null;
+        Iterator<String>   iter   = null;
         String[]   arrRet = null;
 
         try
@@ -589,9 +590,9 @@ public class MStudioParserIniFile {
      * @param pstrSection the name of the section for which properties are to be retrieved.
      * @return the map of properties.
      */
-    public Map getProperties(String pstrSection)
+    public Map<String, MStudioParserIniProperty> getProperties(String pstrSection)
     {
-        Map        hmRet = null;
+        Map<String, MStudioParserIniProperty> hmRet = null;
         MStudioParserIniSection objSec = null;
 
         objSec = (MStudioParserIniSection) this.mhmapSections.get(pstrSection);
@@ -641,7 +642,7 @@ public class MStudioParserIniFile {
         File       objFile   = null;
         String     strName   = null;
         String     strTemp   = null;
-        Iterator   itrSec    = null;
+        Iterator<String>   itrSec    = null;
         MStudioParserIniSection objSec    = null;
         FileWriter objWriter = null;
 
@@ -1092,7 +1093,7 @@ public class MStudioParserIniFile {
         private String mstrName;
         
         /** Variable to hold the properties falling under this section. */
-        private LinkedHashMap mhmapProps;
+        private LinkedHashMap<String, MStudioParserIniProperty> mhmapProps;
 
         /**
          * Construct a new section object identified by the name specified in 
@@ -1102,7 +1103,7 @@ public class MStudioParserIniFile {
         public MStudioParserIniSection(String pstrSection)
         {
             this.mstrName =  pstrSection;
-            this.mhmapProps = new LinkedHashMap();
+            this.mhmapProps = new LinkedHashMap<String, MStudioParserIniProperty>();
         }
 
         /**
@@ -1115,7 +1116,7 @@ public class MStudioParserIniFile {
         {
             this.mstrName =  pstrSection;
             this.mstrComment = delRemChars(pstrComments);
-            this.mhmapProps = new LinkedHashMap();
+            this.mhmapProps = new LinkedHashMap<String, MStudioParserIniProperty>();
         }
         
         /**
@@ -1179,7 +1180,7 @@ public class MStudioParserIniFile {
          * Returns a map of all properties.
          * @return a map of all properties
          */
-        public Map getProperties()
+        public Map<String, MStudioParserIniProperty> getProperties()
         {
             return Collections.unmodifiableMap(this.mhmapProps);
         }
@@ -1193,7 +1194,7 @@ public class MStudioParserIniFile {
         {
             int      iCntr  = 0;
             String[] arrRet = null;
-            Iterator iter   = null;
+            Iterator<String> iter   = null;
 
             try
             {
@@ -1233,11 +1234,11 @@ public class MStudioParserIniFile {
          */
         public String toString()
         {
-            Set          colKeys = null;
-            String       strRet  = "";
-            Iterator     iter    = null;
+            Set<String>  		colKeys = null;
+            String       		strRet  = "";
+            Iterator<String>    iter    = null;
             MStudioParserIniProperty  objProp = null;
-            StringBuffer objBuf  = new StringBuffer();
+            StringBuffer 		objBuf  = new StringBuffer();
 
             objBuf.append(System.getProperty("line.separator"));
             if (this.mstrComment != null)

@@ -28,18 +28,17 @@ import org.eclipse.jface.operation.ModalContext;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
-import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 
 public class MStudioFileExportOperation implements IRunnableWithProgress {
 
 	private IPath path;
 	private IProgressMonitor monitor;
-	private List resourcesToExport;
+	private List<IResource> resourcesToExport;
 	private IOverwriteQuery overwriteCallback;
 	private IResource resource;
-	private List errorTable = new ArrayList(1);
-	private List cfgFilesList = new ArrayList();
-	private List needSaveFiles;
+	private List<IStatus> errorTable = new ArrayList<IStatus>(1);
+	private List<String> cfgFilesList = new ArrayList<String>();
+	private List<String> needSaveFiles;
 	
 	private static final int DEFAULT_BUFFER_SIZE = 16*1024;   
 
@@ -58,7 +57,7 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 		overwriteCallback = overwriteImplementor;
 	}
 	
-	public MStudioFileExportOperation(IResource res, List resources,
+	public MStudioFileExportOperation(IResource res, List<IResource> resources,
 			String destinationPath, IOverwriteQuery overwriteImplementor) {
 		this(res, destinationPath, overwriteImplementor);
 		resourcesToExport = resources;
@@ -83,7 +82,7 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 	
 	protected int countSelectedResources() throws CoreException {
 		int result = 0; 
-		Iterator resources = resourcesToExport.iterator();
+		Iterator<IResource> resources = resourcesToExport.iterator();
 		
 		while(resources.hasNext()) {
 			result += countChildrenOf((IResource) resources.next());
@@ -135,11 +134,11 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 		}
 	}
 	
-	public void setNeedSaveTargetFilesList(List saveFilesName) {
-		this.needSaveFiles = saveFilesName;
+	public void setNeedSaveTargetFilesList(List<String> saveFilesName) {
+		needSaveFiles = saveFilesName;
 	}
 	
-	public List getTargetFilesList()	{
+	public List<String> getTargetFilesList()	{
 		return cfgFilesList;
 	}
 	protected void exportFile(IFile file, IPath location) 
@@ -202,7 +201,7 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 	}
 
 	protected void exportSpecifiedResources() throws InterruptedException {
-		Iterator resources = resourcesToExport.iterator();
+		Iterator<IResource> resources = resourcesToExport.iterator();
 		IPath initPath = (IPath) path.clone();
 		
 		while(resources.hasNext()) {
@@ -347,8 +346,6 @@ public class MStudioFileExportOperation implements IRunnableWithProgress {
 				try {
 					contentStream.close();
 				} catch (IOException e) {
-					IDEWorkbenchPlugin.log(
-							"Error closing input stream for file: " + file.getLocation(), e);
 				}
 			}
 			if (output != null) {

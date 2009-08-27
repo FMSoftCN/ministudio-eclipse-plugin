@@ -5,6 +5,7 @@
 		<minigui-version>3.x.x</minigui-version>
 		<control-set>ncs</control-set>
 		<path>/usr/local/etc/guibuilder/</path>
+		<respack-name>res/$(projectName).res</respack-name>
 	</configuration>
 	<uieditor>
         <def-renderer>$(defaultRenderer)</def-renderer>

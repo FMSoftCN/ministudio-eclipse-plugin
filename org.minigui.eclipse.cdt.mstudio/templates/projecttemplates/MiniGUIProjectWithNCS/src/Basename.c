@@ -37,8 +37,10 @@ int MiniGUIMain(int argc, const char* argv[])
 	SetResPath("./");
 
 	hPackage = LoadResPackage (f_package);
-	if (hPackage == HPACKAGE_NULL)
+	if (hPackage == HPACKAGE_NULL) {
+		printf ("load resource package:%s failure.\n", f_package);
 		return 1;
+	}
 
 	SetDefaultWindowElementRenderer(GetString(hPackage, MGRM_SYSSTR_DEFRDR));
 

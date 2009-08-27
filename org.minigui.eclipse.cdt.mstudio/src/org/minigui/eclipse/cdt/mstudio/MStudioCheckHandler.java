@@ -15,7 +15,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage;
 import org.minigui.eclipse.cdt.mstudio.preferences.PreferenceConstants;
-import org.minigui.eclipse.cdt.mstudio.project.MgProject;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
@@ -42,7 +41,14 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	private boolean getBuilderVersion() {
 		String defVersion = MStudioPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.MSVERSION_DEFAULT);
 		String binPath = MStudioPreferencePage.getMStudioBinPath(defVersion);
-		Path cmd = new Path (binPath + File.separatorChar +builderCmd);
+		Path cmd;
+		
+		if (binPath != null) {
+			cmd = new Path (builderCmd);
+		}
+		else
+			cmd = new Path (binPath + File.separatorChar +builderCmd);
+		
 	    Runtime r = Runtime.getRuntime();
 	    Process p; 
 	    

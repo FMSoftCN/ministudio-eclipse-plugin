@@ -126,12 +126,6 @@
    <extension
          point="org.eclipse.core.runtime.contentTypes">
       <content-type
-            file-extensions="mui"
-            id="org.minigui.eclipse.cdt.mstudio.uitype"
-            name="%MStudio.contenttype.ui"
-            priority="high">
-      </content-type>
-      <content-type
             file-extensions="project"
             id="org.minigui.eclipse.cdt.mstudio.mrctype"
             name="%MStudio.contenttype.mrc"
@@ -139,19 +133,6 @@
       </content-type>
    </extension>
    
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            default="true"
-            extensions="mui"
-            id="org.minigui.eclipse.cdt.mstudio.UIEditorLauncher"
-            launcher="org.minigui.eclipse.cdt.mstudio.editor.UIEditorLauncher"
-            name="%MStudioUIeditor.name">
-         <contentTypeBinding
-               contentTypeId="org.minigui.eclipse.cdt.mstudio.uitype">
-         </contentTypeBinding>
-      </editor>
-   </extension>
    
    
    <extension

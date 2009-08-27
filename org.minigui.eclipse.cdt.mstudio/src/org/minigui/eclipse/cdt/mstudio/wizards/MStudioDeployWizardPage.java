@@ -84,14 +84,20 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	private Combo resolutionNameField;
 	private Object checkedObject;
 	
+	@SuppressWarnings("unused")
 	private static final String STORE_TARGET_NAMES_ID = "MStudioDeployWizardPage.STORE_TARGET_NAMES_ID";
+	@SuppressWarnings("unused")
 	private static final String STORE_BINARY_NAMES_ID = "MStudioDeployWizardPage.STORE_BINARY_NAMES_ID";
+	@SuppressWarnings("unused")
 	private static final String STORE_RESPACKAGE_NAMES_ID = "MStudioDeployWizardPage.STORE_RESPACKAGE_NAMES_ID";
+	@SuppressWarnings("unused")
 	private static final String STORE_IAL_NAMES_ID = "MStudioDeployWizardPage.STORE_IAL_NAMES_ID";
+	@SuppressWarnings("unused")
 	private static final String STORE_GAL_NAMES_ID = "MStudioDeployWizardPage.STORE_GAL_NAMES_ID";
+	@SuppressWarnings("unused")
 	private static final String STORE_RESOLUTION_NAMES_ID = "MStudioDeployWizardPage.STORE_RESOLUTION_NAMES_ID";
 
-	private static final Map saveIDField = new HashMap();
+	private static final Map<String, Combo> saveIDField = new HashMap<String, Combo>();
 	private static final String MINIGUI_CONFIG_FILE = "MiniGUI.cfg";
 	private static final String MSTUDIO_IMAGEID_FILE = "res/image/id.xml";
 	
@@ -171,7 +177,10 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
             if (filterPath.charAt(filterPath.length() - 1) != File.separatorChar) {
             	filterPath += File.separatorChar;
             }
-        	filterPath += checkedProj.toString();
+        	filterPath += (checkedProj.toString());
+        	if (field == resPackNameField) {
+        		filterPath += (File.separatorChar + "res");
+        	}
         }
         
         FileDialog dialog = new FileDialog(getContainer().getShell(), style);
@@ -382,7 +391,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 					} catch (CoreException e) {
 						return new Object[0];
 					}
-					ArrayList results = new ArrayList();
+					ArrayList<IResource> results = new ArrayList<IResource>();
 					for (int i = 0; i < members.length; i ++) {
 						if ((members[i].getType() & resourceType) > 0) {
 							results.add(members[i]);
@@ -392,7 +401,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 				}
 				
 				if (o instanceof ArrayList) {
-					return ((ArrayList) o).toArray();
+					return ((ArrayList<?>) o).toArray();
 				}
 				return new Object[0];
 			}
@@ -556,11 +565,11 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 
 	protected void restoreWidgetValues() {
 		IDialogSettings settings = getDialogSettings();
-		Iterator keyValuePairs = saveIDField.entrySet().iterator();
+		Iterator<Map.Entry<String, Combo>> keyValuePairs = saveIDField.entrySet().iterator();
 		int mapSize = saveIDField.size();
 		
 		for (int i = 0; i < mapSize; i++) {
-			Map.Entry entry = (Map.Entry) keyValuePairs.next();
+			Map.Entry<String, Combo> entry = keyValuePairs.next();
 			internalRestoreWidgetValues(settings, 
 					(String)entry.getKey(), (Combo)entry.getValue());
 		}
@@ -569,11 +578,11 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
     protected void saveWidgetValues() {
     	super.saveWidgetValues();
 		IDialogSettings settings = getDialogSettings();
-		Iterator keyValuePairs = saveIDField.entrySet().iterator();
+		Iterator<Map.Entry<String, Combo>> keyValuePairs = saveIDField.entrySet().iterator();
 		int mapSize = saveIDField.size();
 		
 		for (int i = 0; i < mapSize; i++) {
-			Map.Entry entry = (Map.Entry) keyValuePairs.next();
+			Map.Entry<String, Combo> entry = keyValuePairs.next();
 			internalSaveComboValues(settings, 
 					(String)entry.getKey(), (Combo)entry.getValue());
 		}
@@ -644,25 +653,25 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		
 		ICProject[] projectsToExport = getCheckedElements();
 		saveWidgetValues();
-		List resourcesToExport = getAllDeployFiles(projectsToExport);
+		List<IResource> resourcesToExport = getAllDeployFiles(projectsToExport);
 
 		return executeExportOperation(new MStudioFileExportOperation(null,
 				resourcesToExport, getComboValue(destNameField), this));
 	}
 	
-	private List getAllDeployFiles(ICProject[] projects) {
-		List result = new ArrayList();
+	private List<IResource> getAllDeployFiles(ICProject[] projects) {
+		List<IResource> result = new ArrayList<IResource>();
 		for (ICProject project : projects) {
 			getDeployFiles(project, result);
 		}	
 		return result;
 	}
 
-	private void getDeployFiles(ICProject project, Collection result) {
+	private void getDeployFiles(ICProject project, Collection<IResource> result) {
 		IProject prj = project.getProject();
 		
-		List filesList = getDeployFilesList(prj);
-		Iterator it = filesList.iterator();
+		List<String> filesList = getDeployFilesList(prj);
+		Iterator<String> it = filesList.iterator();
 		
 		while (it.hasNext()) {
 			IResource res = prj.getFile((String)it.next());
@@ -670,15 +679,15 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		}
 	}
 
-	private void addComboFileToList(IProject project, Combo field, List list) {
+	private void addComboFileToList(IProject project, Combo field, List<String> list) {
 		String binFile = fileInProject(project.getName(), getComboValue(field), true);
 		if (binFile != null) {
 			list.add(binFile);
 		}
 	}
 	
-	private List getDeployFilesList(IProject project) {
-		List list = new ArrayList();
+	private List<String> getDeployFilesList(IProject project) {
+		List<String> list = new ArrayList<String>();
 
 		list.add(MINIGUI_CONFIG_FILE);
 		addComboFileToList(project, binNameField, list);
@@ -689,14 +698,14 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		return list;
 	}
 	
-	private void addImagesToList(IProject project, Collection result) {
+	private void addImagesToList(IProject project, Collection<String> result) {
 		IFile imageFile = project.getFile(MSTUDIO_IMAGEID_FILE);
 		if (imageFile.isAccessible()) {
 			getImagesInfo(imageFile.getLocation().toOSString(), result);
 		}
 	}
 	
-	private void getImagesInfo(String xmlFile, Collection result) {
+	private void getImagesInfo(String xmlFile, Collection<String> result) {
         DocumentBuilderFactory dom_factory = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder dom_builder = dom_factory.newDocumentBuilder();
@@ -730,7 +739,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         }    
     }
 	
-	private void addFontsToList(IProject project, Collection result) {
+	private void addFontsToList(IProject project, Collection<String> result) {
 		IFile cfgFile = project.getFile(MINIGUI_CONFIG_FILE);
 		if (cfgFile.isAccessible()) {
 		    String[] fontKey = {"upf", "truetypefonts"};
@@ -738,7 +747,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		}
 	}
 
-	private void getFontsInfo(String cfgFile, String[] fontKey, Collection result) {
+	private void getFontsInfo(String cfgFile, String[] fontKey, Collection<String> result) {
 		
 	    MStudioParserIniFile iniObj = new MStudioParserIniFile(cfgFile);
 	    for (int j = 0; j < fontKey.length; j++) {
@@ -756,7 +765,6 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	    String newGalEngine= new String(getComboValue(galNameField));
 	    iniObj.setStringProperty("system", "gal_engine", newGalEngine, null);
 	    
-	    String ialEngine = iniObj.getStringProperty("system", "ial_engine");
 	    iniObj.setStringProperty("system", 
 	    		"ial_engine", getComboValue(ialNameField), null);
 
@@ -831,7 +839,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		op.setCreateLeadupStructure(true);
 		op.setOverwriteFiles(true);
 		
-		List files = new ArrayList();
+		List<String> files = new ArrayList<String>();
 		files.add(MINIGUI_CONFIG_FILE);
 		op.setNeedSaveTargetFilesList(files);
 		
@@ -854,9 +862,9 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		}
 		
 		//for MINIGUI_CONFIG_FILE
-		Iterator it = op.getTargetFilesList().iterator();
+		Iterator<String> it = op.getTargetFilesList().iterator();
 		while (it.hasNext()) {
-			targetMiniGUICfg(it.next().toString());
+			targetMiniGUICfg(it.next());
 		}
 		
 		return true;

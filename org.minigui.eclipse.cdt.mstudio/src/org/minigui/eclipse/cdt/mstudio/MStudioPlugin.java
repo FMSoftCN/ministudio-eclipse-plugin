@@ -1,5 +1,12 @@
 package org.minigui.eclipse.cdt.mstudio;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -15,6 +22,7 @@ public class MStudioPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static MStudioPlugin plugin;
+	private static MStudioResourceChangeListener listener;
 	
 	/**
 	 * The constructor
@@ -29,6 +37,8 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		listener = new MStudioResourceChangeListener();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*
@@ -41,6 +51,7 @@ public class MStudioPlugin extends AbstractUIPlugin {
 			serverSocket.closeServer();
 		}
 		super.stop(context);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
 		plugin = null;
 	}
 
@@ -63,4 +74,45 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	public void updateProject(String projectName) {
+		MStudioSocketServerThread serverSocket = MStudioSocketServerThread.get();
+		if (serverSocket != null) {
+			//please waiting for closing process
+			serverSocket.closeProject(projectName);
+		}
+	}
+	
+	public class MStudioResourceChangeListener implements IResourceChangeListener {
+
+		@Override
+		public void resourceChanged(IResourceChangeEvent event) {
+			// TODO Auto-generated method stub
+			IResourceDelta delta = event.getDelta();
+			if (delta == null) {
+				return;
+			}
+			IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
+				public boolean visit(IResourceDelta delta) {
+					
+					if (delta.getKind() == IResourceDelta.REMOVED) {
+						if ((delta.getFlags() & IResourceDelta.MOVED_TO) != 0) {
+							
+							IResource resource = delta.getResource();
+							if (resource.getType() == IResource.PROJECT) {
+								updateProject(resource.getName());
+							}
+						}
+					}
+					return true;
+				}
+			};
+			
+			try {
+				delta.accept(visitor);
+			} catch (CoreException e) {
+			}
+		}
+	}
+	
 }
