@@ -11,6 +11,12 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage;
@@ -23,19 +29,14 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	private static String pluginVersion;
 	private static String baseurl = "http://192.168.1.9:7777/update.php?msver=";
 	private static String builderCmd = "guibuilder";
-    private static String verDesc = "Builder Version:";
+    private static String verDesc = "Build-Version:";
     private static String verChar = " -v";
     
 	private void parseVersionLine(String line) {
-	    System.out.println(line);
 		StringBuffer buf = new StringBuffer();
-
-		if (line.startsWith(verDesc)) {
-		    buf.append(line);
-		    buf.delete(0, verDesc.length());
-		    builderVersion = buf.toString().trim();
-			System.out.println(builderVersion);
-		}
+	    buf.append(line);
+	    buf.delete(0, verDesc.length());
+	    builderVersion = buf.toString().trim();
 	}
 	
 	private boolean getBuilderVersion() {
@@ -82,7 +83,6 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		String version = (String) bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
 		Version v = org.osgi.framework.Version.parseVersion(version);
 		pluginVersion = v.toString();
-		System.out.println(pluginVersion);
 	}
 	
 	private boolean getVersion() {
@@ -90,47 +90,37 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		return getBuilderVersion();
 	}
 	
-	private String getUrl() {	
+	private String getUrl() {
 		baseurl = String.format("%s%s%s-%s%s", 
 				baseurl, "guibuilder", builderVersion, "msplus", pluginVersion);
+		System.out.println(baseurl);
 		return baseurl;
 	}
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		if (!getVersion())
-			return null;
-		
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-		
-        if( !java.awt.Desktop.isDesktopSupported() ) {
-    		MessageDialog.openInformation(
-    				window.getShell(),
-    				"mStudio Plug-in",
-    				"Desktop is not supported.");
-        }
-        else {
-            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 
-            if( !desktop.isSupported( java.awt.Desktop.Action.BROWSE ) ) {
-        		MessageDialog.openInformation(
-        				window.getShell(),
-        				"mStudio Plug-in",
-        				"Desktop doesn't support the browser action.");
-            }
-            else {
-                try {
-                    java.net.URI uri = new java.net.URI( getUrl() );
-                    desktop.browse( uri );
-                }
-                catch ( Exception e ) {
-            		MessageDialog.openInformation(
-            				window.getShell(),
-            				"mStudio Plug-in",
-            				"Open the update site failure.");
-                }
-            }
-        }
+		if (!getVersion()) {
+			MessageDialog.openInformation(
+    				window.getShell(), "mStudio Plug-in",
+    				"Error: Get mStudio version failure.");
+			return null;
+		}
+
+		String url = getUrl();
+		Shell shell = new Shell(window.getShell());
+		shell.setLayout(new FillLayout());
+		shell.setText(url);
+		
+		Browser browser = new Browser(shell, SWT.BORDER);
+		FormData data = new FormData();
+		data.left = new FormAttachment(0, 5);
+		data.right = new FormAttachment(100, -5);
+		browser.setLayoutData(data);
+		browser.setUrl(url);
+		
+		shell.open();
 		return null;
 	}
 

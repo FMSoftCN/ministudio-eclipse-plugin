@@ -18,7 +18,6 @@
 #include <minigui/window.h>
 
 #include <mgncs/mgncs.h>
-#include <mgncs/mgncs_resmanager.h>
 
 #include "resource.h"
 #include "ncs-windows.h"
@@ -36,13 +35,13 @@ int MiniGUIMain(int argc, const char* argv[])
 	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
-	hPackage = LoadResPackage (f_package);
+	hPackage = ncsLoadResPackage (f_package);
 	if (hPackage == HPACKAGE_NULL) {
 		printf ("load resource package:%s failure.\n", f_package);
 		return 1;
 	}
 
-	SetDefaultWindowElementRenderer(GetString(hPackage, MGRM_SYSSTR_DEFRDR));
+	SetDefaultWindowElementRenderer(ncsGetString(hPackage, NCSRM_SYSSTR_DEFRDR));
 
 	mWin = ntStartWindowEx(hPackage, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
 
@@ -53,7 +52,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	}
 
 	MainWindowThreadCleanup(mWin->hwnd);
-	UnloadResPackage(hPackage);
+	ncsUnloadResPackage(hPackage);
 #endif
 
 	return 0;
