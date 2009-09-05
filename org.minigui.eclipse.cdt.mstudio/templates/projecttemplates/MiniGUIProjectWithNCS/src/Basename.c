@@ -31,7 +31,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	char f_package[MAX_PATH];
 	mMainWnd *mWin;
 
-	ncsRegisterCtrls();
+	ncsInitialize();
 	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
@@ -53,6 +53,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	MainWindowThreadCleanup(mWin->hwnd);
 	ncsUnloadResPackage(hPackage);
+	ncsUninitialize();
 #endif
 
 	return 0;
