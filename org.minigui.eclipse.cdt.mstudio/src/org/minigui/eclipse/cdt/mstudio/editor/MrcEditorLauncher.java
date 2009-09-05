@@ -49,7 +49,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
 			args.add(serverThread.getAddress());
 			args.add("-port");
 			args.add(Integer.toString(serverThread.getPort()));
-			System.out.println(args);
+			//System.out.println(args);
 		}
 		
 		IPath workingDir = projectDir;
