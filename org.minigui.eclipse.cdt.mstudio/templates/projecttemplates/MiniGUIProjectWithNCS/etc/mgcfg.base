@@ -368,6 +368,8 @@ fgc_significant_item=0xFFFFFFFF
 bgc_significant_item=0xFF000000
 
 bgc_desktop=0xFFC08000
+
+flat_tab_normal_color=0xFFC6D2CF
 #}}
 
 #{{ifdef _MGLF_RDR_SKIN
