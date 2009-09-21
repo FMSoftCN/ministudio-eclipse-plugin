@@ -26,26 +26,6 @@
             name="%MiniGUIAppProject">
          <description>%MiniGUIAppProject.desc</description>
       </wizard>
-    <!--  
-      <wizard
-            category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
-            class="org.minigui.eclipse.cdt.mstudio.wizards.NewMiniGUIUIFileWizard"
-            finalPerspective="org.eclipse.cdt.ui.CPerspective"
-            icon="icons/mgnewfile.gif"
-            id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
-            name="%NewMiniGUIWizards.uifile">
-         <description>%NewMiniGUIWizards.uifile.desc</description>
-     	</wizard>
-            <wizard
-            category="org.minigui.eclipse.cdt.mstudio.newMiniGUIWizards"
-            class="org.minigui.eclipse.cdt.mstudio.wizards.NewRdrResWizard"
-            finalPerspective="org.eclipse.cdt.ui.CPerspective"
-            icon="icons/mgnewfile.gif"
-            id="org.minigui.eclipse.cdt.mstudio.wizards.UIFileCreationWizard"
-            name="%NewRdrResWizard.file">
-         <description>%NewRdrResWizards.file.desc</description>
-      </wizard>
-      -->
    </extension>
 
   	<extension

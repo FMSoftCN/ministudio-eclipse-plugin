@@ -2,6 +2,7 @@ package org.minigui.eclipse.cdt.mstudio.wizards;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -689,7 +690,25 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	private List<String> getDeployFilesList(IProject project) {
 		List<String> list = new ArrayList<String>();
 
-		list.add(MINIGUI_CONFIG_FILE);
+		File f = new File(project.getLocation().toOSString());
+		String[] filename = f.list(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File arg0, String arg1) {
+				// TODO Auto-generated method stub
+				if (arg1.endsWith(".cfg")) {
+					return true;
+				}
+				return false;
+			}
+			
+		});
+		
+		for (int i = 0; i < filename.length; i++) {
+			list.add(filename[i]);
+		}
+
+		//list.add(MINIGUI_CONFIG_FILE);
 		addComboFileToList(project, binNameField, list);
 		addComboFileToList(project, resPackNameField, list);
 		addImagesToList(project, list);
@@ -785,8 +804,13 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 	}
 	
     protected boolean ensureFileIsValid() {
-        if (!valueIsFile(resPackNameField) || !valueIsFile(binNameField)) {
-        	setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.InputFileName"));
+        if (!valueIsFile(resPackNameField)) {
+        	setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.InvalidResPackName"));
+            return false;
+        }  
+    	
+        if (!valueIsFile(binNameField)) {
+        	setMessage(getMessage("MStudioDeployWizardPage.deployErrors.target.InvalidBinName"));
             return false;
         }  
 

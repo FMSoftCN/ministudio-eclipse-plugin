@@ -179,6 +179,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 				<simple name="target" value="MiniGUI.cfg"/>
 				<simple name="replaceable" value="true"/>
 			</element>
+			<element>
+				<simple name="source" value="etc/mgncs.base"/>
+				<simple name="target" value="mgncs.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
 		</complex-array>
 	</process>
 	
