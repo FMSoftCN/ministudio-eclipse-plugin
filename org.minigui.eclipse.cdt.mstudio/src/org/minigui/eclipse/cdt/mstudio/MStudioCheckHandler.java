@@ -27,7 +27,7 @@ import org.osgi.framework.Version;
 public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	private static String builderVersion;
 	private static String pluginVersion;
-	private static String baseurl = "http://192.168.1.9:7777/update.php?msver=";
+	private static String baseurl = "http://auth.minigui.com/mstudio/update/update.php?msver=";
 	private static String builderCmd = "guibuilder";
     private static String verDesc = "Build-Version:";
     private static String verChar = " -v";
@@ -111,7 +111,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		String url = getUrl();
 		Shell shell = new Shell(window.getShell());
 		shell.setLayout(new FillLayout());
-		shell.setText(url);
+		shell.setText("mStudio Check Updates...");
 		
 		Browser browser = new Browser(shell, SWT.BORDER);
 		FormData data = new FormData();
