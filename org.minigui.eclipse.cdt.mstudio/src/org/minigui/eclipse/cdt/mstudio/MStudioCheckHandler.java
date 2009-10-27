@@ -91,16 +91,13 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	}
 	
 	private String getUrl() {
-		baseurl = String.format("%s%s%s-%s%s", 
+		return String.format("%s%s%s-%s%s", 
 				baseurl, "guibuilder", builderVersion, "msplus", pluginVersion);
-		System.out.println(baseurl);
-		return baseurl;
 	}
 	
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
-
 		if (!getVersion()) {
 			MessageDialog.openInformation(
     				window.getShell(), "mStudio Plug-in",
@@ -109,6 +106,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		}
 
 		String url = getUrl();
+		System.out.println(url);
 		Shell shell = new Shell(window.getShell());
 		shell.setLayout(new FillLayout());
 		shell.setText("mStudio Check Updates...");
