@@ -106,7 +106,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		}
 
 		String url = getUrl();
-		System.out.println(url);
+//		System.out.println(url);
 		Shell shell = new Shell(window.getShell());
 		shell.setLayout(new FillLayout());
 		shell.setText("mStudio Check Updates...");
