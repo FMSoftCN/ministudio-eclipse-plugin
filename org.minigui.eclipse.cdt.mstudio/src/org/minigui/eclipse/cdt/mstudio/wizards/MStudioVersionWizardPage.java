@@ -24,7 +24,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 
 	public MStudioVersionWizardPage(String pageName) {
 		super(pageName);
-		setTitle("MStudio veriosn Select");
+		setTitle("Select MStudio Version");
 		setDescription("Specify the Name and Bin of the guibuilder.");
 	}
 
@@ -61,7 +61,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 		new Label(composite, SWT.NULL);
 		new Label(composite, SWT.NULL);
 
-		binPath = new DirectoryFieldEditor("bin", "Bin Path:", composite);
+		binPath = new DirectoryFieldEditor("bin", "Binary Path:", composite);
 		binPath.getTextControl(composite).addModifyListener(
 				new ModifyListener() {
 					public void modifyText(ModifyEvent e) {
@@ -77,7 +77,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 		*/
 		new Label(composite, SWT.NULL);
 		Label binPathDescription = new Label(composite, SWT.NULL);
-		binPathDescription.setText("Path containing tools 'guibuilder','ui2c',etc.\n");
+		binPathDescription.setText("Path should contain 'guibuilder'.\n");
 
 		new Label(composite, SWT.NULL);
 		new Label(composite, SWT.NULL);
@@ -93,7 +93,6 @@ public class MStudioVersionWizardPage extends WizardPage {
 	}
 
 	private boolean isBinPathValid() {
-		//TODO , for guibuilder ,ui2c,...
 		String subElement = "guibuilder";
 		Path subElementPath = new Path(binPath.getStringValue());
 		String subElementOSString = subElementPath.append(subElement)
@@ -113,9 +112,9 @@ public class MStudioVersionWizardPage extends WizardPage {
 		if (!isValid) {
 			String errorMessage = "";
 			if (!isVersionNameValid())
-				errorMessage += "Version Name is empty. ";
+				errorMessage += "Version name is empty. ";
 			if (!isBinPathValid())
-				errorMessage += "Bin Path is invalid. ";
+				errorMessage += "Binary path is invalid. ";
 			setErrorMessage(errorMessage);
 		} else {
 			setErrorMessage(null);
