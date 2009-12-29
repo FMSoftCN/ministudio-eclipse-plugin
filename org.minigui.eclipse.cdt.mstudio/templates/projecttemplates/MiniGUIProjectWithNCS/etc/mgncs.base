@@ -8,6 +8,8 @@ bgc_3dbody=0xFFCED3D6
 fgc_selected_item=0xFFFFFFFF
 bgc_selected_item=0xFF6B2408
 
+bgc_selected_nofocus=0xFFBDA69C
+
 fgc_disabled_item=0xFF848284
 bgc_disabled_item=0xFFCED3D6
 
@@ -30,6 +32,8 @@ bgc_window=0xFFFFFFFF
 mode_item=1
 fgc_selected_item=0xFFFFFFFF
 bgc_selected_item=0xFFF54512
+
+bgc_selected_nofocus=0xFFBDA69C
 
 fgc_disabled_item=0xFF99A8AC
 bgc_disabled_item=0xFFFFFFFF
@@ -83,6 +87,8 @@ bgc_3dbody=0xFFD8E9EC
 
 fgc_selected_item=0xFFFFFFFF
 bgc_selected_item=0xFFC56A31
+
+bgc_selected_nofocus=0xFFBDA69C
 
 fgc_disabled_item=0xFF99A8AC
 bgc_disabled_item=0xFFFFFFFF
@@ -142,6 +148,8 @@ bgc_disabled_item=0xFFFFFFFF
 
 fgc_selected_item=0xFFFFFFFF
 bgc_selected_item=0xFF000000
+
+bgc_selected_nofocus=0xFFBDA69C
 
 [flat.Spinner]
 metrics_3dbody_roundx=1
