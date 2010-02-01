@@ -93,10 +93,16 @@ public class MStudioVersionWizardPage extends WizardPage {
 	}
 
 	private boolean isBinPathValid() {
-		String subElement = "guibuilder";
 		Path subElementPath = new Path(binPath.getStringValue());
-		String subElementOSString = subElementPath.append(subElement)
-				.toOSString();
+        String osname = System.getProperty("os.name").toLowerCase();
+		StringBuffer cmd = new StringBuffer("guibuilder");
+
+        if (osname.indexOf("window") >= 0) {        
+        	//for linux: (osname.indexOf("nix") >= 0 || osname.indexOf("nux")>=0 )
+        	cmd.append(".exe");
+        }
+
+		String subElementOSString = subElementPath.append(cmd.toString()).toOSString();
 
 		File subElementFile = new File(subElementOSString);
 		return subElementFile.exists();

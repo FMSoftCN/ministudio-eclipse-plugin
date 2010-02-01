@@ -33,7 +33,14 @@ public class MrcEditorLauncher implements IEditorLauncher {
 		IFile ifile = root.getFileForLocation(file); 
 		IProject project = ifile.getProject();	
 		String binPath = new MgProject(project).getMStudioBinPath();
-		Path editCommand = new Path (binPath+ File.separatorChar +"guibuilder");
+        StringBuffer cmd = new StringBuffer("guibuilder");
+      
+        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
+            cmd.append(".exe");
+        }
+       
+		Path editCommand = new Path (binPath+ File.separatorChar +cmd.toString());
+		
 		List<String> args = new ArrayList<String>();	
 		
 		IPath projectDir = removeFileName(file).removeLastSegments(1);
