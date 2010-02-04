@@ -32,7 +32,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			default="%Ncs.sourceDir.default"
 			pattern="[a-zA-Z0-9]+"
 			mandatory="false"
-			persist="true"
+			persist="false"
 			hidden="true"/>
 		
 		<property id="incDir"
@@ -56,10 +56,10 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			hidden="true"/>
 
 		<property id="sdkPrefix"
-			label="%Ncs.MiniGUISDKPrefix.label"
-			description="%Ncs.MiniGUISDKPrefix.description"
+			label="%Ncs.MiniGUIADPPrefix.label"
+			description="%Ncs.MiniGUIADPPrefix.description"
 			type="browsedir"
-			default="%Ncs.MiniGUISDKPrefix.default"
+			default="%Ncs.MiniGUIADPPrefix.default"
 			pattern=".*"
 			mandatory="false"
 			persist="true"/>
@@ -72,9 +72,9 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			pattern=".*"
 			mandatory="false"
 			persist="true">
-               <item label="Threads Mode" value="minigui_ths"/>
-               <item label="Processes Mode" value="minigui_procs"/>
-               <item label="Standalone Mode" value="minigui_sa"/>
+               <item label="Standalone" value="minigui_sa"/>
+               <item label="Threads" value="minigui_ths"/>
+               <item label="Processes" value="minigui_procs"/>
            </property>
 
 		<property id="defaultRenderer"
@@ -85,9 +85,10 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			pattern=".*"
 			mandatory="false"
 			persist="true">
-               <item label="classic renderer" value="classic"/>
-               <item label="fashion renderer" value="fashion"/>
-               <item label="skin renderer" value="skin"/>
+               <item label="Classic" value="classic"/>
+               <item label="Fashion" value="fashion"/>
+               <item label="Skin" value="skin"/>
+               <item label="Flat" value="flat"/>
            </property>
 	</property-group>
 
