@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="ProjTempl" version="1.0" supplier="minigui.org" revision="1.0" author="sylvia" 
+copyright="Copyright (c) 2008 Feynman Software. All rights reserved."
+id="MGProjectWithNCS" label="%MiniGUINcsProject.template.label" 
+description="%MiniGUINcsProject.template.description" help="help.html">
+
+	<property-group id="basics" label="%Ncs.basics.label" description="%Ncs.basics.description" type="PAGES-ONLY" help="help.html">
+		
+		<property id="author"
+			label="%Ncs.author.label"
+			description="%Ncs.author.description"
+			type="input"
+			pattern=".*"
+			default=""
+			hidden="false"
+			persist="true"/>
+		
+		<property id="copyright"
+			label="%Ncs.copyright.label"
+			description="%Ncs.copyright.description"
+			type="input"
+			pattern=".*"
+			default="%Ncs.copyright.default"
+			hidden="false"
+			persist="true"/>
+		
+		<property id="sourceDir"
+			label="%Ncs.sourceDir.label"
+			description="%Ncs.sourceDir.description"
+			type="input"
+			default="%Ncs.sourceDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="true"
+			hidden="true"/>
+		
+		<property id="incDir"
+			label="%Ncs.incDir.label"
+			description="%Ncs.incDir.description"
+			type="input"
+			default="%Ncs.incDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+			
+		<property id="resourceDir"
+			label="%Ncs.resourceDir.label"
+			description="%Ncs.resourceDir.description"
+			type="input"
+			default="%Ncs.resourceDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+
+		<property id="sdkPrefix"
+			label="%Ncs.MiniGUISDKPrefix.label"
+			description="%Ncs.MiniGUISDKPrefix.description"
+			type="browsedir"
+			default="%Ncs.MiniGUISDKPrefix.default"
+			pattern=".*"
+			mandatory="false"
+			persist="true"/>
+
+		<property id="runmode"
+			label="%Ncs.miniGUIRunmode.label"
+			description="%Ncs.miniGUIRunmode.description"
+			type="select"
+			default="%Ncs.miniGUIRunmode.default"
+			pattern=".*"
+			mandatory="false"
+			persist="true">
+               <item label="Threads Mode" value="minigui_ths"/>
+               <item label="Processes Mode" value="minigui_procs"/>
+               <item label="Standalone Mode" value="minigui_sa"/>
+           </property>
+
+		<property id="defaultRenderer"
+			label="%Ncs.miniGUIDefaultRenderer.label"
+			description="%Ncs.miniGUIDefaultRenderer.description"
+			type="select"
+			default="classic"
+			pattern=".*"
+			mandatory="false"
+			persist="true">
+               <item label="classic renderer" value="classic"/>
+               <item label="fashion renderer" value="fashion"/>
+               <item label="skin renderer" value="skin"/>
+           </property>
+	</property-group>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" /> 
+		<simple name="isCProject" value="true" /> 
+	</process>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+        <simple name="projectName" value="$(projectName)"/>
+        <complex-array name="resourcePaths">
+            <element>
+                <simple name="id" value=".*c\.link\.option\.libs"/>
+                <simple-array name="values">
+                    <element value="mgncs"/>
+                    <element value="mgutils"/>
+                    <element value="mgplus"/>
+                    <element value="$(runmode)" />
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+
+            <element>
+                <simple name="id" value=".*c\.link\.option\.paths"/>
+                <simple-array name="values">
+                    <element value="$(sdkPrefix)/lib" />
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+
+            <element>
+                <simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
+                <simple-array name="values">
+                    <element value="/usr/include/"/>
+                    <element value="/usr/local/include/"/>
+                    <element value="../include/"/>
+                </simple-array>
+                <simple name="path" value=""/>
+            </element>
+        </complex-array>
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+        <simple name ="path" value="$(incDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+        <simple name ="path" value="$(sourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+        <simple name ="path" value="$(resourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="include/Basename.h"/>
+				<simple name="target" value="$(incDir)/ncs-windows.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="src/base.project"/>
+				<simple name="target" value="res/res.project"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="include/resource.h"/>
+				<simple name="target" value="$(incDir)/resource.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="etc/mgcfg.base"/>
+				<simple name="target" value="MiniGUI.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="etc/mgncs.base"/>
+				<simple name="target" value="mgncs.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+	
+</template>

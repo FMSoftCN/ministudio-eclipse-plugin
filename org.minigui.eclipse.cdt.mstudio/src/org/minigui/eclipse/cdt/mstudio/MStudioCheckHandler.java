@@ -28,7 +28,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 	private static String builderVersion;
 	private static String pluginVersion;
 	private static String baseurl = "http://auth.minigui.com/mstudio/update/update.php?msver=";
-	private static String builderCmd = "guibuilder";
+    private static StringBuffer builderCmd = new StringBuffer("guibuilder");
     private static String verDesc = "Build-Version:";
     private static String verChar = " -v";
     
@@ -43,12 +43,16 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		String defVersion = MStudioPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.MSVERSION_DEFAULT);
 		String binPath = MStudioPreferencePage.getMStudioBinPath(defVersion);
 		Path cmd;
+
+        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
+            builderCmd.append(".exe");
+        }
 		
-		if (binPath != null) {
-			cmd = new Path (builderCmd);
+		if (binPath == null) {
+			cmd = new Path (builderCmd.toString());
 		}
 		else
-			cmd = new Path (binPath + File.separatorChar +builderCmd);
+			cmd = new Path (binPath + File.separatorChar +builderCmd.toString());
 		
 	    Runtime r = Runtime.getRuntime();
 	    Process p; 
