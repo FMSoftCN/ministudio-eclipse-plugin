@@ -372,7 +372,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 	{
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		
-		// Fetch all project's Qt paths
+		// Fetch all project's GUIBuilder paths
 		IProject[] pros = getMgProjects();
 		MgProject[] mgProjects = new MgProject[pros.length];
 		String[] oldBinPaths = new String[pros.length];
@@ -393,7 +393,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 					table.getItem(i).getText(1));
 		}
 
-		// updates all the Qt projects and collect projects that need rebuild
+		// updates all the MiniGUI projects and collect projects that need rebuild
 		Vector<IProject> outdated = new Vector<IProject>();
 		
 		for (int i=0; i < mgProjects.length; ++i) {
@@ -413,7 +413,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 	private void askForRebuild(final Vector<IProject> projects) {
 		Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
 		MessageDialog dialog = new MessageDialog(shell, "MStudio Versions Changed", null,
-				"Some projects' MStudio versions have changed. A rebuild of the projects is required for changes to take effect. Do a full rebuild now?", 
+				"Some projects' mStudio versions have changed. A rebuild of the projects is required for changes to take effect. Do a full rebuild now?", 
 				MessageDialog.QUESTION, 
 				new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL}, 0);
 		if (dialog.open() == 0) {
@@ -424,8 +424,12 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 				public IStatus runInWorkspace(IProgressMonitor monitor) {
 					Iterator<IProject> i = projects.iterator();
 					while (i.hasNext()) {
-						MgProject project = (MgProject)i.next();
-						project.scheduleRebuild();
+                        IProject project = i.next();
+            			try {
+	                        if (project.hasNature(MgProjectNature.MG_NATURE_ID)) {
+	                            ((MgProject)project).scheduleRebuild();
+	                        }
+            			} catch (CoreException ex) {}
 					}
 					return Status.OK_STATUS;
 				}
