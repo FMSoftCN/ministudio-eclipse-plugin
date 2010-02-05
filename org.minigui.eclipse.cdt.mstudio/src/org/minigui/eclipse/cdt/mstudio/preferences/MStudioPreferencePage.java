@@ -394,13 +394,13 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 		}
 
 		// updates all the MiniGUI projects and collect projects that need rebuild
-		Vector<IProject> outdated = new Vector<IProject>();
+		Vector outdated = new Vector();
 		
 		for (int i=0; i < mgProjects.length; ++i) {
 			mgProjects[i].updateMStudioDir(oldBinPaths[i]);
 			if ((mgProjects[i].getMStudioBinPath() == null && oldBinPaths[i] != null)
 				|| (mgProjects[i].getMStudioBinPath() != null && !mgProjects[i].getMStudioBinPath().equals(oldBinPaths[i]))) {
-				outdated.add(mgProjects[i].getProject());
+				outdated.add(mgProjects[i]);
 			}
 		}
 		
@@ -422,15 +422,11 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 	    			return ResourcesPlugin.FAMILY_MANUAL_BUILD.equals(family);
 	    		}
 				public IStatus runInWorkspace(IProgressMonitor monitor) {
-					Iterator<IProject> i = projects.iterator();
+					Iterator i = projects.iterator();
 					while (i.hasNext()) {
-                        IProject project = i.next();
-            			try {
-	                        if (project.hasNature(MgProjectNature.MG_NATURE_ID)) {
-	                            ((MgProject)project).scheduleRebuild();
-	                        }
-            			} catch (CoreException ex) {}
-					}
+                        MgProject project = (MgProject)i.next();
+                        project.scheduleRebuild();
+                    }
 					return Status.OK_STATUS;
 				}
 			};
