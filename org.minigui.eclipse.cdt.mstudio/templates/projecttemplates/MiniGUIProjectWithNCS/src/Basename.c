@@ -42,6 +42,9 @@ int MiniGUIMain(int argc, const char* argv[])
 	}
 
 	SetDefaultWindowElementRenderer(ncsGetString(hPackage, NCSRM_SYSSTR_DEFRDR));
+#ifdef _MGRM_PROCESSES
+    JoinLayer(NAME_DEF_LAYER , argv[0], 0 , 0);
+#endif
 
 	mWin = ntStartWindowEx(hPackage, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
 
@@ -58,7 +61,3 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	return 0;
 }
-
-#ifdef _MGRM_THREADS
-#include <minigui/dti.c>
-#endif

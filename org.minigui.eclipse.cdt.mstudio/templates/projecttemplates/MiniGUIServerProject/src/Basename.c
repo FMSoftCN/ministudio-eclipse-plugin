@@ -94,7 +94,3 @@ int MiniGUIMain (int argc, const char* argv[])
     }
     return 0;
 }
-
-#ifdef _MGRM_THREADS
-#include <minigui/dti.c>
-#endif
