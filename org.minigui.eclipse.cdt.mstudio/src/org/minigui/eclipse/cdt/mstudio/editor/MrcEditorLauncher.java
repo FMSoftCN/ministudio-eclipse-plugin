@@ -32,10 +32,11 @@ public class MrcEditorLauncher implements IEditorLauncher {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         IFile ifile = root.getFileForLocation(file); 
         IProject project = ifile.getProject();	
-        String binPath = System.getenv("GUIBUILDER_PATH");
-        if (binPath == null) {
-            binPath = new MgProject(project).getMStudioBinPath();
+        String binPath = new MgProject(project).getMStudioBinPath();
+        if (binPath == null || binPath.equals("")) {
+            binPath = System.getenv("GUIBUILDER_PATH");
         }
+        System.out.println(binPath);
         StringBuffer cmd = new StringBuffer("guibuilder");
 
         if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {

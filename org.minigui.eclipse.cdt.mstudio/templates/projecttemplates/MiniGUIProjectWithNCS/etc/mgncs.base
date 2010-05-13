@@ -137,9 +137,6 @@ bgc_window=0xFFFFFFFF
 fgc_3dbody=0xFF000000
 bgc_3dbody=0xFFFFFFFF
 
-metrics_3dbody_roundx=3
-metrics_3dbody_roundy=3
-
 fgc_hilight_item=0xFFFFFFFF
 bgc_hilight_item=0xFF000000
 
@@ -151,11 +148,4 @@ bgc_selected_item=0xFF000000
 
 bgc_selected_nofocus=0xFFBDA69C
 
-[flat.Spinner]
-metrics_3dbody_roundx=1
-metrics_3dbody_roundy=1
-
-[flat.ListView]
-metrics_3dbody_roundx = 0
-metrics_3dbody_roundy = 0
-
+bgc_normal_tab=0xFFC6D2CF
