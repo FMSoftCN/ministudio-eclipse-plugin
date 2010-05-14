@@ -49,9 +49,13 @@ public class MrcEditorLauncher implements IEditorLauncher {
 
         IPath projectDir = removeFileName(file).removeLastSegments(1);
         args.add("-project");
+        args.add("'");
         args.add(projectDir.toOSString());
+        args.add("'");
         args.add("-project-name");
+        args.add("'");
         args.add(projectDir.lastSegment());
+        args.add("'");
 
         //add port information
         MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();
