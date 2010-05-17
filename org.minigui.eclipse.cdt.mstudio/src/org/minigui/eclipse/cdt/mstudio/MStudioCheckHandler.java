@@ -48,22 +48,22 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
             builderCmd.append(".exe");
         }
 		
-		if (binPath == null) {
-			cmd = new Path (builderCmd.toString());
-		}
-		else
-			cmd = new Path (binPath + File.separatorChar +builderCmd.toString());
+        if (binPath == null || binPath.equals("")) {
+            binPath = System.getenv("GUIBUILDER_PATH");
+        }
+        cmd = new Path (binPath + File.separatorChar + builderCmd.toString());
 		
 	    Runtime r = Runtime.getRuntime();
 	    Process p; 
-	    
+	    System.out.println("getBuilderVersion:" + cmd);
 	    try {
 		    p = r.exec(cmd.toOSString() + verChar);
 		    BufferedReader is; 
 		    is = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		    String line;
-		    
+		    System.out.println("========");
 		    while ((line = is.readLine()) != null) {
+			    System.out.println(line);
 				if (line.startsWith(verDesc)) {
 					parseVersionLine(line);
 					return true;

@@ -186,11 +186,11 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 		table.setHeaderVisible(true);
 		TableColumn column;
 		column = new TableColumn(table, SWT.LEFT);
-		column.setText("Name");
+		column.setText("Version Name");
 		column.setWidth(150);
 		column.setResizable(true);
 		column = new TableColumn(table, SWT.LEFT);
-		column.setText("Bin Path");
+		column.setText("Binary Path");
 		column.setResizable(true);
 		column.setWidth(150);
 		

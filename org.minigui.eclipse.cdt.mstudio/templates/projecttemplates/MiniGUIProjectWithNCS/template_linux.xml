@@ -57,7 +57,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 
 		<property id="adpPrefix"
 			label="%Ncs.MiniGUIADPPrefix.label"
-			description="%Ncs.MiniGUIADPPrefix.description"
+			description="%Ncs.MiniGUIADP.description"
 			type="browsedir"
 			default="%Ncs.MiniGUIADPPrefix.default"
 			pattern=".*"

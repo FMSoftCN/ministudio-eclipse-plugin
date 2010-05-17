@@ -25,7 +25,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 	public MStudioVersionWizardPage(String pageName) {
 		super(pageName);
 		setTitle("Select MStudio Version");
-		setDescription("Specify the Name and Bin of the guibuilder.");
+		setDescription("Specify the Name and Binary of the guibuilder.");
 	}
 
 	public void createControl(Composite parent) {

@@ -166,6 +166,9 @@
             icon="icons/deploy_wiz.gif"
             id="org.minigui.eclipse.cdt.mstudio.deploywizard"
             name="%MStudioDeployWizard.name">
+            <description>
+            %MStudioDeployWizard.description
+            </description>
       </wizard>
    </extension>
 

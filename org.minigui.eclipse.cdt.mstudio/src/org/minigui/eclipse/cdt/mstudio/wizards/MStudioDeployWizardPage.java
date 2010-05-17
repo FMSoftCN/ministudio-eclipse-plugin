@@ -245,6 +245,7 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
 		
 		createProjectsGroup(composite);
 		createTargetDirGroup(composite);
+		createDescriptionGroup(composite);
 		initMapInfo();
 
 		restoreWidgetValues();
@@ -480,7 +481,21 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
             label.setFont(parent.getFont());
         }
     }
-    
+	private void createDescriptionGroup(Composite parent) {
+        Font font = parent.getFont();
+        Composite destSelectionGroup = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        destSelectionGroup.setLayout(layout);
+        destSelectionGroup.setLayoutData(new GridData(
+                GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+        destSelectionGroup.setFont(font);
+
+        createLabel(destSelectionGroup, 
+        		getMessage("MStudioDeployWizardPage.ial.description"));
+        createLabel(destSelectionGroup, 
+        		getMessage("MStudioDeployWizardPage.gal.description"));
+	}    
+	
 	private void createTargetDirGroup(Composite parent) {
         Font font = parent.getFont();
         Composite destSelectionGroup = new Composite(parent, SWT.NONE);
