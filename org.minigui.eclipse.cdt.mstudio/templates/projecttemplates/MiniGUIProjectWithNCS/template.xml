@@ -55,11 +55,11 @@ description="%MiniGUINcsProject.template.description" help="help.html">
 			persist="false"
 			hidden="true"/>
 
-		<property id="sdkPrefix"
-			label="%Ncs.MiniGUISDKPrefix.label"
-			description="%Ncs.MiniGUISDKPrefix.description"
+		<property id="adpPrefix"
+			label="%Ncs.MiniGUIADPPrefix.label"
+			description="%Ncs.MiniGUIADPPrefix.description"
 			type="browsedir"
-			default="%Ncs.MiniGUISDKPrefix.default"
+			default="%Ncs.MiniGUIADPPrefix.default"
 			pattern=".*"
 			mandatory="false"
 			persist="true"/>
@@ -119,7 +119,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
             <element>
                 <simple name="id" value=".*c\.link\.option\.paths"/>
                 <simple-array name="values">
-                    <element value="$(sdkPrefix)/lib" />
+                    <element value="$(adpPrefix)/lib" />
                 </simple-array>
                 <simple name="path" value=""/>
             </element>

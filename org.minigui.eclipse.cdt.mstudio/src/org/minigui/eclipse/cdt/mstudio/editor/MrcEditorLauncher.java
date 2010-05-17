@@ -36,7 +36,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
         if (binPath == null || binPath.equals("")) {
             binPath = System.getenv("GUIBUILDER_PATH");
         }
-        System.out.println(binPath);
+
         StringBuffer cmd = new StringBuffer("guibuilder");
 
         if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
@@ -44,18 +44,16 @@ public class MrcEditorLauncher implements IEditorLauncher {
         }
 
         Path editCommand = new Path (binPath+ File.separatorChar +cmd.toString());
-
+        System.out.println(editCommand);
+        
         List<String> args = new ArrayList<String>();	
 
         IPath projectDir = removeFileName(file).removeLastSegments(1);
         args.add("-project");
-        args.add("'");
-        args.add(projectDir.toOSString());
-        args.add("'");
+
+        args.add("'" + projectDir.toOSString() + "'");
         args.add("-project-name");
-        args.add("'");
-        args.add(projectDir.lastSegment());
-        args.add("'");
+        args.add("'" + projectDir.lastSegment() + "'");
 
         //add port information
         MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();
@@ -64,7 +62,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
             args.add(serverThread.getAddress());
             args.add("-port");
             args.add(Integer.toString(serverThread.getPort()));
-            //System.out.println(args);
+            System.out.println(args);
         }
 
         IPath workingDir = projectDir;

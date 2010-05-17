@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle.name
-Bundle-SymbolicName: org.minigui.eclipse.cdt.mstudio; singleton:=true
+Bundle-SymbolicName: org.minigui.eclipse.cdt.mstudio;singleton:=true
 Bundle-Version: 1.0.4
 Bundle-Activator: org.minigui.eclipse.cdt.mstudio.MStudioPlugin
 Bundle-Vendor: %FeynmanVendor.name
