@@ -41,12 +41,14 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
@@ -488,7 +490,11 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         destSelectionGroup.setLayout(layout);
         destSelectionGroup.setLayoutData(new GridData(
                 GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-        destSelectionGroup.setFont(font);
+        
+        FontData[] fD = font.getFontData();
+        fD[0].setHeight(10);
+        fD[0].setStyle(SWT.NORMAL);
+        destSelectionGroup.setFont(new Font(Display.getCurrent(), fD[0]));
 
         createLabel(destSelectionGroup, 
         		getMessage("MStudioDeployWizardPage.ial.description"));
@@ -806,7 +812,6 @@ public class MStudioDeployWizardPage extends WizardDataTransferPage implements
         String defaultMode = iniObj.getStringProperty(galEngine, "defaultmode");
 	    String[] modes = defaultMode.split("[-]");
 	    String newMode = String.format("%s-%sbpp", modes[0], getComboValue(resolutionNameField));
-
 	    iniObj.setStringProperty(newGalEngine, "defaultmode", newMode, null);
 	    iniObj.save();
 	}

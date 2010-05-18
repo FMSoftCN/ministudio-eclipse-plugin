@@ -43,7 +43,13 @@ public class MrcEditorLauncher implements IEditorLauncher {
             cmd.append(".exe");
         }
 
-        Path editCommand = new Path (binPath+ File.separatorChar +cmd.toString());
+        Path editCommand;
+        if (binPath == null || binPath.equals("")) {
+        	editCommand = new Path (cmd.toString());
+        }
+        else
+        	editCommand = new Path (binPath+ File.separatorChar +cmd.toString());
+        
         System.out.println(editCommand);
         
         List<String> args = new ArrayList<String>();	
@@ -74,10 +80,12 @@ public class MrcEditorLauncher implements IEditorLauncher {
                 createEnvStringList(envProps), workingDir);
 
         if (p != null) {
+        	System.out.println("launch guibuilder ok");
             if (serverThread != null)
                 serverThread.addBuilderProcs(projectDir.lastSegment(), p);
             //TODO, monitor this process ...
         } else {
+        	System.out.println("launch guibuilder error");
             //TODO for error ...
         }
     }

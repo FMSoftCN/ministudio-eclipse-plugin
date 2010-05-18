@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage;
 import org.minigui.eclipse.cdt.mstudio.preferences.PreferenceConstants;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
@@ -51,19 +52,20 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
         if (binPath == null || binPath.equals("")) {
             binPath = System.getenv("GUIBUILDER_PATH");
         }
-        cmd = new Path (binPath + File.separatorChar + builderCmd.toString());
+        if (binPath == null || binPath.equals("")) {
+        	cmd = new Path (builderCmd.toString());
+        }
+        else 
+        	cmd = new Path (binPath + File.separatorChar + builderCmd.toString());
 		
 	    Runtime r = Runtime.getRuntime();
 	    Process p; 
-	    System.out.println("getBuilderVersion:" + cmd);
 	    try {
 		    p = r.exec(cmd.toOSString() + verChar);
 		    BufferedReader is; 
 		    is = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		    String line;
-		    System.out.println("========");
 		    while ((line = is.readLine()) != null) {
-			    System.out.println(line);
 				if (line.startsWith(verDesc)) {
 					parseVersionLine(line);
 					return true;
@@ -105,7 +107,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		if (!getVersion()) {
 			MessageDialog.openInformation(
     				window.getShell(), "mStudio Plug-in",
-    				"Error: Get mStudio version failure.");
+    				MiniGUIMessages.getString("MStudioUpdateError.desc"));
 			return null;
 		}
 
@@ -113,7 +115,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 //		System.out.println(url);
 		Shell shell = new Shell(window.getShell());
 		shell.setLayout(new FillLayout());
-		shell.setText("mStudio Check Updates...");
+		shell.setText(MiniGUIMessages.getString("MStudioUpdateCaption.desc"));
 		
 		Browser browser = new Browser(shell, SWT.BORDER);
 		FormData data = new FormData();
