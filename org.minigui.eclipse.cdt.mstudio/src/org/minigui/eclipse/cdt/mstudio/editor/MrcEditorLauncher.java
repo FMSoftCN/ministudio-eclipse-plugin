@@ -50,16 +50,16 @@ public class MrcEditorLauncher implements IEditorLauncher {
         else
         	editCommand = new Path (binPath+ File.separatorChar +cmd.toString());
         
-        System.out.println(editCommand);
+        //System.out.println(editCommand);
         
         List<String> args = new ArrayList<String>();	
 
         IPath projectDir = removeFileName(file).removeLastSegments(1);
         args.add("-project");
 
-        args.add("'" + projectDir.toOSString() + "'");
+        args.add(projectDir.toOSString());
         args.add("-project-name");
-        args.add("'" + projectDir.lastSegment() + "'");
+        args.add(projectDir.lastSegment());
 
         //add port information
         MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();
@@ -68,7 +68,7 @@ public class MrcEditorLauncher implements IEditorLauncher {
             args.add(serverThread.getAddress());
             args.add("-port");
             args.add(Integer.toString(serverThread.getPort()));
-            System.out.println(args);
+            //System.out.println(args);
         }
 
         IPath workingDir = projectDir;
@@ -80,12 +80,10 @@ public class MrcEditorLauncher implements IEditorLauncher {
                 createEnvStringList(envProps), workingDir);
 
         if (p != null) {
-        	System.out.println("launch guibuilder ok");
             if (serverThread != null)
                 serverThread.addBuilderProcs(projectDir.lastSegment(), p);
             //TODO, monitor this process ...
         } else {
-        	System.out.println("launch guibuilder error");
             //TODO for error ...
         }
     }
