@@ -32,12 +32,30 @@ int MiniGUIMain(int argc, const char* argv[])
 	mMainWnd *mWin;
 
 	ncsInitialize();
+
+#ifdef _MGNCS_INCORE_RES
+	char* pInnerResPackage;
+	int innerResPackSize;
+
+	if (ncsGetIncoreResPackInfo(&pInnerResPackage, &innerResPackSize))
+		hPackage = ncsLoadResPackageFromMem (pInnerResPackage, innerResPackSize);
+	else {
+		printf ("Error: get in-core resource package information failure.\n");
+		return 1;
+	}
+#else
 	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
 	hPackage = ncsLoadResPackage (f_package);
+#endif
+
 	if (hPackage == HPACKAGE_NULL) {
-		printf ("load resource package:%s failure.\n", f_package);
+#ifdef _MGNCS_INCORE_RES
+		printf ("Error: load in-core resource package failure.\n");
+#else
+		printf ("Error: load resource package:%s failure.\n", f_package);
+#endif
 		return 1;
 	}
 
@@ -55,7 +73,11 @@ int MiniGUIMain(int argc, const char* argv[])
 	}
 
 	MainWindowThreadCleanup(mWin->hwnd);
+
+#ifndef _MGNCS_INCORE_RES
 	ncsUnloadResPackage(hPackage);
+#endif
+
 	ncsUninitialize();
 #endif
 
