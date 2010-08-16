@@ -24,26 +24,26 @@
 
 HPACKAGE hPackage = HPACKAGE_NULL;
 
+#ifdef _MGNCS_INCORE_RES
+extern HPACKAGE ncsLoadIncoreResPackage(void);
+extern GHANDLE ncsGetIncoreEtc(void);
+#endif
+
 int MiniGUIMain(int argc, const char* argv[])
 {
 #ifdef ntStartWindowEx
 	MSG Msg;
-	char f_package[MAX_PATH];
 	mMainWnd *mWin;
 
+#ifdef _MGNCS_INCORE_RES
+	ncsSetEtcHandle(ncsGetIncoreEtc());
 	ncsInitialize();
 
-#ifdef _MGNCS_INCORE_RES
-	char* pInnerResPackage;
-	int innerResPackSize;
-
-	if (ncsGetIncoreResPackInfo(&pInnerResPackage, &innerResPackSize))
-		hPackage = ncsLoadResPackageFromMem (pInnerResPackage, innerResPackSize);
-	else {
-		printf ("Error: get in-core resource package information failure.\n");
-		return 1;
-	}
+	hPackage = ncsLoadIncoreResPackage();
 #else
+	char f_package[MAX_PATH];
+
+	ncsInitialize();
 	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
 
@@ -74,9 +74,7 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	MainWindowThreadCleanup(mWin->hwnd);
 
-#ifndef _MGNCS_INCORE_RES
 	ncsUnloadResPackage(hPackage);
-#endif
 
 	ncsUninitialize();
 #endif
