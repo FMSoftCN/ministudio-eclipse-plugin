@@ -94,15 +94,12 @@ public class MStudioPlugin extends AbstractUIPlugin {
 			}
 			IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) {
-					
-					if (delta.getKind() == IResourceDelta.REMOVED) {
-						if ((delta.getFlags() & IResourceDelta.MOVED_TO) != 0) {
-							
+
+					if (delta.getKind() == IResourceDelta.REMOVED) {	
 							IResource resource = delta.getResource();
 							if (resource.getType() == IResource.PROJECT) {
 								updateProject(resource.getName());
 							}
-						}
 					}
 					return true;
 				}
