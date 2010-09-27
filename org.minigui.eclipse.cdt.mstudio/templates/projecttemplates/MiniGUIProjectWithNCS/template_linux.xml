@@ -113,6 +113,7 @@ description="%MiniGUINcsProject.template.description" help="help.html">
                     <element value="png" />
                     <element value="jpeg" />
                     <element value="freetype" />
+                    <element value="dl" />
                 </simple-array>
                 <simple name="path" value=""/>
             </element>
