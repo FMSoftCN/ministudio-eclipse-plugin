@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="ProjTempl" version="1.0" supplier="feynman" revision="2.0" author="sylvia" 
+copyright="Copyright (c) 2010 Feynman Software. All rights reserved."
+id="MStudioSimpleSharedLibCProject" label="%MStudioSimpleSharedLibCProject.template.label" 
+description="%MStudioSimpleSharedLibCProject.template.description" help="help.html">
+
+	<process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" /> 
+		<simple name="isCProject" value="true" /> 
+	</process>
+
+</template>

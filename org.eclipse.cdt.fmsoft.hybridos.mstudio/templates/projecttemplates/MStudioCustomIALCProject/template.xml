@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="ProjTempl" version="1.0" supplier="feynman" revision="2.0" author="sylvia" 
+copyright="Copyright (c) 2010 Feynman Software. All rights reserved."
+id="MStudioCustomIALCProject" label="%MStudioCustomIALCProject.template.label" 
+description="%MStudioCustomIALCProject.template.description" help="help.html">
+
+	<property-group id="basics" label="%Project.basics.label" description="%Project.basics.description" type="PAGES-ONLY" help="help.html">
+		<property id="sourceDir"
+			label="%Project.sourceDir.label"
+			description="%Project.sourceDir.description"
+			type="input"
+			default="%Project.sourceDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+    </property-group>
+		
+	<process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" /> 
+		<simple name="isCProject" value="true" /> 
+	</process>
+	
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+        <simple name ="path" value="$(sourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName).c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+</template>
