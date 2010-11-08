@@ -47,9 +47,16 @@ public class MStudioNewWizardTemplate extends AbstractCWizard {
 				h.addTc(null);
 				for (int tcsIdx=0; tcsIdx<tcs.length; tcsIdx++) {
 					if (isValid(tcs[tcsIdx], supportedOnly, wizard)) {
-						h.addTc(tcs[tcsIdx]);
+						String tcsId = tcs[tcsIdx].getId(); 
+
+						if (tcsId.equals("cdt.managedbuild.toolchain.gnu.exe.debug")
+								|| tcsId.equals("cdt.managedbuild.toolchain.gnu.so.debug")) {
+							h.addTc(tcs[tcsIdx]);
+						}
+						
 					}
 				}
+
 				if (h.getToolChainsCount() > 0) {
 					// The project category item.
 					items.add(new EntryDescriptor(vs[bpvIdx].getId(), null, vs[bpvIdx].getName(), true, h, null));

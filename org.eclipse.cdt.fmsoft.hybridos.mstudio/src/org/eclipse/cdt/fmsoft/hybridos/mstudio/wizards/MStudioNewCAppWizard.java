@@ -121,8 +121,8 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 				if (f.exists() && f.isDirectory()) {
 					if (fs.getChild(".project").fetchInfo().exists()) { 
 						if (!MessageDialog.openConfirm(getShell(), 
-								MStudioMessages.getString("MGProjectWizard.0"), 
-								MStudioMessages.getString("MGProjectWizard.1")))
+								MStudioMessages.getString("MStudioProjectWizard.0"), 
+								MStudioMessages.getString("MStudioProjectWizard.1")))
 							return null;
 					}
 					existingPath = true;

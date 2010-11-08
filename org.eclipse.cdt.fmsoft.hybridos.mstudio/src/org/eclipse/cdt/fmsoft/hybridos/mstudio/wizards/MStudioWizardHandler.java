@@ -16,14 +16,19 @@ import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
+import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.internal.core.Configuration;
@@ -477,7 +482,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		if (cfgs == null || cfgs.length == 0)
 			cfgs = MStudioNewCAppSoCConfigWizardPage.getDefaultCfgs(this);
 
-		if (cfgs == null || cfgs.length == 0	|| cfgs[0].getConfiguration() == null) {
+		if (cfgs == null || cfgs.length == 0 || cfgs[0].getConfiguration() == null) {
 			throw new CoreException(new Status(IStatus.ERROR,
 					ManagedBuilderUIPlugin.getUniqueIdentifier(),
 					MStudioMessages.getString("MStudioWizardHandler.6"))); 
@@ -506,7 +511,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			if (bld != null) {
 				bld.setManagedBuildOn(true);
 			}
-
+			
 			config.setName(cfgs[i].getName());
 			config.setArtifactName(removeSpaces(project.getName()));
 
@@ -520,9 +525,82 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		mngr.setProjectDescription(project, des);
 		doTemplatesPostProcess(project);
+
+		//createTargetConfiguration(project);
 		doCustom(project);
 	}
 
+	private void createTargetConfiguration(IProject project)
+	{
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+		//TODO:
+		String crossToolPrefix = "arm-linux-"; 
+		String socName = MStudioEnvInfo.getCurSoCName();
+		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
+		String hostName = "Host";
+		
+		for (int i = 0; i < cur_cfgs.length; i++) {
+			String id = CDataUtil.genId(cur_cfgs[0].getId());
+
+			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[0], id);
+			ITool[] tools = newconfig.getTools();
+
+			//change name
+			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
+			newconfig.setDescription(newconfig.getName());
+			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
+			System.out.println(newconfig.getName());
+			
+			System.out.println("tools length :" + tools.length + "; BuildCommand: "
+					+ newconfig.getBuildCommand());
+
+			for (int j = 0; j < tools.length; j++) {
+				ITool subTool = tools[j];
+
+				System.out.println();
+				System.out.println("Tool Command: " + subTool.getToolCommand()
+						+ "; Command Pattern:" + subTool.getCommandLinePattern());
+				
+				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
+
+				IOption[] subOpts = subTool.getOptions();
+				System.out.println("subtools option length :" + subOpts.length);
+
+				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
+					IOption option = subOpts[optIdx];
+					System.out.println(option.getName() + " : ["
+							+ option.getCommand() + "] : " + option.getValue());
+					try {
+						System.out.println("---Value type:" + option.getValueType());
+
+						if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
+							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+						} else if (option.getValueType() == IOption.INCLUDE_PATH) {
+							String[] expectedSymbols = { "/opt/hybridos/include" };
+							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+							
+						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
+							String[] expectedSymbols = { "/opt/hybridos/lib" };
+							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+							
+						} else if (option.getValueType() == IOption.LIBRARIES) {
+							String[] expectedSymbols = { "testlib" };
+							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+						} 
+					} catch (BuildException e) {
+
+					}
+					System.out.println();
+				}
+			}
+		}
+		
+		if (cur_cfgs.length > 0)
+			ManagedBuildManager.saveBuildInfo(project, false);		
+	}
+	
 	protected void doTemplatesPostProcess(IProject prj) {
 		if (entryInfo == null)
 			return;
@@ -537,6 +615,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		for (int i = 0; i < cfgs.length; i++) {
 			configs.add((IConfiguration) cfgs[i].getConfiguration());
 		}
+
 		template.getTemplateInfo().setConfigurations(configs);
 
 		IStatus[] statuses = template.executeTemplateProcesses(null, false);

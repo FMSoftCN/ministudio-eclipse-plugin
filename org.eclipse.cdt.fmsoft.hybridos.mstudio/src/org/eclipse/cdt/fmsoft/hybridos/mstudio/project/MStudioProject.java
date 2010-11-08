@@ -97,13 +97,8 @@ public class MStudioProject {
 	}
 	
 	public String[] getDepPkgs() {
-		try {
-			String pkgs = wrapped.getPersistentProperty(new QualifiedName("", MSTUDIO_DEPPKGS));
-			return pkgs.split(" ?", 1);
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-		return null;
+		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
+		return pkgs != null ? pkgs.split(" ?", 1) : null;
 	}
 	
 	public boolean setDefaultDeployable(boolean deployable) {
@@ -122,7 +117,7 @@ public class MStudioProject {
 
 	public boolean isExeTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType.equals(MStudioProjectTemplateType.exe))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.exe))
 			return true;
 		
 		return false;
@@ -130,7 +125,7 @@ public class MStudioProject {
 	
 	public boolean isIALTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType.equals(MStudioProjectTemplateType.dlcustom))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.dlcustom))
 			return true;
 
 		return false;
@@ -138,7 +133,7 @@ public class MStudioProject {
 	
 	public boolean isMginitModuleTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType.equals(MStudioProjectTemplateType.mginitmodule))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.mginitmodule))
 			return true;
 		
 		return false;
@@ -146,7 +141,7 @@ public class MStudioProject {
 	
 	public boolean isNormalLibTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType.equals(MStudioProjectTemplateType.normallib))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.normallib))
 			return true;
 		
 		return false;
@@ -154,7 +149,7 @@ public class MStudioProject {
 	
 	public boolean isMiniGUIEntryType() {
 		String tmplType = getPersistentEntryType();
-		if (tmplType.equals(MStudioProjectEntryType.minigui))
+		if (tmplType != null && tmplType.equals(MStudioProjectEntryType.minigui))
 			return true;
 
 		return false;
