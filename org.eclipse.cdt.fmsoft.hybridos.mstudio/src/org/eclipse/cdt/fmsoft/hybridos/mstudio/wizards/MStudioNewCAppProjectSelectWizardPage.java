@@ -37,7 +37,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.newui.CDTPrefUtil;
-import org.eclipse.cdt.ui.newui.PageLayout;
+// import org.eclipse.cdt.ui.newui.PageLayout;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
@@ -58,15 +58,15 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	private static final String EXTENSION_POINT_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioWizard";
 	private static final String ELEMENT_NAME = "wizard";
 	private static final String CLASS_NAME = "class";
-	public static final String DESC = "EntryDescriptor";
-
-	private Tree tree;
-	private Composite right;
-	private Button show_sup;
-	private Label right_label;
+	public  static final String DESC = "EntryDescriptor";
 
 	public CWizardHandler h_selected = null;
-	private Label categorySelectedLabel;
+
+	private Tree tree = null;
+	private Composite composite = null;
+	private Button show_sup = null;
+	// private Label right_label = null;
+	private Label categorySelectedLabel = null;
 
 	public MStudioNewCAppProjectSelectWizardPage(String pageName) {
 		super(pageName);
@@ -77,7 +77,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		super.createControl(parent);
 
 		createDynamicGroup((Composite) getControl());
-		switchTo(updateData(tree, right, show_sup,
+		switchTo(updateData(tree, composite, show_sup,
 				MStudioNewCAppProjectSelectWizardPage.this, getWizard()), getDescriptor(tree));
 
 		setPageComplete(validatePage());
@@ -88,16 +88,16 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	private void createDynamicGroup(Composite parent) {
 		Composite c = new Composite(parent, SWT.NONE);
 		c.setLayoutData(new GridData(GridData.FILL_BOTH));
-		c.setLayout(new GridLayout(2, true));
+		c.setLayout(new GridLayout(1, true));
 
-		Label l1 = new Label(c, SWT.NONE);
-		l1.setText(MStudioMessages.getString("MGMainWizardPage.0")); //$NON-NLS-1$
-		l1.setFont(parent.getFont());
-		l1.setLayoutData(new GridData(GridData.BEGINNING));
+		Label label = new Label(c, SWT.NONE);
+		label.setText(MStudioMessages.getString("MGMainWizardPage.0")); //$NON-NLS-1$
+		label.setFont(parent.getFont());
+		label.setLayoutData(new GridData(GridData.BEGINNING));
 
-		right_label = new Label(c, SWT.NONE);
-		right_label.setFont(parent.getFont());
-		right_label.setLayoutData(new GridData(GridData.BEGINNING));
+		// right_label = new Label(c, SWT.NONE);
+		// right_label.setFont(parent.getFont());
+		// right_label.setLayoutData(new GridData(GridData.BEGINNING));
 
 		tree = new Tree(c, SWT.SINGLE | SWT.BORDER);
 		tree.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -122,9 +122,9 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 				e.result = MStudioMessages.getString("MGMainWizardPage.0"); //$NON-NLS-1$
 			}
 		});
-		right = new Composite(c, SWT.NONE);
-		right.setLayoutData(new GridData(GridData.FILL_BOTH));
-		right.setLayout(new PageLayout());
+		composite = new Composite(c, SWT.NONE);
+		// right.setLayoutData(new GridData(GridData.FILL_BOTH));
+		// right.setLayout(new PageLayout());
 
 		show_sup = new Button(c, SWT.CHECK);
 		show_sup.setText(MStudioMessages.getString("MGMainWizardPage.1")); //$NON-NLS-1$
@@ -136,7 +136,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 			public void widgetSelected(SelectionEvent e) {
 				if (h_selected != null)
 					h_selected.setSupportedOnly(show_sup.getSelection());
-				switchTo(updateData(tree, right, show_sup,
+				switchTo(updateData(tree, composite, show_sup,
 						MStudioNewCAppProjectSelectWizardPage.this, getWizard()),
 						getDescriptor(tree));
 			}
@@ -235,7 +235,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		return true;
 	}
 
-	public static CWizardHandler updateData(Tree tree, Composite right,
+	public static CWizardHandler updateData(Tree tree, Composite compos,
 			Button show_sup, IWizardItemsListListener ls, IWizard wizard) {
 		// remember selected item
 		TreeItem[] sel = tree.getSelection();
@@ -251,11 +251,10 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 			return null;
 		List<EntryDescriptor> items = new ArrayList<EntryDescriptor>();
 		for (int i = 0; i < extensions.length; ++i) {
-			IConfigurationElement[] elements = extensions[i]
-					.getConfigurationElements();
+			IConfigurationElement[] elements = extensions[i] .getConfigurationElements();
 			for (IConfigurationElement element : elements) {
 				if (element.getName().equals(ELEMENT_NAME)) {
-					
+
 					MStudioNewWizardTemplate w = null;
 					try {
 						w = (MStudioNewWizardTemplate) element
@@ -267,17 +266,15 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 					}
 					if (w == null)
 						return null;
-					w.setDependentControl(right, ls);
-					for (EntryDescriptor ed : w.createItems(show_sup
-							.getSelection(), wizard)) {
+					w.setDependentControl(compos, ls);
+					for (EntryDescriptor ed : w.createItems(show_sup.getSelection(), wizard)) {
 						items.add(ed);
 					}
 				}
 			}
 		}
 		// If there is a EntryDescriptor which is default for category, make
-		// sure it
-		// is in the front of the list.
+		// sure it is in the front of the list.
 		for (int i = 0; i < items.size(); ++i) {
 			EntryDescriptor ed = items.get(i);
 			if (ed.isCategory()) {
@@ -318,10 +315,9 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 	private static void addItemsToTree(Tree tree, List<EntryDescriptor> items) {
 
-		ArrayList<TreeItem> placedTreeItemsList = new ArrayList<TreeItem>(items
-				.size());
-		ArrayList<EntryDescriptor> placedEntryDescriptorsList = new ArrayList<EntryDescriptor>(
-				items.size());
+		ArrayList<TreeItem> placedTreeItemsList = new ArrayList<TreeItem>(items.size());
+		ArrayList<EntryDescriptor> placedEntryDescriptorsList =
+											new ArrayList<EntryDescriptor>(items.size());
 		for (EntryDescriptor wd : items) {
 			if (wd.getParentId() == null) {
 				wd.setPath(wd.getId());
@@ -394,15 +390,15 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		if (h == null) {
 			if (ed.isCategory()) {
 				if (categorySelectedLabel == null) {
-					categorySelectedLabel = new Label(right, SWT.WRAP);
+					categorySelectedLabel = new Label(composite, SWT.WRAP);
 					categorySelectedLabel.setText(MStudioMessages.getString("MGMainWizardPage.12"));
-					right.layout();
+					composite.layout();
 				}
 				categorySelectedLabel.setVisible(true);
 			}
 			return;
 		}
-		right_label.setText(h_selected.getHeader());
+		// right_label.setText(h_selected.getHeader());
 		if (categorySelectedLabel != null)
 			categorySelectedLabel.setVisible(false);
 		h_selected.handleSelection();
@@ -438,3 +434,4 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		return items;
 	}
 }
+
