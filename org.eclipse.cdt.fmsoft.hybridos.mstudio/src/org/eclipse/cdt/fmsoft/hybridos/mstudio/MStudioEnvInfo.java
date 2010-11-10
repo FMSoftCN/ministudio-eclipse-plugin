@@ -44,6 +44,7 @@ public class MStudioEnvInfo {
 	//private final static String SoCConf_section_kernel = "kernel";
 	//private final static String SoCConf_section_toolchain = "toolchain";
 	private final static String SoCConf_section_services = "services";
+	private final static String SoCConf_section_miginit = "mginit";
 
 	//the ini file object which pointer to SoC used by current workspace
 	private enum MiniGUIRunMode {
@@ -62,15 +63,26 @@ public class MStudioEnvInfo {
 	
 	//-----private methods-----
 	private static String getCurSoCConfFileName() {
-		if (SoCName != null)
-			return SoCPathPrefix + SoCName + "/" + SoCConfigFile;
-		else
+		if (SoCName == null)
 			return null;
+		return SoCPathPrefix + SoCName + "/" + SoCConfigFile;
 	}
 
 	//get current SoC 
 	public MStudioParserIniFile getSoCIniFile() {
 		return iniFile;
+	}
+	
+	public String getMginitBinPath () {
+		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
+			return null;
+		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SoCConf_section_miginit, "bin");
+	}
+	
+	public String getMginitCfgFile() {
+		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
+			return null;
+		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SoCConf_section_miginit, "cfg");
 	}
 	
 	public List<String> getServices() {
