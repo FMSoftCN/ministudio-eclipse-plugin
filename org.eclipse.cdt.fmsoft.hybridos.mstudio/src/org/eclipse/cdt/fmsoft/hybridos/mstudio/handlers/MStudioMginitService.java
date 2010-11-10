@@ -1,6 +1,9 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.handlers;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -85,9 +88,11 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
         return path.removeLastSegments(1);
     }
     */
-
+	
 	private void startMginit()
 	{
+		//getAllProcess();
+		
 		File files=new File(mginitTmpFile);
 		if(!files.exists())
 		{
@@ -136,20 +141,51 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}			
 		}
 	}
 	
 	
 	private void stopMginit()
 	{
-		if(miniguiServer != null)
-		{			
-			miniguiServer.destroy();
-			miniguiServer = null;
-		}
-		
 		try{
+			//if mginitServer exist kill it
+			if(miniguiServer != null)
+			{			
+				miniguiServer.destroy();
+				miniguiServer = null;
+			}
+			else
+			{
+				//find mginit process in all processes ,if find kill it.
+				List<String> args = new ArrayList<String>();
+				List<String> returnValues=new ArrayList<String>();
+				//args.add("ps");
+				//args.add("aux");
+				args.add("pgrep");
+				args.add("-o");
+				args.add("mginit");
+				Process p = Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));
+				InputStream is = p.getInputStream();
+				BufferedReader br = new BufferedReader(new InputStreamReader(is));
+				String line="";
+				while((line=br.readLine())!=null)
+				{
+					returnValues.add(line.toString());
+				}
+				if(returnValues.size()>0)
+				{
+					for(int i=0;i<returnValues.size();i++)
+					{
+						args.clear();
+						args.add("kill");
+						args.add(returnValues.get(i).toString());
+						Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));						
+					}
+				}
+				p.destroy();
+			}				
+			//find the temp file, if exist delete it
 			File file=new File(mginitTmpFile);
 			if(file.exists())
 			{
