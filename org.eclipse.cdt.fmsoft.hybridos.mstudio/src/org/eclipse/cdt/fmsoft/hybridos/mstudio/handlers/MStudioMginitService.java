@@ -91,10 +91,8 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	
 	private void startMginit()
 	{
-		//getAllProcess();
-		
-		File files=new File(mginitTmpFile);
-		if(!files.exists())
+		//File files=new File(mginitTmpFile);
+		if(mginitHasRunning())
 		{
 			try {
 				/*
