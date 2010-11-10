@@ -156,7 +156,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				miniguiServer = null;
 			}
 			else
-			{
+			{				
 				//find mginit process in all processes ,if find kill it.
 				List<String> args = new ArrayList<String>();
 				List<String> returnValues=new ArrayList<String>();
