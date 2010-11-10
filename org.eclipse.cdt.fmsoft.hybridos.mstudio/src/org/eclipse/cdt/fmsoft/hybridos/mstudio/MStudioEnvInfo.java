@@ -39,12 +39,12 @@ public class MStudioEnvInfo {
 	private final static String SoCPathPrefix = "/opt/hybridos/";
 	private final static String SoCConfigFile = ".hybridos.cfg";
 	
-	//private final static String SoCConf_section_soc = "soc";
-	private final static String SoCConf_section_minigui = "minigui";
-	//private final static String SoCConf_section_kernel = "kernel";
-	//private final static String SoCConf_section_toolchain = "toolchain";
-	private final static String SoCConf_section_services = "services";
-	private final static String SoCConf_section_miginit = "mginit";
+	//private final static String SOC_CFG_SECTION_SOC = "soc";
+	private final static String SOC_CFG_SECTION_MINIGUI = "minigui";
+	//private final static String SOC_CFG_SECTION_KERNEL = "kernel";
+	//private final static String SOC_CFG_SECTION_TOOLCHAIN = "toolchain";
+	private final static String SOC_CFG_SECTION_SERVICES = "services";
+	private final static String SOC_CFG_SECTION_MGINIT = "mginit";
 
 	//the ini file object which pointer to SoC used by current workspace
 	private enum MiniGUIRunMode {
@@ -76,23 +76,23 @@ public class MStudioEnvInfo {
 	public String getMginitBinPath () {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
 			return null;
-		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SoCConf_section_miginit, "bin");
+		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
 	}
 	
 	public String getMginitCfgFile() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
 			return null;
-		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SoCConf_section_miginit, "cfg");
+		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
 	}
 	
 	public List<String> getServices() {
-		int srvCount = iniFile.getIntegerProperty(SoCConf_section_services, "num");
+		int srvCount = iniFile.getIntegerProperty(SOC_CFG_SECTION_SERVICES, "num");
 		if (srvCount <= 0)
 			return null;
 		
 		List<String> srvList = new ArrayList<String>(srvCount);
 		for (int i = 0; i < srvCount; i++) {
-			srvList.add(iniFile.getStringProperty(SoCConf_section_services, "service" + i));
+			srvList.add(iniFile.getStringProperty(SOC_CFG_SECTION_SERVICES, "service" + i));
 		}
 		return srvList;
 	}
@@ -146,7 +146,7 @@ public class MStudioEnvInfo {
 		
 		SoCName = store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
 		iniFile = new MStudioParserIniFile(getCurSoCConfFileName());
-		mgRunMode = MiniGUIRunMode.valueOf(iniFile.getStringProperty(SoCConf_section_minigui, "runmode"));
+		mgRunMode = MiniGUIRunMode.valueOf(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, "runmode"));
 		
 		File socDir = new File(SoCPathPrefix + SoCName);
 		String hpkgFiles[] = socDir.list(new hpkgFilter());
