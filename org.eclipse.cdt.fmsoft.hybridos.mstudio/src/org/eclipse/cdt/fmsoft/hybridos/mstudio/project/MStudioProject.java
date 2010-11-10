@@ -15,21 +15,21 @@ import org.eclipse.core.runtime.Status;
 
 
 public class MStudioProject {
-	private enum MStudioProjectTemplateType {
-	        exe,
-	        normallib,
-	        dlcustom,
-	        mginitmodule,
+	public enum MStudioProjectTemplateType {
+        exe,
+        normallib,
+        dlcustom,
+        mginitmodule,
 	};
 
-	private enum MStudioProjectEntryType {
-	        common,
-	        minigui
+	public enum MStudioProjectEntryType {
+        common,
+        minigui
 	};
 
 	private enum MStudioProjectDefaultDeployable {
-	        yes,
-	        no	
+        yes,
+        no	
 	};
 	
 	private static final String MSTUDIO_VERSION = "org.eclipse.cdt.fmsoft.hybridos.mstudio.version";
@@ -37,6 +37,8 @@ public class MStudioProject {
 	private final static String MSTUDIO_TMPLTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.tmpltype";
 	private final static String MSTUDIO_ENTRYTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.entrytype";
 	private final static String MSTUDIO_DEPLOYABLE = "org.eclipse.cdt.feynman.hybridos.mstudio.deployable";
+	
+	private final String DPKGS_SPLIT_CHAR = " ?";  //FIXME , may be only space 
 	
 	private IProject wrapped;
 	
@@ -48,16 +50,13 @@ public class MStudioProject {
 		return wrapped;
 	}
 	
-	public void initProjectTypeInfo(boolean isLibrary, boolean isMginitModule, boolean isMgEntry) {
-		if (isMgEntry)
-			setPersistentSettings(MSTUDIO_ENTRYTYPE, MStudioProjectEntryType.minigui.name());
-		else
-			setPersistentSettings(MSTUDIO_ENTRYTYPE, MStudioProjectEntryType.common.name());
-		
-		if (isMginitModule)
-			setPersistentTmplType(MStudioProjectTemplateType.mginitmodule);
-		//TODO:
-		
+	public void initProjectTypeInfo(boolean isMgEntry, MStudioProjectTemplateType type) {
+		if (isMgEntry) {
+			setPersistentEntryType (MStudioProjectEntryType.minigui);
+		} else {
+			setPersistentEntryType (MStudioProjectEntryType.common);
+		}
+		setPersistentTmplType(type);
 	}
 	
 	private boolean setPersistentSettings(String name, String value) {
@@ -92,32 +91,34 @@ public class MStudioProject {
 	}
 
 	public boolean setDepPkgs(String[] depPkgs) {
-		//TODO:
-		return false;
+		if (depPkgs.length <= 0)
+			return false;
+		
+		String tmp = depPkgs[0];
+		for (int i = 1; i < depPkgs.length; i++){
+			tmp += DPKGS_SPLIT_CHAR + depPkgs[i];
+		}
+		setPersistentSettings(MSTUDIO_DEPPKGS, tmp);
+		return true;
 	}
 	
 	public String[] getDepPkgs() {
 		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
-		return pkgs != null ? pkgs.split(" ?", 1) : null;
+		return pkgs != null ? pkgs.split(DPKGS_SPLIT_CHAR, 0) : null;
 	}
 	
 	public boolean setDefaultDeployable(boolean deployable) {
-		String newValue;
-		if (deployable)
-			newValue = MStudioProjectDefaultDeployable.yes.name();
-		else
-			newValue = MStudioProjectDefaultDeployable.no.name();
-		
-		return setPersistentSettings(MSTUDIO_DEPLOYABLE, newValue);
+		return setPersistentSettings(MSTUDIO_DEPLOYABLE, 
+				deployable ? MStudioProjectDefaultDeployable.yes.name() :MStudioProjectDefaultDeployable.no.name());
 	}
 	
 	public boolean getDefaultDeployable() {
-		return getPersistentSettings(MSTUDIO_DEPLOYABLE).equals(MStudioProjectDefaultDeployable.yes);
+		return getPersistentSettings(MSTUDIO_DEPLOYABLE).equals(MStudioProjectDefaultDeployable.yes.name());
 	}
 
 	public boolean isExeTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.exe))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.exe.name()))
 			return true;
 		
 		return false;
@@ -125,7 +126,7 @@ public class MStudioProject {
 	
 	public boolean isIALTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.dlcustom))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.dlcustom.name()))
 			return true;
 
 		return false;
@@ -133,7 +134,7 @@ public class MStudioProject {
 	
 	public boolean isMginitModuleTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.mginitmodule))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.mginitmodule.name()))
 			return true;
 		
 		return false;
@@ -141,7 +142,7 @@ public class MStudioProject {
 	
 	public boolean isNormalLibTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.normallib))
+		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.normallib.name()))
 			return true;
 		
 		return false;
@@ -149,7 +150,7 @@ public class MStudioProject {
 	
 	public boolean isMiniGUIEntryType() {
 		String tmplType = getPersistentEntryType();
-		if (tmplType != null && tmplType.equals(MStudioProjectEntryType.minigui))
+		if (tmplType != null && tmplType.equals(MStudioProjectEntryType.minigui.name()))
 			return true;
 
 		return false;
@@ -179,7 +180,7 @@ public class MStudioProject {
 			String msBinPath = getMStudioBinPath();
 			if (msBinPath == null) 	return;
 			
-		//TODO , set to the ui-builder start ....
+			//TODO , set to the ui-builder start ....
 			
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -233,6 +234,5 @@ public class MStudioProject {
 		description.setNatureIds(newNatures);
 		wrapped.setDescription(description, monitor);
 	}
-
 }
 
