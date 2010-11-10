@@ -269,7 +269,10 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 	protected IProject continueCreation(IProject prj) {
 		try {
-			new MStudioProject(prj).addMStudioNature(new NullProgressMonitor());
+			MStudioProject mprj = new MStudioProject(prj);
+			mprj.addMStudioNature(new NullProgressMonitor());
+			// TODO, initProjectTypeInfo .... 
+			// mprj.initProjectTypeInfo(isMgEntry, type);
 		} catch (CoreException e) {
 		}
 		return prj;
