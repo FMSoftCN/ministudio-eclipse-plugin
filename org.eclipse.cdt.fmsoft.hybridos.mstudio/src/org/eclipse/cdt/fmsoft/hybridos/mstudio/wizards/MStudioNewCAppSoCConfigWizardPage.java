@@ -1,17 +1,25 @@
+/*********************************************************************
+ * Copyright (C) 2005 - 2010, Beijing FMSoft Technology Co., Ltd.
+ * Room 902, Floor 9, Taixing, No.11, Huayuan East Road, Haidian
+ * District, Beijing, P. R. CHINA 100191.
+ * All rights reserved.
+ *
+ * This software is the confidentail and proprietary information of
+ * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance you entered into with FMSoft.
+ *
+ *			http://www.minigui.com
+ *
+ *********************************************************************/
+
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
-import org.eclipse.cdt.managedbuilder.core.IProjectType;
-import org.eclipse.cdt.managedbuilder.core.IToolChain;
-import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
-import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
-import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
-import org.eclipse.cdt.ui.newui.CDTPrefUtil;
-import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -30,6 +38,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -37,6 +46,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+
+import org.eclipse.cdt.managedbuilder.core.IProjectType;
+import org.eclipse.cdt.managedbuilder.core.IToolChain;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
+import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
+import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
+import org.eclipse.cdt.ui.newui.CDTPrefUtil;
+import org.eclipse.cdt.ui.newui.UIMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
@@ -48,18 +69,19 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12"); 
 	private static final String EMPTY_STR = "";
 
-	private Table table;
-	private CheckboxTableViewer tv;
-	private Label l_projtype;
-	private Label l_chains;
-	private Composite parent;
-	private String propertyId;
+	private Table table = null;
+	private CheckboxTableViewer ctv = null;
+	private Label l_projtype = null;
+	private Label l_chains = null;
+	private Composite parent = null;
+	private String propertyId = null;
 	private String errorMessage = null;
 	private String message = MESSAGE;
 	public boolean isVisible = false;
-	private MStudioWizardHandler handler;
+	private MStudioWizardHandler handler = null;
 	public boolean pagesLoaded = false;
 	private IToolChain[] visitedTCs = null;
+	private MStudioEnvInfo msEnvInfo = null;
 	IWizardPage[] customPages = null;
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler h) {
@@ -70,10 +92,11 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public CfgHolder[] getCfgItems(boolean getDefault) {
-		CfgHolder[] its;
-		if (getDefault || table == null || !isVisited())
+		CfgHolder[] its = null;
+
+		if (getDefault || table == null || !isVisited()) {
 			its = getDefaultCfgs(handler);
-		else {
+		} else {
 			ArrayList<CfgHolder> out = new ArrayList<CfgHolder>(table.getItemCount());
 			for (TableItem ti : table.getItems()) {
 				if (ti.getChecked())
@@ -81,6 +104,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 			its = out.toArray(new CfgHolder[out.size()]);
 		}
+
 		return its;
 	}
 
@@ -91,18 +115,27 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Composite c1 = new Composite(parent, SWT.NONE);
-		c1.setLayout(new GridLayout(2, false));
+		c1.setLayout(new GridLayout(2, true));
 		c1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
 				GridData.BEGINNING);
-		l_projtype = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
-		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
-				GridData.BEGINNING);
-		l_chains = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
-		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
-				GridData.BEGINNING);
+
+		String[] socType = MStudioEnvInfo.getSoCPaths();
+		Combo combo = new Combo(c1, SWT.READ_ONLY);
+		combo.setItems(socType);
+		combo.setText(socType[0]);
 		setupLabel(c1, EMPTY_STR, GridData.BEGINNING);
+
+		Composite cLabel = new Composite(parent, SWT.NONE);
+		cLabel.setLayout(new GridLayout());
+		cLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// l_projtype = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
+		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
+				GridData.BEGINNING);
+		// l_chains = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
+		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
+				GridData.BEGINNING);
 
 		Composite c2 = new Composite(parent, SWT.NONE);
 		c2.setLayout(new GridLayout(2, false));
@@ -112,8 +145,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		table.setLayoutData(gd);
 
-		tv = new CheckboxTableViewer(table);
-		tv.setContentProvider(new IStructuredContentProvider() {
+		setupLabel(c2, COMMENT, GridData.BEGINNING);
+
+		ctv = new CheckboxTableViewer(table);
+		ctv.setContentProvider(new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {
 				return (Object[]) inputElement;
 			}
@@ -125,67 +160,66 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					Object newInput) {
 			}
 		});
-		tv.setLabelProvider(new LabelProvider() {
+		ctv.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
-				return element == null ? EMPTY_STR : ((CfgHolder) element)
-						.getName();
+				return element == null ? EMPTY_STR : ((CfgHolder) element).getName();
 			}
 
 			public Image getImage(Object element) {
 				return IMG;
 			}
 		});
-		tv.addCheckStateListener(new ICheckStateListener() {
+		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
 		});
 		Composite c = new Composite(c2, SWT.NONE);
-		c.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 		c.setLayout(new GridLayout());
+		c.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
-		Button b1 = new Button(c, SWT.PUSH);
+		Button b1 = new Button(c, SWT.CHECK);
 		b1.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
 		b1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		b1.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				tv.setAllChecked(true);
+				ctv.setAllChecked(true);
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
 		});
 
-		Button b2 = new Button(c, SWT.PUSH);
-		b2.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.8"));
-		b2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		b2.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				tv.setAllChecked(false);
-				setPageComplete(isCustomPageComplete());
-				update();
-			}
-		});
+		// Button b2 = new Button(c, SWT.PUSH);
+		// b2.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.8"));
+		// b2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// b2.addSelectionListener(new SelectionAdapter() {
+		// 	public void widgetSelected(SelectionEvent e) {
+		// 		ctv.setAllChecked(false);
+		// 		setPageComplete(isCustomPageComplete());
+		// 		update();
+		// 	}
+		// });
 
 		// dummy place holder
-		new Label(c, 0).setLayoutData(new GridData(GridData.FILL_BOTH));
+		// new Label(c, 0).setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Button b3 = new Button(c, SWT.PUSH);
-		b3.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.13"));
-		b3.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		b3.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				advancedDialog();
-			}
-		});
+		// Button b3 = new Button(c, SWT.PUSH);
+		// b3.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.13"));
+		// b3.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// b3.addSelectionListener(new SelectionAdapter() {
+		// 	public void widgetSelected(SelectionEvent e) {
+		// 		advancedDialog();
+		// 	}
+		// });
 
-		Group gr = new Group(parent, SWT.NONE);
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		gr.setLayoutData(gd);
-		gr.setLayout(new FillLayout());
-		Label lb = new Label(gr, SWT.NONE);
-		lb.setText(COMMENT);
+		// Group gr = new Group(parent, SWT.NONE);
+		// gd = new GridData(GridData.FILL_HORIZONTAL);
+		// gd.horizontalSpan = 2;
+		// gr.setLayoutData(gd);
+		// gr.setLayout(new FillLayout());
+		// Label lb = new Label(gr, SWT.NONE);
+		// lb.setText(COMMENT);
 
 		setControl(parent);
 	}
@@ -199,6 +233,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		String id = handler.getPropertyId();
 		IProjectType pt = handler.getProjectType();
 		ArrayList<CfgHolder> out = new ArrayList<CfgHolder>();
+
 		for (IToolChain tc : handler.getSelectedToolChains()) {
 			CfgHolder[] cfgs = null;
 			if (id != null)
@@ -241,7 +276,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			message = errorMessage;
 			return false;
 		}
-		if (tv.getCheckedElements().length == 0) {
+		if (ctv.getCheckedElements().length == 0) {
 			errorMessage = UIMessages.getString("MStudioNewCAppSoCConfigWizardPage.11"); 
 			message = errorMessage;
 			return false;
@@ -255,8 +290,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		parent.setVisible(visible);
 		isVisible = visible;
 		if (visible && handler != null && !isVisited()) {
-			tv.setInput(CfgHolder.unique(getDefaultCfgs(handler)));
-			tv.setAllChecked(true);
+			ctv.setInput(CfgHolder.unique(getDefaultCfgs(handler)));
+			ctv.setAllChecked(true);
 			String s = EMPTY_STR;
 			visitedTCs = handler.getSelectedToolChains();
 			for (int i = 0; i < visitedTCs.length; i++) {
@@ -264,10 +299,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				if (i < visitedTCs.length - 1)
 					s = s + "\n"; 
 			}
-			l_chains.setText(s);
-			l_projtype.setText(handler.getName());
+			// l_chains.setText(s);
+			// l_projtype.setText(handler.getName());
 			setPageComplete(isCustomPageComplete());
-			l_chains.getParent().pack();
+			// l_chains.getParent().pack();
 		}
 		if (visible) {
 			parent.getParent().layout(true, true);

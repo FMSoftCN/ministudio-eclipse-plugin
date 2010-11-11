@@ -1,3 +1,18 @@
+/*********************************************************************
+ * Copyright (C) 2005 - 2010, Beijing FMSoft Technology Co., Ltd.
+ * Room 902, Floor 9, Taixing, No.11, Huayuan East Road, Haidian
+ * District, Beijing, P. R. CHINA 100191.
+ * All rights reserved.
+ *
+ * This software is the confidentail and proprietary information of
+ * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance you entered into with FMSoft.
+ *
+ *			http://www.minigui.com
+ *
+ *********************************************************************/
+
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.net.URI;
@@ -122,28 +137,29 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 				e.result = MStudioMessages.getString("MGMainWizardPage.0"); //$NON-NLS-1$
 			}
 		});
-		composite = new Composite(c, SWT.NONE);
+		composite = c;
+		// composite = new Composite(c, SWT.NONE);
 		// right.setLayoutData(new GridData(GridData.FILL_BOTH));
 		// right.setLayout(new PageLayout());
 
-		show_sup = new Button(c, SWT.CHECK);
-		show_sup.setText(MStudioMessages.getString("MGMainWizardPage.1")); //$NON-NLS-1$
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 2;
-		show_sup.setLayoutData(gd);
-		show_sup.addSelectionListener(new SelectionAdapter() {
+		// show_sup = new Button(c, SWT.CHECK);
+		// show_sup.setText(MStudioMessages.getString("MGMainWizardPage.1")); //$NON-NLS-1$
+		// GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		// gd.horizontalSpan = 2;
+		// show_sup.setLayoutData(gd);
+		// show_sup.addSelectionListener(new SelectionAdapter() {
 
-			public void widgetSelected(SelectionEvent e) {
-				if (h_selected != null)
-					h_selected.setSupportedOnly(show_sup.getSelection());
-				switchTo(updateData(tree, composite, show_sup,
-						MStudioNewCAppProjectSelectWizardPage.this, getWizard()),
-						getDescriptor(tree));
-			}
-		});
+		// 	public void widgetSelected(SelectionEvent e) {
+		// 		if (h_selected != null)
+		// 			h_selected.setSupportedOnly(show_sup.getSelection());
+		// 		switchTo(updateData(tree, composite, show_sup,
+		// 				MStudioNewCAppProjectSelectWizardPage.this, getWizard()),
+		// 				getDescriptor(tree));
+		// 	}
+		// });
 
 		// restore settings from preferences
-		show_sup.setSelection(!CDTPrefUtil.getBool(CDTPrefUtil.KEY_NOSUPP));
+		// show_sup.setSelection(!CDTPrefUtil.getBool(CDTPrefUtil.KEY_NOSUPP));
 	}
 
 	public IWizardPage getNextPage() {
@@ -257,8 +273,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 					MStudioNewWizardTemplate w = null;
 					try {
-						w = (MStudioNewWizardTemplate) element
-								.createExecutableExtension(CLASS_NAME);
+						w = (MStudioNewWizardTemplate) element.createExecutableExtension(CLASS_NAME);
 					} catch (CoreException e) {
 						System.out.println(MStudioMessages
 										.getString("MGMainWizardPage.5") + e.getLocalizedMessage()); //$NON-NLS-1$
@@ -267,8 +282,9 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 					if (w == null)
 						return null;
 					w.setDependentControl(compos, ls);
-					for (EntryDescriptor ed : w.createItems(show_sup.getSelection(), wizard)) {
-						items.add(ed);
+					// for (EntryDescriptor ed : w.createItems(show_sup.getSelection(), wizard)) {
+					for (EntryDescriptor ed : w.createItems(false, wizard)) {
+					 	items.add(ed);
 					}
 				}
 			}
@@ -402,7 +418,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		if (categorySelectedLabel != null)
 			categorySelectedLabel.setVisible(false);
 		h_selected.handleSelection();
-		h_selected.setSupportedOnly(show_sup.getSelection());
+		// h_selected.setSupportedOnly(show_sup.getSelection());
 	}
 
 	public static EntryDescriptor getDescriptor(Tree _tree) {

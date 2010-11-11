@@ -1,6 +1,18 @@
-/**
- * 
- */
+/*********************************************************************
+ * Copyright (C) 2005 - 2010, Beijing FMSoft Technology Co., Ltd.
+ * Room 902, Floor 9, Taixing, No.11, Huayuan East Road, Haidian
+ * District, Beijing, P. R. CHINA 100191.
+ * All rights reserved.
+ *
+ * This software is the confidentail and proprietary information of
+ * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance you entered into with FMSoft.
+ *
+ *			http://www.minigui.com
+ *
+ *********************************************************************/
+
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.net.URI;
@@ -32,6 +44,7 @@ import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
@@ -48,12 +61,13 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	private static final String message = MStudioMessages.getString("MGProjectWizard.op_error.message");
 	private static final String[] EMPTY_ARR = new String[0];
 
-	protected IConfigurationElement fConfigElement;
-	protected MStudioNewCAppProjectSelectWizardPage fMainPage;
+	protected IConfigurationElement fConfigElement = null;
+	protected MStudioNewCAppProjectSelectWizardPage fMainPage = null;
+	private MStudioEnvInfo msEnvInfo = null;
 
-	protected IProject newProject;
-	private String wz_title;
-	private String wz_desc;
+	protected IProject newProject = null;
+	private String wz_title = null;
+	private String wz_desc = null;
 
 	private boolean existingPath = false;
 	private String lastProjectName = null;
@@ -73,6 +87,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		setWindowTitle(title);
 		wz_title = title;
 		wz_desc = desc;
+		msEnvInfo = new MStudioEnvInfo();
 	}
 
 	public void addPages() {
@@ -109,14 +124,14 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		if (newProject == null) {
 			existingPath = false;
 			try {
-				IFileStore fs;
+				IFileStore fs = null;
 				URI p = fMainPage.getProjectLocation();
 				if (p == null) {
-					fs = EFS.getStore(ResourcesPlugin.getWorkspace().getRoot()
-							.getLocationURI());
+					fs = EFS.getStore(ResourcesPlugin.getWorkspace().getRoot().getLocationURI());
 					fs = fs.getChild(fMainPage.getProjectName());
-				} else
+				} else {
 					fs = EFS.getStore(p);
+				}
 				IFileInfo f = fs.fetchInfo();
 				if (f.exists() && f.isDirectory()) {
 					if (fs.getChild(".project").fetchInfo().exists()) { 
@@ -143,19 +158,22 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	private void clearProject() {
 		if (lastProjectName == null)
 			return;
+
 		try {
 			ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(lastProjectName).delete(!existingPath, true, null);
-		} catch (CoreException ignore) { }
+		} catch (CoreException ignore) {
+		}
+
 		newProject = null;
 		lastProjectName = null;
 		lastProjectLocation = null;
 	}
 
 	private boolean invokeRunnable(IRunnableWithProgress runnable) {
-		IRunnableWithProgress op = new WorkspaceModifyDelegatingOperation(runnable);
+		IRunnableWithProgress opRunnable = new WorkspaceModifyDelegatingOperation(runnable);
 		try {
-			getContainer().run(true, true, op);
+			getContainer().run(true, true, opRunnable);
 		} catch (InvocationTargetException e) {
 			CUIPlugin.errorDialog(getShell(), title, message, e.getTargetException(), false);
 			clearProject();
@@ -185,17 +203,16 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	protected boolean setCreated() throws CoreException {
-		ICProjectDescriptionManager mngr = CoreModel.getDefault()
-				.getProjectDescriptionManager();
+		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
+		ICProjectDescription des = mngr.getProjectDescription(newProject, false);
 
-		ICProjectDescription des = mngr
-				.getProjectDescription(newProject, false);
 		if (des.isCdtProjectCreating()) {
 			des = mngr.getProjectDescription(newProject, true);
 			des.setCdtProjectCreated();
 			mngr.setProjectDescription(newProject, des, false, null);
 			return true;
 		}
+
 		return false;
 	}
 
@@ -209,8 +226,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		fConfigElement = config;
 	}
 
-	private IRunnableWithProgress getRunnable(boolean _defaults,
-			final boolean onFinish) {
+	private IRunnableWithProgress getRunnable(boolean _defaults, final boolean onFinish) {
 		final boolean defaults = _defaults;
 		return new IRunnableWithProgress() {
 			public void run(IProgressMonitor imonitor)
@@ -230,8 +246,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		};
 	}
 
-	public IProject createIProject(final String name, final URI location)
-			throws CoreException {
+	public IProject createIProject(final String name, final URI location) throws CoreException {
 		if (newProject != null)
 			return newProject;
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -264,7 +279,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 	
 	public String[] getNatures() {
-		return new String[] { CProjectNature.C_NATURE_ID, MStudioProjectNature.MSTUDIO_NATURE_ID};
+		return new String[] {CProjectNature.C_NATURE_ID, MStudioProjectNature.MSTUDIO_NATURE_ID};
 	}
 
 	protected IProject continueCreation(IProject prj) {
@@ -275,6 +290,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			// mprj.initProjectTypeInfo(isMgEntry, type);
 		} catch (CoreException e) {
 		}
+
 		return prj;
 	}
 
@@ -286,11 +302,15 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		if (fMainPage.h_selected != null) {
 			if (!fMainPage.h_selected.canFinish())
 				return false;
-			String s = fMainPage.h_selected.getErrorMessage();
-			if (s != null)
+			String string = fMainPage.h_selected.getErrorMessage();
+			if (string  != null)
 				return false;
 		}
 		return super.canFinish();
+	}
+
+	public MStudioEnvInfo getEnvInfo() {
+		return msEnvInfo;
 	}
 
 	public String getLastProjectName() {
@@ -317,5 +337,5 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	public String[] getExtensions() {
 		return EMPTY_ARR;
 	}
-	
 }
+

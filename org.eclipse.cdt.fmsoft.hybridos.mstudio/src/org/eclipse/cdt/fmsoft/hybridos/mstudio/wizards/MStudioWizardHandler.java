@@ -327,7 +327,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 								e.result = head;
 						}
 					});
-			table.setToolTipText(tooltip);
+			// table.setToolTipText(tooltip);
 			if (entryInfo != null) {
 				int counter = 0;
 				int position = 0;
@@ -359,7 +359,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 		}
 		updatePreferred(preferred);
 		loadCustomPages();
-		table.setVisible(true);
+		// table.setVisible(true);
+		table.setVisible(false);
 		parent.layout();
 		if (fConfigPage != null)
 			fConfigPage.pagesLoaded = false;
