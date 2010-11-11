@@ -171,6 +171,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				{
 					returnValues.add(line.toString());
 				}
+				br.close();
 				if(returnValues.size()>0)
 				{
 					for(int i=0;i<returnValues.size();i++)
