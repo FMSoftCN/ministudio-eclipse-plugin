@@ -1,6 +1,19 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -9,8 +22,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 
 public class MStudioCommonPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	

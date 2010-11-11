@@ -89,7 +89,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 
 	private boolean isBinPathValid() {
 		Path subElementPath = new Path(binPath.getStringValue());
-        String osname = System.getProperty("os.name").toLowerCase();
+      String osname = System.getProperty("os.name").toLowerCase();
 		StringBuffer cmd = new StringBuffer("guibuilder");
 
         if (osname.indexOf("window") >= 0) {        
