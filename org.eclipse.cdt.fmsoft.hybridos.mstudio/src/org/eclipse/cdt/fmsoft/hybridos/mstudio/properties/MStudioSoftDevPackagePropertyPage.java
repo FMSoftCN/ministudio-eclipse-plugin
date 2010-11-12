@@ -108,12 +108,12 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 			}
 			else{
 				b.setSelection(false);	
-				isAllSelected=false;
+				isAllSelected = false;
 			}				
 		}
 		//if there is no button in the button list,set the selectAll-Button's selection propertie is false
-		if(0>=groupButtonList.size()){
-			isAllSelected=false;
+		if(0 >= groupButtonList.size()){
+			isAllSelected = false;
 		}
 		selectAll.setSelection(isAllSelected);
 	}
