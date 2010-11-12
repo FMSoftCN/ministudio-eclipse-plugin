@@ -49,7 +49,7 @@ public class MStudioEnvInfo {
 	//the ini file object which pointer to SoC used by current workspace
 	private enum MiniGUIRunMode {
 	    thread,
-	    processes,
+	    process,
 	    standalone
 	};
 
@@ -57,8 +57,14 @@ public class MStudioEnvInfo {
 	private static String SoCName = null;
 	private MiniGUIRunMode mgRunMode = MiniGUIRunMode.thread;
 	
-	public MStudioEnvInfo() {
+	private static MStudioEnvInfo instance = new MStudioEnvInfo();
+	
+	private MStudioEnvInfo() {
 		updateSoCName();
+	}
+	
+	public static MStudioEnvInfo getInstance (){
+		return instance;
 	}
 	
 	//-----private methods-----
@@ -74,18 +80,21 @@ public class MStudioEnvInfo {
 	}
 	
 	public String getMginitBinPath () {
-		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
+		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
 	}
 	
 	public String getMginitCfgFile() {
-		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.processes))
+		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
 	}
 	
 	public List<String> getServices() {
+		if (iniFile == null)
+			return null;
+		
 		int srvCount = iniFile.getIntegerProperty(SOC_CFG_SECTION_SERVICES, "num");
 		if (srvCount <= 0)
 			return null;
@@ -146,14 +155,20 @@ public class MStudioEnvInfo {
 		
 		SoCName = store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
 		iniFile = new MStudioParserIniFile(getCurSoCConfFileName());
-		mgRunMode = MiniGUIRunMode.valueOf(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, "runmode"));
+		if (null == iniFile) 
+			return;
+		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, "runmode"));
+		mgRunMode = MiniGUIRunMode.valueOf((iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, "runmode")));
 		
 		File socDir = new File(SoCPathPrefix + SoCName);
+		if (!socDir.exists())
+			return;
+		
 		String hpkgFiles[] = socDir.list(new hpkgFilter());
 		for (int i = 0; i < hpkgFiles.length; i++)
 		{
 			// ".../.XXXX.hpkg" -->>-- ".../.XXXX"
-			String pkgName = hpkgFiles[i].replaceAll(".hpkg", null);
+			String pkgName = hpkgFiles[i].replaceAll(".hpkg", "");
 			// ".../.XXXX" -->>-- "XXXX"
 			pkgName = pkgName.substring(pkgName.lastIndexOf('.') + 1);
 			
@@ -165,21 +180,24 @@ public class MStudioEnvInfo {
 			String sect = pfgFile.getStringProperty("package", "name");
 			
 			// depend packages ...
-			String depend[] = pfgFile.getStringProperty(sect, "depend").split(" ");
-
-			for (i = 0; i < depend.length; i++) {
-				depend[i] = depend[i].replace("-dev", null);
-				List<String> devAff = affectedPkgs.get(depend[i]);
-				if (devAff == null){
-					devAff = new ArrayList<String>(1);
+			String depends = pfgFile.getStringProperty(sect, "depend");
+			if (null != depends){
+				String dep[] = depends.split(" ");
+	
+				for (i = 0; i < dep.length; i++) {
+					dep[i] = dep[i].replace("-dev", "");
+					List<String> devAff = affectedPkgs.get(dep[i]);
+					if (devAff == null){
+						devAff = new ArrayList<String>(1);
+					}
+					if (!devAff.contains(pkgName)) {
+						devAff.add(pkgName);
+					}
+					affectedPkgs.put(dep[i], devAff);
 				}
-				if (!devAff.contains(pkgName)) {
-					devAff.add(pkgName);
-				}
-				affectedPkgs.put(depend[i], devAff);
+				List<String> depList = Arrays.asList(dep);
+				depPkgs.put(pkgName, depList);
 			}
-			List<String> depList = Arrays.asList(depend);
-			depPkgs.put(pkgName, depList);
 		}
 	}
 
@@ -190,7 +208,7 @@ public class MStudioEnvInfo {
 	
 	public boolean supportMginitModule() {
 		//whether support mginit? If MiniGUI is processes runmode, return true.
-		return mgRunMode == MiniGUIRunMode.processes;
+		return mgRunMode == MiniGUIRunMode.process;
 	}
 
 	//get the SoC used by current workspace. If still not set, return null.

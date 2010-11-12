@@ -1,11 +1,13 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.properties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.swt.SWT;
@@ -74,7 +76,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 		buttonGroup.setLayoutData(new GridData());
 		
 		contentDes = new Label(composite2Right,SWT.FILL|SWT.WRAP);
-		MStudioEnvInfo envInfo = new MStudioEnvInfo();
+		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		//clear the button array for insert
 		groupButtonList.clear();
 		for(Map.Entry<String, String> softInfo : envInfo.getAllSoftPkgs().entrySet())
@@ -97,9 +99,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	private void loadPersistentSettings() {
 		//PRIFiX
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());	
-		ArrayList s = new ArrayList();
-		s.add(mStudioProject.getDepPkgs());
-		Iterator button = groupButtonList.iterator();
+		List<String> s = Arrays.asList(mStudioProject.getDepPkgs());
+		Iterator<Button> button = groupButtonList.iterator();
 		// judge the select all button is selected
 		boolean isAllSelected=true;
 		while(button.hasNext()){
@@ -175,7 +176,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 				}
 				return;
 			}			
-			contentDes.setText(new MStudioEnvInfo().getAllSoftPkgs().get(((Button)(e.getSource())).getText()).toString());
+			contentDes.setText(MStudioPlugin.getDefault().getMStudioEnvInfo()
+					.getAllSoftPkgs().get(((Button)(e.getSource())).getText()).toString());
 		}		
 	}
 }

@@ -46,6 +46,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -87,7 +88,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		setWindowTitle(title);
 		wz_title = title;
 		wz_desc = desc;
-		msEnvInfo = new MStudioEnvInfo();
+		msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	}
 
 	public void addPages() {

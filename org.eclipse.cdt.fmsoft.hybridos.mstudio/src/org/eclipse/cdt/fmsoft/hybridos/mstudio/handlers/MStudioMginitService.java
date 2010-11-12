@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -111,7 +112,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 		        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
 		            cmd.append(".exe");
 		        }
-		        MStudioEnvInfo envInfo = new MStudioEnvInfo();
+		        MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		        String binPath = envInfo.getMginitBinPath();
 		        if(binPath == null)
 		        	return;

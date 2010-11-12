@@ -112,4 +112,8 @@ public class MStudioPlugin extends AbstractUIPlugin {
 		}
 	}
 	
+	public MStudioEnvInfo getMStudioEnvInfo () {
+		return MStudioEnvInfo.getInstance();
+	}
+	
 }
