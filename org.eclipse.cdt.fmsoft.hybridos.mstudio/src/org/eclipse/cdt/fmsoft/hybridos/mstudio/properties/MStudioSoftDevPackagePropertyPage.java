@@ -56,7 +56,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 		title.setText("Software Development Package");
 		description = new Label(composite1,SWT.NONE);
 		description.setText("Select software development packages for HybridOS");
-		description.setBounds(description.getBounds().x, description.getBounds().y, description.getBounds().width, description.getBounds().height*3);
+		//description.setBounds(description.getBounds().x, description.getBounds().y, description.getBounds().width, description.getBounds().height*3);
+		new Label(composite1,SWT.FULL_SELECTION|SWT.LINE_SOLID);
 		tip = new Label(composite1,SWT.NONE);
 		tip.setText("Please select the packages for your project");		
 		
