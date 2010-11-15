@@ -2,7 +2,6 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -16,6 +15,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -70,9 +71,11 @@ public class MStudioDeployPreferencePage extends PreferencePage implements IWork
 	   String l = locationPath.getStringValue();
 	   File file = new File(l);
 	   if (!file.exists()) {
-		   updateTipMessage("Deploy Location Path is invalid ...");
+		   updateTipMessage("Path is invalid !");
+		   setValid(false);
 	   } else {
 		   updateTipMessage("");
+		   setValid(true);
 	   }
  	}
    
@@ -85,7 +88,19 @@ public class MStudioDeployPreferencePage extends PreferencePage implements IWork
 		locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));
 		
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
-		selServList = Arrays.asList(storeServ.split(STORE_SERV_SPLIT));
+		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
+		selServList.clear();
+		for (Iterator<Button> it = btnList.iterator(); it.hasNext(); ){
+			boolean find = false;
+			Button btn = it.next();
+			for (int i = 0; i < defaultSelServ.length; i++){
+				if (defaultSelServ[i].equals(btn.getText())){
+					selServList.add(defaultSelServ[i]);
+					find = true;
+				}
+			}
+			btn.setSelection(find);
+		}
    }
    
    private void saveToStoreData () {
@@ -133,8 +148,18 @@ public class MStudioDeployPreferencePage extends PreferencePage implements IWork
 		sc.setLayoutData(new GridData(GridData.FILL_BOTH));
 		createServicesContent(sc);
 		
-		final Button checkSelAll = new Button (composite, SWT.CHECK);
+		final Button checkSelAll = new Button (composite, SWT.None);
 		checkSelAll.setText("Select All");
+		checkSelAll.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				for (Iterator<Button> it = btnList.iterator(); it.hasNext(); ){
+					Button btn = it.next();
+					btn.setSelection(true);
+				}
+				selServList.clear();
+				selServList.addAll(allServList);
+			}
+		});
 		
       initializeByStoreData ();
 		
@@ -161,6 +186,18 @@ public class MStudioDeployPreferencePage extends PreferencePage implements IWork
       return locationPath;
 	}
 	
+	private SelectionAdapter btnSelAdp = new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			selServList.clear();
+			for (Iterator<Button> it = btnList.iterator(); it.hasNext(); ){
+				Button btn = it.next();
+				if (btn.getSelection()){
+					selServList.add(btn.getText());
+				}
+			}
+		}
+	};
+	
 	private Control createServicesContent (Composite parent) {
 		Composite com = new Composite (parent, SWT.BORDER);
 		com.setLayout(new GridLayout());
@@ -175,11 +212,17 @@ public class MStudioDeployPreferencePage extends PreferencePage implements IWork
 				Button btn = new Button (com, SWT.CHECK);
 				btn.setText(serv);
 				btn.setBackground(c);
+				btn.addSelectionListener(btnSelAdp);
 				btnList.add(btn);
 			}
 		}
 		com.layout(true);
 		return com;
+	}
+	
+	protected void performDefaults() {
+		initializeByStoreData ();
+		super.performDefaults();
 	}
 	
 	public boolean performOk()
