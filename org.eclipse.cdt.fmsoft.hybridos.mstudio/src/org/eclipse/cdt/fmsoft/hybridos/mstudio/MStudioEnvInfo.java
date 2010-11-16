@@ -34,7 +34,7 @@ public class MStudioEnvInfo {
 	private Map<String, List<String>> affectedPkgs = null;
 	private Map<String, List<String>> depPkgs = null;
 	private Map<String, MStudioParserIniFile> allSoftPkgs = null;
-
+	//private Map<String, MStudioParserIniFile> allSoftPkgs = new HashMap<String, MStudioParserIniFile>();
 	//SoC configuration path = SoCPathPrefix + "SoC name" + SoCConfigFile
 	private final static String SoCPathPrefix = "/opt/hybridos/";
 	private final static String SoCConfigFile = ".hybridos.cfg";
@@ -108,7 +108,9 @@ public class MStudioEnvInfo {
 
 	//get all soft packages name and description.
 	public Map<String, String> getAllSoftPkgs() {
-		Map<String, String> mapRet =  new HashMap<String, String>();    
+		Map<String, String> mapRet =  new HashMap<String, String>();  
+		if(null == allSoftPkgs)
+			allSoftPkgs = new HashMap<String, MStudioParserIniFile>();
 		for(Map.Entry<String, MStudioParserIniFile> entry : allSoftPkgs.entrySet()){    
 			String name = entry.getKey().toString();
 			MStudioParserIniFile ini = entry.getValue();
@@ -148,7 +150,7 @@ public class MStudioEnvInfo {
 			depPkgs = new HashMap<String, List<String>>();
 		else
 			depPkgs.clear();
-		if (null == allSoftPkgs)
+		if (null == allSoftPkgs)	
 			allSoftPkgs = new HashMap<String, MStudioParserIniFile>();
 		else
 			allSoftPkgs.clear();
