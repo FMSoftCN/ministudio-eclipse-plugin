@@ -34,7 +34,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	private Group buttonGroup;
 	private Label contentDes;
 	private Button selectAll;
-	private List<Button> groupButtonList;
+	private ArrayList<Button> groupButtonList;
 	public MStudioSoftDevPackagePropertyPage() {
 		groupButtonList=new ArrayList<Button>();
 	}
@@ -77,15 +77,17 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 		
 		contentDes = new Label(composite2Right,SWT.FILL|SWT.WRAP);
 		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		//MStudioEnvInfo envInfo=new MStudioEnvInfo();
 		//clear the button array for insert
-		groupButtonList.clear();
+		groupButtonList.clear();		
 		for(Map.Entry<String, String> softInfo : envInfo.getAllSoftPkgs().entrySet())
-		{
+		{			
 			Button newButton = new Button(buttonGroup,SWT.CHECK);
 			newButton.setText(softInfo.getKey().toString());
 			newButton.setToolTipText(softInfo.getKey().toString());
 			newButton.addSelectionListener(new ButtonSelectionListen());
 			groupButtonList.add(newButton);
+		
 		}
 		selectAll = new Button(composite2Left,SWT.CHECK);
 		selectAll.setText("Select All");
@@ -99,7 +101,11 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	private void loadPersistentSettings() {
 		//PRIFiX
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());	
-		List<String> s = Arrays.asList(mStudioProject.getDepPkgs());
+		//here only use ArrayList do not use List<String> ,if use would be error init
+		ArrayList s = new ArrayList<String>();
+		s.add(mStudioProject.getDepPkgs());
+		
+		//List<String> s = Arrays.asList(mStudioProject.getDepPkgs());
 		Iterator<Button> button = groupButtonList.iterator();
 		// judge the select all button is selected
 		boolean isAllSelected=true;
