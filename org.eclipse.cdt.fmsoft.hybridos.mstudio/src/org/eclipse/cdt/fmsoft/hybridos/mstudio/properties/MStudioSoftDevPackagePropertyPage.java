@@ -79,7 +79,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		//MStudioEnvInfo envInfo=new MStudioEnvInfo();
 		//clear the button array for insert
-		groupButtonList.clear();		
+		groupButtonList.clear();	
 		for(Map.Entry<String, String> softInfo : envInfo.getAllSoftPkgs().entrySet())
 		{			
 			Button newButton = new Button(buttonGroup,SWT.CHECK);
