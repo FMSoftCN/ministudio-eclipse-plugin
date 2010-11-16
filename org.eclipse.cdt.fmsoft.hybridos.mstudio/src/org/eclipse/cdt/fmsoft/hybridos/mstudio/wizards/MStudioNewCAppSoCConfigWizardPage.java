@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+// import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -45,6 +46,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+// import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
@@ -83,6 +85,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private IToolChain[] visitedTCs = null;
 	private MStudioEnvInfo msEnvInfo = null;
 	IWizardPage[] customPages = null;
+	private String socName = MStudioEnvInfo.getCurSoCName();
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler h) {
 		super(TITLE);
@@ -121,10 +124,24 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
 				GridData.BEGINNING);
 
-		String[] socType = MStudioEnvInfo.getSoCPaths();
-		Combo combo = new Combo(c1, SWT.READ_ONLY);
+		final String[] socType = MStudioEnvInfo.getSoCPaths();
+		final Combo combo = new Combo(c1, SWT.READ_ONLY);
+		// combo.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		// combo.setBackground(ResourceManager.getColor(255, 255, 255));
 		combo.setItems(socType);
-		combo.setText(socType[0]);
+		if (null != socName) {
+			combo.setText(socName);
+			combo.setEnabled(false);
+		} else {
+			// combo.setText(socType[0]);
+			// socName = socType[0];
+		}
+		combo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				socName = combo.getText();
+				combo.setEnabled(false);
+			}
+		});
 		setupLabel(c1, EMPTY_STR, GridData.BEGINNING);
 
 		Composite cLabel = new Composite(parent, SWT.NONE);
@@ -290,6 +307,22 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		parent.setVisible(visible);
 		isVisible = visible;
 		if (visible && handler != null && !isVisited()) {
+
+//			 if (getWizard() instanceof MStudioNewCAppWizard) {
+//			 	ArrayList<String> out = new ArrayList<String>();
+//			 	// MStudioNewCAppWizard nmWizard = (MStudioNewCAppWizard) getWizard();
+//				MStudioEnvInfo msEnvInfo = MStudioEnvInfo.getInstance();
+//				msEnvInfo.updateSoCName();
+//			 	Map<String, String> mapRet = msEnvInfo.getAllSoftPkgs();
+//			 	for(Map.Entry<String, String> entry : mapRet.entrySet()){    
+//			 		String name = entry.getKey().toString();
+//					System.out.println(name);
+//			 		out.add((String) name);
+//			 	}  
+//			 	ctv.setInput(mapRet);
+//			 	ctv.setInput(out.toArray());
+//			 }  
+
 			ctv.setInput(CfgHolder.unique(getDefaultCfgs(handler)));
 			ctv.setAllChecked(true);
 			String s = EMPTY_STR;
@@ -312,14 +345,14 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	// ------------------------
 	private Label setupLabel(Composite c, String name, int mode) {
-		Label l = new Label(c, SWT.WRAP);
-		l.setText(name);
+		Label label = new Label(c, SWT.WRAP);
+		label.setText(name);
 		GridData gd = new GridData(mode);
 		gd.verticalAlignment = SWT.TOP;
-		l.setLayoutData(gd);
-		Composite p = l.getParent();
-		l.setFont(p.getFont());
-		return l;
+		label.setLayoutData(gd);
+		Composite cmpst = label.getParent();
+		label.setFont(cmpst.getFont());
+		return label;
 	}
 
 	public String getName() {

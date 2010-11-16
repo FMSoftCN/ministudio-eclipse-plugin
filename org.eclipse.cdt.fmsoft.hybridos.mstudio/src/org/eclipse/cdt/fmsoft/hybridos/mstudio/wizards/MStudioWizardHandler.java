@@ -18,8 +18,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
@@ -64,6 +62,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+
 
 public class MStudioWizardHandler extends CWizardHandler {
 	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
@@ -71,12 +72,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
 	private static final String PROP_VAL = PROPERTY + ".debug";
-	private static final String tooltip = MStudioMessages
-			.getString("MStudioWizardHandler.1")
-			+ MStudioMessages.getString("MStudioWizardHandler.2")
-			+ MStudioMessages.getString("MStudioWizardHandler.3")
-			+ MStudioMessages.getString("MStudioWizardHandler.4")
-			+ MStudioMessages.getString("MStudioWizardHandler.5");
+	// private static final String tooltip = MStudioMessages
+	// 		.getString("MStudioWizardHandler.1")
+	// 		+ MStudioMessages.getString("MStudioWizardHandler.2")
+	// 		+ MStudioMessages.getString("MStudioWizardHandler.3")
+	// 		+ MStudioMessages.getString("MStudioWizardHandler.4")
+	// 		+ MStudioMessages.getString("MStudioWizardHandler.5");
 
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
 	private String propertyId = null;
@@ -104,6 +105,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		public EntryInfo(EntryDescriptor dr, SortedMap<String, IToolChain> _tcs) {
 			entryDescriptor = dr;
+//			entryDescriptor = null;
 			tcs = _tcs;
 		}
 
@@ -359,7 +361,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		}
 		updatePreferred(preferred);
 		loadCustomPages();
-		// table.setVisible(true);
+//		table.setVisible(true);
 		table.setVisible(false);
 		parent.layout();
 		if (fConfigPage != null)

@@ -184,6 +184,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 		IProject handle = getProjectHandle();
 		if (handle.exists()) {
+//		if (false) {
 			if (getWizard() instanceof IWizardWithMemory) {
 				IWizardWithMemory w = (IWizardWithMemory) getWizard();
 				if (w.getLastProjectName() != null
