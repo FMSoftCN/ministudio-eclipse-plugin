@@ -43,7 +43,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
@@ -51,8 +50,6 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import org.eclipse.cdt.ui.CUIPlugin;
-import org.eclipse.cdt.ui.newui.CDTPrefUtil;
-// import org.eclipse.cdt.ui.newui.PageLayout;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
@@ -79,9 +76,6 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 	private Tree tree = null;
 	private Composite composite = null;
-	private Button show_sup = null;
-	// private Label right_label = null;
-	private Label categorySelectedLabel = null;
 
 	public MStudioNewCAppProjectSelectWizardPage(String pageName) {
 		super(pageName);
@@ -92,8 +86,9 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		super.createControl(parent);
 
 		createDynamicGroup((Composite) getControl());
-		switchTo(updateData(tree, composite, show_sup,
-				MStudioNewCAppProjectSelectWizardPage.this, getWizard()), getDescriptor(tree));
+		CWizardHandler handler = updateData(tree, composite,
+						MStudioNewCAppProjectSelectWizardPage.this, getWizard());
+		switchTo(handler, getDescriptor(tree));
 
 		setPageComplete(validatePage());
 		setErrorMessage(null);
@@ -110,14 +105,9 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		label.setFont(parent.getFont());
 		label.setLayoutData(new GridData(GridData.BEGINNING));
 
-		// right_label = new Label(c, SWT.NONE);
-		// right_label.setFont(parent.getFont());
-		// right_label.setLayoutData(new GridData(GridData.BEGINNING));
-
 		tree = new Tree(c, SWT.SINGLE | SWT.BORDER);
 		tree.setLayoutData(new GridData(GridData.FILL_BOTH));
 		tree.addSelectionListener(new SelectionAdapter() {
-
 			public void widgetSelected(SelectionEvent e) {
 				TreeItem[] tis = tree.getSelection();
 				if (tis == null || tis.length == 0)
@@ -138,28 +128,6 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 			}
 		});
 		composite = c;
-		// composite = new Composite(c, SWT.NONE);
-		// right.setLayoutData(new GridData(GridData.FILL_BOTH));
-		// right.setLayout(new PageLayout());
-
-		// show_sup = new Button(c, SWT.CHECK);
-		// show_sup.setText(MStudioMessages.getString("MGMainWizardPage.1")); //$NON-NLS-1$
-		// GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		// gd.horizontalSpan = 2;
-		// show_sup.setLayoutData(gd);
-		// show_sup.addSelectionListener(new SelectionAdapter() {
-
-		// 	public void widgetSelected(SelectionEvent e) {
-		// 		if (h_selected != null)
-		// 			h_selected.setSupportedOnly(show_sup.getSelection());
-		// 		switchTo(updateData(tree, composite, show_sup,
-		// 				MStudioNewCAppProjectSelectWizardPage.this, getWizard()),
-		// 				getDescriptor(tree));
-		// 	}
-		// });
-
-		// restore settings from preferences
-		// show_sup.setSelection(!CDTPrefUtil.getBool(CDTPrefUtil.KEY_NOSUPP));
 	}
 
 	public IWizardPage getNextPage() {
@@ -184,7 +152,6 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 		IProject handle = getProjectHandle();
 		if (handle.exists()) {
-//		if (false) {
 			if (getWizard() instanceof IWizardWithMemory) {
 				IWizardWithMemory w = (IWizardWithMemory) getWizard();
 				if (w.getLastProjectName() != null
@@ -253,19 +220,20 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	}
 
 	public static CWizardHandler updateData(Tree tree, Composite compos,
-			Button show_sup, IWizardItemsListListener ls, IWizard wizard) {
+			IWizardItemsListListener ls, IWizard wizard) {
 		// remember selected item
 		TreeItem[] sel = tree.getSelection();
 		String savedStr = (sel.length > 0) ? sel[0].getText() : null;
 
 		tree.removeAll();
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry()
-				.getExtensionPoint(EXTENSION_POINT_ID);
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(EXTENSION_POINT_ID);
 		if (extensionPoint == null)
 			return null;
+		
 		IExtension[] extensions = extensionPoint.getExtensions();
 		if (extensions == null)
 			return null;
+		
 		List<EntryDescriptor> items = new ArrayList<EntryDescriptor>();
 		for (int i = 0; i < extensions.length; ++i) {
 			IConfigurationElement[] elements = extensions[i] .getConfigurationElements();
@@ -276,8 +244,8 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 					try {
 						w = (MStudioNewWizardTemplate) element.createExecutableExtension(CLASS_NAME);
 					} catch (CoreException e) {
-						System.out.println(MStudioMessages
-										.getString("MGMainWizardPage.5") + e.getLocalizedMessage()); //$NON-NLS-1$
+						System.out.println(MStudioMessages.getString("MGMainWizardPage.5") 
+								+ e.getLocalizedMessage()); //$NON-NLS-1$
 						return null;
 					}
 					if (w == null)
@@ -391,35 +359,25 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	}
 
 	private void switchTo(CWizardHandler h, EntryDescriptor ed) {
+		
 		if (h == null)
 			h = ed.getHandler();
+		
 		if (ed.isCategory())
 			h = null;
+		
 		try {
 			if (h != null)
 				h.initialize(ed);
 		} catch (CoreException e) {
 			h = null;
 		}
+		
 		if (h_selected != null)
 			h_selected.handleUnSelection();
+		
 		h_selected = h;
-		if (h == null) {
-			if (ed.isCategory()) {
-				if (categorySelectedLabel == null) {
-					categorySelectedLabel = new Label(composite, SWT.WRAP);
-					categorySelectedLabel.setText(MStudioMessages.getString("MGMainWizardPage.12"));
-					composite.layout();
-				}
-				categorySelectedLabel.setVisible(true);
-			}
-			return;
-		}
-		// right_label.setText(h_selected.getHeader());
-		if (categorySelectedLabel != null)
-			categorySelectedLabel.setVisible(false);
 		h_selected.handleSelection();
-		// h_selected.setSupportedOnly(show_sup.getSelection());
 	}
 
 	public static EntryDescriptor getDescriptor(Tree _tree) {

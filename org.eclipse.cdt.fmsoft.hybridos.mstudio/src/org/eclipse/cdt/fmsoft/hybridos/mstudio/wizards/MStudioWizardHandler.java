@@ -52,16 +52,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.accessibility.AccessibleAdapter;
-import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 
@@ -72,12 +64,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
 	private static final String PROP_VAL = PROPERTY + ".debug";
-	// private static final String tooltip = MStudioMessages
-	// 		.getString("MStudioWizardHandler.1")
-	// 		+ MStudioMessages.getString("MStudioWizardHandler.2")
-	// 		+ MStudioMessages.getString("MStudioWizardHandler.3")
-	// 		+ MStudioMessages.getString("MStudioWizardHandler.4")
-	// 		+ MStudioMessages.getString("MStudioWizardHandler.5");
 
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
 	private String propertyId = null;
@@ -105,7 +91,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		public EntryInfo(EntryDescriptor dr, SortedMap<String, IToolChain> _tcs) {
 			entryDescriptor = dr;
-//			entryDescriptor = null;
 			tcs = _tcs;
 		}
 
@@ -136,8 +121,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 				if (!entryDescriptor.isCategory() && path.length > 1
 						&& (!path[0].equals(ManagedBuildWizard.OTHERS_LABEL))) {
 					templateId = path[path.length - 1];
-					Template templates[] = TemplateEngineUI.getDefault()
-							.getTemplates();
+					Template templates[] = TemplateEngineUI.getDefault().getTemplates();
 					if (templates.length == 0)
 						break;
 					for (int i = 0; i < templates.length; i++) {
@@ -320,59 +304,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	public void handleSelection() {
 		List<String> preferred = CDTPrefUtil.getPreferredTCs();
-		if (table == null) {
-			table = new Table(parent, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
-			table.getAccessible().addAccessibleListener(
-					new AccessibleAdapter() {
-						public void getName(AccessibleEvent e) {
-							if (e.result == null)
-								e.result = head;
-						}
-					});
-			// table.setToolTipText(tooltip);
-			if (entryInfo != null) {
-				int counter = 0;
-				int position = 0;
-				for (String s : entryInfo.tc_filter()) {
-					TableItem ti = new TableItem(table, SWT.NONE);
-					Object obj = full_tcs.get(s);
-					String id = CDTPrefUtil.NULL;
-					if (obj instanceof IToolChain) {
-						IToolChain tc = (IToolChain) obj;
-						String name = tc.getUniqueRealName();
-						id = tc.getId();
-						ti.setText(name);
-						ti.setData(tc);
-					} else { // NULL for -NO TOOLCHAIN-
-						ti.setText(s);
-					}
-					if (position == 0 && preferred.contains(id))
-						position = counter;
-					counter++;
-				}
-				if (counter > 0)
-					table.select(position);
-			}
-			table.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					handleToolChainSelection();
-				}
-			});
-		}
+		
 		updatePreferred(preferred);
 		loadCustomPages();
-//		table.setVisible(true);
-		table.setVisible(false);
-		parent.layout();
+
 		if (fConfigPage != null)
 			fConfigPage.pagesLoaded = false;
-	}
-
-	private void handleToolChainSelection() {
-		loadCustomPages();
-		// Notify listener, if any.
-		if (listener != null)
-			listener.toolChainListChanged(table.getSelectionCount());
 	}
 
 	private void loadCustomPages() {
@@ -460,9 +397,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public void handleUnSelection() {
-		if (table != null) {
-			table.setVisible(false);
-		}
 		if (fConfigPage != null)
 			fConfigPage.pagesLoaded = false;
 	}
@@ -645,18 +579,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 	 */
 
 	public void updatePreferred(List<String> prefs) {
-		preferredTCs.clear();
-		int x = table.getItemCount();
-		for (int i = 0; i < x; i++) {
-			TableItem ti = table.getItem(i);
-			IToolChain tc = (IToolChain) ti.getData();
-			String id = (tc == null) ? CDTPrefUtil.NULL : tc.getId();
-			if (prefs.contains(id)) {
-				ti.setImage(IMG1);
-				preferredTCs.add(tc.getName());
-			} else
-				ti.setImage(IMG0);
-		}
 	}
 
 	public List<String> getPreferredTCNames() {
@@ -700,16 +622,19 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public IToolChain[] getSelectedToolChains() {
-		if (full_tcs.size() == 0 || table.getSelection().length == 0)
-			return new IToolChain[] { null };
-		TableItem[] tis = table.getSelection();
-		if (tis == null || tis.length == 0)
-			return new IToolChain[0];
-		IToolChain[] ts = new IToolChain[tis.length];
-		for (int i = 0; i < tis.length; i++) {
-			ts[i] = (IToolChain) tis[i].getData();
+		if (entryInfo != null) {
+			int i = 0;
+			Set <String> tcString = entryInfo.tc_filter();
+			IToolChain[] ts = new IToolChain[tcString.size()];
+			for (String s : tcString) {
+				Object obj = full_tcs.get(s);
+				if (obj instanceof IToolChain) {
+					ts[i++] = (IToolChain) obj;
+				}
+			}
+			return ts;
 		}
-		return ts;
+		return new IToolChain[0];
 	}
 
 	public int getToolChainsCount() {
@@ -737,17 +662,13 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public String getErrorMessage() {
-		TableItem[] tis = table.getSelection();
-		if (tis == null || tis.length == 0)
-			return MStudioMessages.getString("MStudioWizardHandler.7"); //$NON-NLS-1$
 		return null;
 	}
 
 	protected void doCustom(IProject newProject) {
-		IRunnableWithProgress[] operations = MBSCustomPageManager
-				.getOperations();
-		if (operations != null)
-			for (int k = 0; k < operations.length; k++)
+		IRunnableWithProgress[] operations = MBSCustomPageManager.getOperations();
+		if (operations != null){
+			for (int k = 0; k < operations.length; k++){
 				try {
 					wizard.getContainer().run(false, true, operations[k]);
 				} catch (InvocationTargetException e) {
@@ -755,6 +676,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 				} catch (InterruptedException e) {
 					ManagedBuilderUIPlugin.log(e);
 				}
+			}
+		}
 	}
 
 	public void postProcess(IProject newProject, boolean created) {
@@ -781,8 +704,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		if (fConfigPage == null || !fConfigPage.pagesLoaded)
 			return;
 
-		ICProjectDescription prjd = CoreModel.getDefault()
-				.getProjectDescription(newProject, true);
+		ICProjectDescription prjd = CoreModel.getDefault().getProjectDescription(newProject, true);
 		if (prjd == null)
 			return;
 		ICConfigurationDescription[] all = prjd.getConfigurations();
@@ -819,8 +741,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		EntryInfo info = new EntryInfo(data, full_tcs);
 		if (!info.isValid()) {
 			throw new CoreException(new Status(IStatus.ERROR,
-					ManagedBuilderUIPlugin.getUniqueIdentifier(),
-					"inappropriate descriptor")); //$NON-NLS-1$
+					ManagedBuilderUIPlugin.getUniqueIdentifier(), "inappropriate descriptor")); //$NON-NLS-1$
 		}
 		entryInfo = info;
 	}
