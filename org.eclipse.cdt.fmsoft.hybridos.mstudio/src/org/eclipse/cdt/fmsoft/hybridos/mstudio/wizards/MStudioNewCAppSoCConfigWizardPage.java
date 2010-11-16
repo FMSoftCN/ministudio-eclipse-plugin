@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-// import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -46,7 +45,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-// import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
@@ -126,8 +124,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		final String[] socType = MStudioEnvInfo.getSoCPaths();
 		final Combo combo = new Combo(c1, SWT.READ_ONLY);
-		// combo.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
-		// combo.setBackground(ResourceManager.getColor(255, 255, 255));
 		combo.setItems(socType);
 		if (null != socName) {
 			combo.setText(socName);
@@ -147,10 +143,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		Composite cLabel = new Composite(parent, SWT.NONE);
 		cLabel.setLayout(new GridLayout());
 		cLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// l_projtype = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
 		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
 				GridData.BEGINNING);
-		// l_chains = setupLabel(c1, EMPTY_STR, GridData.FILL_HORIZONTAL);
 		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
 				GridData.BEGINNING);
 
@@ -206,37 +200,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				update();
 			}
 		});
-
-		// Button b2 = new Button(c, SWT.PUSH);
-		// b2.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.8"));
-		// b2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// b2.addSelectionListener(new SelectionAdapter() {
-		// 	public void widgetSelected(SelectionEvent e) {
-		// 		ctv.setAllChecked(false);
-		// 		setPageComplete(isCustomPageComplete());
-		// 		update();
-		// 	}
-		// });
-
-		// dummy place holder
-		// new Label(c, 0).setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		// Button b3 = new Button(c, SWT.PUSH);
-		// b3.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.13"));
-		// b3.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// b3.addSelectionListener(new SelectionAdapter() {
-		// 	public void widgetSelected(SelectionEvent e) {
-		// 		advancedDialog();
-		// 	}
-		// });
-
-		// Group gr = new Group(parent, SWT.NONE);
-		// gd = new GridData(GridData.FILL_HORIZONTAL);
-		// gd.horizontalSpan = 2;
-		// gr.setLayoutData(gd);
-		// gr.setLayout(new FillLayout());
-		// Label lb = new Label(gr, SWT.NONE);
-		// lb.setText(COMMENT);
 
 		setControl(parent);
 	}
@@ -319,7 +282,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 //					System.out.println(name);
 //			 		out.add((String) name);
 //			 	}  
-//			 	ctv.setInput(mapRet);
 //			 	ctv.setInput(out.toArray());
 //			 }  
 
@@ -332,10 +294,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				if (i < visitedTCs.length - 1)
 					s = s + "\n"; 
 			}
-			// l_chains.setText(s);
-			// l_projtype.setText(handler.getName());
 			setPageComplete(isCustomPageComplete());
-			// l_chains.getParent().pack();
 		}
 		if (visible) {
 			parent.getParent().layout(true, true);
