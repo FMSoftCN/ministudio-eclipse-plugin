@@ -1,5 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.handlers;
 
+import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
