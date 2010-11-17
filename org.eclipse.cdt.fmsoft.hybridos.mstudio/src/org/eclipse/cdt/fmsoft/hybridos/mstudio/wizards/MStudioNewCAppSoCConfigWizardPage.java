@@ -163,7 +163,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		packageDesc = new Label(c2, SWT.WRAP);
 		packageDesc.setText("No Selected module");
-		GridData gdx = new GridData(GridData.BEGINNING);
+		GridData gdx = new GridData(GridData.FILL_BOTH);
 		gdx.verticalAlignment = SWT.TOP;
 		packageDesc.setLayoutData(gdx);
 
@@ -209,12 +209,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
 		}
 		ctv.setInput(pkgs.toArray());
-		
-		Composite c = new Composite(c2, SWT.NONE);
-		c.setLayout(new GridLayout());
-		c.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
-		Button b1 = new Button(c, SWT.CHECK);
+		Button b1 = new Button(c2, SWT.CHECK);
 		b1.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
 		b1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		b1.addSelectionListener(new SelectionAdapter() {

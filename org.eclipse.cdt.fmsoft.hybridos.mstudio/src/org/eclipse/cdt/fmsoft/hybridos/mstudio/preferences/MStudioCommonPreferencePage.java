@@ -52,7 +52,7 @@ public class MStudioCommonPreferencePage extends PreferencePage implements IWork
 		
 		Label intro = new Label(composite, SWT.WRAP);
 		if (null != intro){
-			//intro.setFont(parent.getFont());
+			intro.setFont(parent.getFont());
          intro.setText(hybridosIntroduction);
 		}
 		return composite;

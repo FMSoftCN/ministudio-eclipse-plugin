@@ -109,14 +109,14 @@ public class MStudioEnvInfo {
 	//get all soft packages name and description.
 	public Map<String, String> getAllSoftPkgs() {
 		Map<String, String> mapRet =  new HashMap<String, String>();  
-		if(null == allSoftPkgs)
-			allSoftPkgs = new HashMap<String, MStudioParserIniFile>();
-		for(Map.Entry<String, MStudioParserIniFile> entry : allSoftPkgs.entrySet()){    
-			String name = entry.getKey().toString();
-			MStudioParserIniFile ini = entry.getValue();
-			String description = ini.getStringProperty("package", "description");
-			mapRet.put(name, description);
-		}  
+		if(null != allSoftPkgs){
+			for(Map.Entry<String, MStudioParserIniFile> entry : allSoftPkgs.entrySet()){    
+				String name = entry.getKey().toString();
+				MStudioParserIniFile ini = entry.getValue();
+				String description = ini.getStringProperty("package", "description");
+				mapRet.put(name, description);
+			}  
+		}
 		return mapRet;
 	}
 
@@ -129,7 +129,7 @@ public class MStudioEnvInfo {
 	}
 
 	//get all valid SoC paths
-	public static String[] getSoCPaths() {
+	public String[] getSoCPaths() {
 		File hybridosDir = new File(SoCPathPrefix);
 		return hybridosDir.list(new DirFilter());
 	}
@@ -173,8 +173,8 @@ public class MStudioEnvInfo {
 			String pkgName = hpkgFiles[i].replaceAll(".hpkg", "");
 			// ".../.XXXX" -->>-- "XXXX"
 			pkgName = pkgName.substring(pkgName.lastIndexOf('.') + 1);
-			
-			MStudioParserIniFile pfgFile = new MStudioParserIniFile(hpkgFiles[i]);
+
+			MStudioParserIniFile pfgFile = new MStudioParserIniFile(socDir.getAbsolutePath() + "/"+ hpkgFiles[i]);
 			allSoftPkgs.put(pkgName, pfgFile);
 			
 			// parse the pfgFile
@@ -186,16 +186,16 @@ public class MStudioEnvInfo {
 			if (null != depends){
 				String dep[] = depends.split(" ");
 	
-				for (i = 0; i < dep.length; i++) {
-					dep[i] = dep[i].replace("-dev", "");
-					List<String> devAff = affectedPkgs.get(dep[i]);
+				for (int j = 0; j < dep.length; j++) {
+					dep[j] = dep[j].replace("-dev", "");
+					List<String> devAff = affectedPkgs.get(dep[j]);
 					if (devAff == null){
 						devAff = new ArrayList<String>(1);
 					}
 					if (!devAff.contains(pkgName)) {
 						devAff.add(pkgName);
 					}
-					affectedPkgs.put(dep[i], devAff);
+					affectedPkgs.put(dep[j], devAff);
 				}
 				List<String> depList = Arrays.asList(dep);
 				depPkgs.put(pkgName, depList);
