@@ -32,13 +32,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 		//init the Graphic
-		//Label separate=new Lable();
-		Composite bottomPanel=new Composite(topPanel,SWT.NONE);
-		bottomPanel.setLayout(new GridLayout());
-		bottomPanel.setLayoutData(new GridData());
-		//devide the bottomPanel to four panel
+		//devide the topPanel to four panel
 		//bottomPanel1
-		Composite bottomPanel1=new Composite(bottomPanel,SWT.NONE);
+		Composite bottomPanel1=new Composite(topPanel,SWT.NONE);
 		bottomPanel1.setLayout(new GridLayout());
 		bottomPanel1.setLayoutData(new GridData());
 		//add the Control to the bottomPanel1
@@ -46,15 +42,15 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		List c=new List(bottomPanel1, SWT.CHECK);
 		c.add("test");
 		//bottomPanel2
-		Composite bottomPanel2=new Composite(bottomPanel,SWT.NONE);
+		Composite bottomPanel2=new Composite(topPanel,SWT.NONE);
 		bottomPanel2.setLayout(new GridLayout());
 		bottomPanel2.setLayoutData(new GridData());
 		//bottomPanel3
-		Composite bottomPanel3=new Composite(bottomPanel,SWT.NONE);
+		Composite bottomPanel3=new Composite(topPanel,SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout());
 		bottomPanel3.setLayoutData(new GridData());
 		//bottomPanel4
-		Composite bottomPanel4=new Composite(bottomPanel,SWT.NONE);
+		Composite bottomPanel4=new Composite(topPanel,SWT.NONE);
 		bottomPanel4.setLayout(new GridLayout());
 		bottomPanel4.setLayoutData(new GridData());
 		

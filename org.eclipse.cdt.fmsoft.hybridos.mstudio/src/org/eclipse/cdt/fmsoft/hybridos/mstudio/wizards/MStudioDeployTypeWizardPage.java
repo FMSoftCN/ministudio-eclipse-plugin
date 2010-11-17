@@ -57,16 +57,11 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
-		Label first = new Label(topPanel,SWT.NONE);
-		
-		Composite bottomPanel = new Composite(topPanel,SWT.NONE);
-		bottomPanel.setLayout(new GridLayout());
-		bottomPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
-		Label typeTitle = new Label(bottomPanel,SWT.NONE);
+		Label typeTitle = new Label(topPanel,SWT.NONE);
 		
 		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", "Select deploy type", 1,
 			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
-							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},bottomPanel);
+							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
 		//set the default choice value
 		PreferenceStore newTypePreferenceStore=new PreferenceStore();
 		newTypePreferenceStore.setValue(getTargetType(), getTargetType());
@@ -81,10 +76,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 						targetType = MStudioDeployTargetType.Target;					
 				}
 			}});
-		new Label(bottomPanel,SWT.FULL_SELECTION|SWT.LINE_SOLID);
+		new Label(topPanel,SWT.FULL_SELECTION|SWT.LINE_SOLID);
 		RadioGroupFieldEditor rootfsRadioGroup = new RadioGroupFieldEditor("rootfs","Select rootfs type",1,
 							new String[][]{{MStudioDeployBuildType.Release.name(),MStudioDeployBuildType.Release.name()},
-							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},bottomPanel);
+							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},topPanel);
 		//set the default choice value
 		PreferenceStore newPreferenceStore = new PreferenceStore();
 		newPreferenceStore.setValue(getBuildType(), getBuildType());
