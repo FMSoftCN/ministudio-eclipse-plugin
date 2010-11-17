@@ -164,8 +164,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			return template;
 		}
 
-		public IWizardPage getNextPage(IWizardPage predatingPage,
-				IWizardPage followingPage) {
+		public IWizardPage getNextPage(IWizardPage predatingPage, IWizardPage followingPage) {
 			initialize();
 			if (this.templatePages == null
 					|| this.predatingPage != predatingPage
@@ -174,8 +173,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 				this.followingPage = followingPage;
 				if (template != null) {
 					this.templatePages = template.getTemplateWizardPages(
-							predatingPage, followingPage, predatingPage
-									.getWizard());
+							predatingPage, followingPage, predatingPage.getWizard());
 				} else {
 					templatePages = new IWizardPage[0];
 					followingPage.setPreviousPage(predatingPage);
@@ -187,8 +185,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			return followingPage;
 		}
 
-		private boolean canFinish(IWizardPage predatingPage,
-				IWizardPage followingPage) {
+		private boolean canFinish(IWizardPage predatingPage, IWizardPage followingPage) {
 			getNextPage(predatingPage, followingPage);
 			for (int i = 0; i < templatePages.length; i++) {
 				if (!templatePages[i].isPageComplete())

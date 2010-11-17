@@ -18,14 +18,18 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -57,6 +61,7 @@ import org.eclipse.cdt.ui.newui.CDTPrefUtil;
 import org.eclipse.cdt.ui.newui.UIMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
@@ -71,8 +76,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	private Table table = null;
 	private CheckboxTableViewer ctv = null;
-	private Label l_projtype = null;
-	private Label l_chains = null;
+	private Label packageDesc = null;
 	private Composite parent = null;
 	private String propertyId = null;
 	private String errorMessage = null;
@@ -81,9 +85,23 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private MStudioWizardHandler handler = null;
 	public boolean pagesLoaded = false;
 	private IToolChain[] visitedTCs = null;
-	private MStudioEnvInfo msEnvInfo = null;
 	IWizardPage[] customPages = null;
 	private String socName = MStudioEnvInfo.getCurSoCName();
+	
+	protected static final class PackageItem {
+		String name = null;
+		String description = null;
+		public PackageItem (String name, String desc){
+			this.name = name;
+			this.description = desc;
+		}
+		public String getName (){
+			return name;
+		}
+		public String getDescription (){
+			return description;
+		}
+	}
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler h) {
 		super(TITLE);
@@ -93,20 +111,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public CfgHolder[] getCfgItems(boolean getDefault) {
-		CfgHolder[] its = null;
-
-		if (getDefault || table == null || !isVisited()) {
-			its = getDefaultCfgs(handler);
-		} else {
-			ArrayList<CfgHolder> out = new ArrayList<CfgHolder>(table.getItemCount());
-			for (TableItem ti : table.getItems()) {
-				if (ti.getChecked())
-					out.add((CfgHolder) ti.getData());
-			}
-			its = out.toArray(new CfgHolder[out.size()]);
-		}
-
-		return its;
+		return getDefaultCfgs(handler);
 	}
 
 	public void createControl(Composite p) {
@@ -122,20 +127,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
 				GridData.BEGINNING);
 
-		final String[] socType = MStudioEnvInfo.getSoCPaths();
+		final String[] socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
 		final Combo combo = new Combo(c1, SWT.READ_ONLY);
 		combo.setItems(socType);
 		if (null != socName) {
 			combo.setText(socName);
 			combo.setEnabled(false);
-		} else {
-			// combo.setText(socType[0]);
-			// socName = socType[0];
-		}
+		} 
 		combo.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				socName = combo.getText();
-				combo.setEnabled(false);
 			}
 		});
 		setupLabel(c1, EMPTY_STR, GridData.BEGINNING);
@@ -143,20 +144,28 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		Composite cLabel = new Composite(parent, SWT.NONE);
 		cLabel.setLayout(new GridLayout());
 		cLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
+		setupLabel(cLabel, 
+				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
 				GridData.BEGINNING);
-		setupLabel(cLabel, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
+		setupLabel(cLabel, 
+				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
 				GridData.BEGINNING);
 
 		Composite c2 = new Composite(parent, SWT.NONE);
-		c2.setLayout(new GridLayout(2, false));
+		GridLayout gl = new GridLayout(2, false);
+		gl.makeColumnsEqualWidth = true;
+		c2.setLayout(gl);
 		c2.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		table = new Table(c2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		table.setLayoutData(gd);
 
-		setupLabel(c2, COMMENT, GridData.BEGINNING);
+		packageDesc = new Label(c2, SWT.WRAP);
+		packageDesc.setText("No Selected module");
+		GridData gdx = new GridData(GridData.BEGINNING);
+		gdx.verticalAlignment = SWT.TOP;
+		packageDesc.setLayoutData(gdx);
 
 		ctv = new CheckboxTableViewer(table);
 		ctv.setContentProvider(new IStructuredContentProvider() {
@@ -167,13 +176,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			public void dispose() {
 			}
 
-			public void inputChanged(Viewer viewer, Object oldInput,
-					Object newInput) {
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			}
 		});
 		ctv.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
-				return element == null ? EMPTY_STR : ((CfgHolder) element).getName();
+				return element == null ? EMPTY_STR : ((PackageItem)element).getName();
 			}
 
 			public Image getImage(Object element) {
@@ -186,6 +194,22 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				update();
 			}
 		});
+		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
+			public void selectionChanged(SelectionChangedEvent event) {
+				Object obj = ((IStructuredSelection)(ctv.getSelection())).getFirstElement();
+				PackageItem pck = (PackageItem) obj;
+				if (pck != null && pck.getDescription() != null)
+					packageDesc.setText(pck.getDescription());				
+			}
+		});
+		
+		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		List<PackageItem> pkgs = new ArrayList<PackageItem>();
+		for(Map.Entry<String, String> info : envInfo.getAllSoftPkgs().entrySet()){			
+			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
+		}
+		ctv.setInput(pkgs.toArray());
+		
 		Composite c = new Composite(c2, SWT.NONE);
 		c.setLayout(new GridLayout());
 		c.setLayoutData(new GridData(GridData.FILL_VERTICAL));
@@ -218,8 +242,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			CfgHolder[] cfgs = null;
 			if (id != null)
 				cfgs = CfgHolder.cfgs2items(ManagedBuildManager
-						.getExtensionConfigurations(tc,
-								MStudioWizardHandler.ARTIFACT, id));
+						.getExtensionConfigurations(tc, MStudioWizardHandler.ARTIFACT, id));
 			else if (pt != null)
 				cfgs = CfgHolder.cfgs2items(ManagedBuildManager
 						.getExtensionConfigurations(tc, pt));
@@ -231,8 +254,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				return null;
 
 			for (int j = 0; j < cfgs.length; j++) {
-				if (cfgs[j].isSystem()
-						|| (handler.supportedOnly() && !cfgs[j].isSupported()))
+				if (cfgs[j].isSystem() || (handler.supportedOnly() && !cfgs[j].isSupported()))
 					continue;
 				out.add(cfgs[j]);
 			}
@@ -270,30 +292,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		parent.setVisible(visible);
 		isVisible = visible;
 		if (visible && handler != null && !isVisited()) {
-
-//			 if (getWizard() instanceof MStudioNewCAppWizard) {
-//			 	ArrayList<String> out = new ArrayList<String>();
-//			 	// MStudioNewCAppWizard nmWizard = (MStudioNewCAppWizard) getWizard();
-//				MStudioEnvInfo msEnvInfo = MStudioEnvInfo.getInstance();
-//				msEnvInfo.updateSoCName();
-//			 	Map<String, String> mapRet = msEnvInfo.getAllSoftPkgs();
-//			 	for(Map.Entry<String, String> entry : mapRet.entrySet()){    
-//			 		String name = entry.getKey().toString();
-//					System.out.println(name);
-//			 		out.add((String) name);
-//			 	}  
-//			 	ctv.setInput(out.toArray());
-//			 }  
-
-			ctv.setInput(CfgHolder.unique(getDefaultCfgs(handler)));
-			ctv.setAllChecked(true);
-			String s = EMPTY_STR;
-			visitedTCs = handler.getSelectedToolChains();
-			for (int i = 0; i < visitedTCs.length; i++) {
-				s = s + ((visitedTCs[i] == null) ? "" : visitedTCs[i].getUniqueRealName());
-				if (i < visitedTCs.length - 1)
-					s = s + "\n"; 
-			}
 			setPageComplete(isCustomPageComplete());
 		}
 		if (visible) {
