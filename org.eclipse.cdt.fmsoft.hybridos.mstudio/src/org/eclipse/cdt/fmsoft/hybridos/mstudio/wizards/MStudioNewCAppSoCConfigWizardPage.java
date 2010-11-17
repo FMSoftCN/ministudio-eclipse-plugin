@@ -362,6 +362,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public IWizardPage getNextPage() {
 		pagesLoaded = true;
-		return MBSCustomPageManager.getNextPage(PAGE_ID);
+		return null;
+		//return MBSCustomPageManager.getNextPage(PAGE_ID);
 	}
 }

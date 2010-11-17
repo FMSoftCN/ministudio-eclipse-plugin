@@ -359,10 +359,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 		// new-style).
 		boolean ptIsNull = (getProjectType() == null);
 		if (!ptIsNull)
-			MBSCustomPageManager
-					.addPageProperty(MBSCustomPageManager.PAGE_ID,
-							MBSCustomPageManager.PROJECT_TYPE, getProjectType()
-									.getId());
+			MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
+							MBSCustomPageManager.PROJECT_TYPE, getProjectType().getId());
 
 		IToolChain[] tcs = getSelectedToolChains();
 		int n = (tcs == null) ? 0 : tcs.length;
