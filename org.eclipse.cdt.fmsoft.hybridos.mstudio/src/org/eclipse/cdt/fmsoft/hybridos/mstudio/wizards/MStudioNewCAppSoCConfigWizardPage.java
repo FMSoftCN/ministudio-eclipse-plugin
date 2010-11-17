@@ -84,7 +84,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private MStudioWizardHandler handler = null;
 	public boolean pagesLoaded = false;
 	private IToolChain[] visitedTCs = null;
-	private MStudioEnvInfo msEnvInfo = MStudioEnvInfo.getInstance();
+	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	IWizardPage[] customPages = null;
 	private String socName = MStudioEnvInfo.getCurSoCName();
 	private Button buttonCheck = null;
@@ -139,9 +139,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				socName = combo.getText();
 				combo.setEnabled(false);
-//				IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-//				store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, socName);
-//				msEnvInfo.updateSoCName();
+				IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+				store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, socName);
+				msEnvInfo.updateSoCName();
+				setCheckboxTableViewerData();
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
@@ -169,7 +170,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		table.setLayoutData(gd);
 
 		packageDesc = new Label(c2, SWT.WRAP);
-		// packageDesc.setText("No Selected module");
 		packageDesc.setText(COMMENT);
 		GridData gdx = new GridData(GridData.FILL_BOTH);
 		gdx.verticalAlignment = SWT.TOP;
@@ -212,14 +212,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					packageDesc.setText(pck.getDescription());				
 			}
 		});
-		
-		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		List<PackageItem> pkgs = new ArrayList<PackageItem>();
-		for(Map.Entry<String, String> info : envInfo.getAllSoftPkgs().entrySet()){			
-			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
-		}
-		ctv.setInput(pkgs.toArray());
-		
+
+		setCheckboxTableViewerData();
+
 		buttonCheck = new Button(c2, SWT.CHECK);
 		buttonCheck.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
 		buttonCheck.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -235,6 +230,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		});
 
 		setControl(parent);
+	}
+
+	private void setCheckboxTableViewerData() {
+		List<PackageItem> pkgs = new ArrayList<PackageItem>();
+
+		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {			
+			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
+		}
+
+		ctv.setInput(pkgs.toArray());
 	}
 
 	/**
@@ -275,7 +280,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		if (table == null || handler == null)
 			return false;
 
-		return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
+		return true;
+		// return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
 	}
 
 	public boolean isCustomPageComplete() {
