@@ -65,18 +65,18 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
-	public static final String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage"; 
+	public static final String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage";
 
 	// private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
-	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0"); 
-	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1"); 
-	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12"); 
+	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
+	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
+	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12");
 	private static final String EMPTY_STR = "";
 
 	private Table table = null;
 	private CheckboxTableViewer ctv = null;
 	private Label packageDesc = null;
-	private Composite parent = null;
+	private Composite msSocParent = null;
 	private String propertyId = null;
 	private String errorMessage = null;
 	private String message = MESSAGE;
@@ -88,80 +88,82 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	IWizardPage[] customPages = null;
 	private String socName = MStudioEnvInfo.getCurSoCName();
 	private Button buttonCheck = null;
-	
+
 	protected static final class PackageItem {
 		String name = null;
 		String description = null;
-		public PackageItem (String name, String desc){
+
+		public PackageItem(String name, String desc) {
 			this.name = name;
 			this.description = desc;
 		}
-		public String getName (){
+
+		public String getName() {
 			return name;
 		}
-		public String getDescription (){
+
+		public String getDescription() {
 			return description;
 		}
 	}
 
-	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler h) {
+	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
 		setPageComplete(false);
-		handler = h;
-		setWizard(h.getWizard());
+		handler = wh;
+		setWizard(wh.getWizard());
 	}
 
 	public CfgHolder[] getCfgItems(boolean getDefault) {
 		return getDefaultCfgs(handler);
 	}
 
-	public void createControl(Composite p) {
-		parent = new Composite(p, SWT.NONE);
-		parent.setFont(parent.getFont());
-		parent.setLayout(new GridLayout());
-		parent.setLayoutData(new GridData(GridData.FILL_BOTH));
+	public void createControl(Composite parent) {
+		msSocParent = new Composite(parent, SWT.NONE);
+		msSocParent.setFont(msSocParent.getFont());
+		msSocParent.setLayout(new GridLayout());
+		msSocParent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		Composite c1 = new Composite(parent, SWT.NONE);
-		c1.setLayout(new GridLayout(2, true));
-		c1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Composite cmpstSocType = new Composite(msSocParent, SWT.NONE);
+		cmpstSocType.setLayout(new GridLayout(2, true));
+		cmpstSocType.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		setupLabel(c1, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
+		setupLabel(cmpstSocType, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
 				GridData.BEGINNING);
 
-		final String[] socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
-		final Combo combo = new Combo(c1, SWT.READ_ONLY);
+		String[] socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
+		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
 		if (null != socName) {
 			combo.setText(socName);
 			combo.setEnabled(false);
-		} 
-		combo.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				socName = combo.getText();
-				combo.setEnabled(false);
-				IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-				store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, socName);
-				msEnvInfo.updateSoCName();
-				setCheckboxTableViewerData();
-				setPageComplete(isCustomPageComplete());
-				update();
-			}
-		});
-		setupLabel(c1, EMPTY_STR, GridData.BEGINNING);
+		} else {
+			combo.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					socName = combo.getText();
+					IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+					store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, socName);
+					msEnvInfo.updateSoCName();
+					setCheckboxTableViewerData();
+					setPageComplete(isCustomPageComplete());
+					update();
+				}
+			});
+		}
+		setupLabel(cmpstSocType, EMPTY_STR, GridData.BEGINNING);
 
-		Composite cLabel = new Composite(parent, SWT.NONE);
+		Composite cLabel = new Composite(msSocParent, SWT.NONE);
 		cLabel.setLayout(new GridLayout());
 		cLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		setupLabel(cLabel, 
+		setupLabel(cLabel,
 				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
 				GridData.BEGINNING);
-		setupLabel(cLabel, 
+		setupLabel(cLabel,
 				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
 				GridData.BEGINNING);
 
-		Composite c2 = new Composite(parent, SWT.NONE);
-		GridLayout gl = new GridLayout(2, false);
-		gl.makeColumnsEqualWidth = true;
+		Composite c2 = new Composite(msSocParent, SWT.NONE);
+		GridLayout gl = new GridLayout(2, true);
 		c2.setLayout(gl);
 		c2.setLayoutData(new GridData(GridData.FILL_BOTH));
 
@@ -209,7 +211,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				Object obj = ((IStructuredSelection)(ctv.getSelection())).getFirstElement();
 				PackageItem pck = (PackageItem) obj;
 				if (pck != null && pck.getDescription() != null)
-					packageDesc.setText(pck.getDescription());				
+					packageDesc.setText(pck.getDescription());
 			}
 		});
 
@@ -229,13 +231,13 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 		});
 
-		setControl(parent);
+		setControl(msSocParent);
 	}
 
 	private void setCheckboxTableViewerData() {
 		List<PackageItem> pkgs = new ArrayList<PackageItem>();
 
-		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {			
+		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
 			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
 		}
 
@@ -243,7 +245,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param handler
 	 * @return
 	 */
@@ -280,8 +282,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		if (table == null || handler == null)
 			return false;
 
-		return true;
 		// return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
+		return true;
 	}
 
 	public boolean isCustomPageComplete() {
@@ -299,7 +301,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			return false;
 		}
 		if (ctv.getCheckedElements().length == 0) {
-			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.11"); 
+			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.11");
 			message = errorMessage;
 			return false;
 		}
@@ -309,13 +311,13 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public void setVisible(boolean visible) {
-		parent.setVisible(visible);
+		msSocParent.setVisible(visible);
 		isVisible = visible;
 		if (visible && handler != null && !isVisited()) {
 			setPageComplete(isCustomPageComplete());
 		}
 		if (visible) {
-			parent.getParent().layout(true, true);
+			msSocParent.getParent().layout(true, true);
 			update();
 		}
 	}
@@ -337,7 +339,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public Control getControl() {
-		return parent;
+		return msSocParent;
 	}
 
 	public String getErrorMessage() {
@@ -386,7 +388,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public IWizardPage getNextPage() {
 		pagesLoaded = true;
-		return null;
 		//return MBSCustomPageManager.getNextPage(PAGE_ID);
+		return null;
 	}
 }
