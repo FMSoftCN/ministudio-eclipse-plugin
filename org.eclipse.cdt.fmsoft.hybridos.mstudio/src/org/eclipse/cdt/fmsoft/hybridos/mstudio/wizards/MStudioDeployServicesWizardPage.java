@@ -36,7 +36,6 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		
 		setControl(topPanel);
 		setPageComplete(true);
-
 	}
 
 	public String[] getDeployServices() {
@@ -45,11 +44,12 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
-		IProject[] exeProjects = wizard.getDeployExeProjects();
+		//IProject[] exeProjects = wizard.getDeployExeProjects();
 		//skip next page
-		if (exeProjects == null || exeProjects.length <= 0)
-			return null;
+		//if (exeProjects == null || exeProjects.length <= 0)
+		//	return null;
 			
 		return wizard.getNextPage(this);
 	}
+	
 }

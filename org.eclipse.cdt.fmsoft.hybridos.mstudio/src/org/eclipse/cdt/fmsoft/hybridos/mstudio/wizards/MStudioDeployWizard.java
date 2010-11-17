@@ -6,7 +6,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPa
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
-public class MStudioDeployWizard extends Wizard {
+public class MStudioDeployWizard extends Wizard{
 	private MStudioDeployTypeWizardPage deployTypePage;
 	private MStudioDeployExecutableProjectsWizardPage exeProjectPage;
 	private MStudioDeploySharedLibProjectsWizardPage sharedLibPage;
@@ -17,7 +17,6 @@ public class MStudioDeployWizard extends Wizard {
 	public MStudioEnvInfo envInfo;
 	
 	public MStudioDeployWizard() {
-		// TODO Auto-generated constructor stub
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
 	}
 
@@ -44,6 +43,10 @@ public class MStudioDeployWizard extends Wizard {
 		return true;
 	}
 
+	public boolean performCancel(){
+		return true;
+	}
+	
 	private boolean saveDeployInfo(String filename) {
 		return false;
 	}
@@ -76,4 +79,5 @@ public class MStudioDeployWizard extends Wizard {
 	public IProject[] getDeployExeProjects() {
 		return exeProjectPage.getDeployExeProjects();
 	}
+
 }

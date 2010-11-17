@@ -28,10 +28,10 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	@Override
 	public void createControl(Composite parent) {
 		// TODO Auto-generated method stub
-		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();		
-		IProject[] libProjects, ialProjects;
-		libProjects = wizard.getModuleProjects();
-		ialProjects = wizard.getIALProjects();
+		//MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();		
+		//IProject[] libProjects, ialProjects;
+		//libProjects = wizard.getModuleProjects();
+		//ialProjects = wizard.getIALProjects();
 		
 		Composite topPanel;
 		topPanel = new Composite(parent, SWT.NONE);
