@@ -28,7 +28,6 @@ public class MStudioDeployPropertyPage extends PropertyPage implements
 		composite.setLayout(new GridLayout());
 		
 		GridData data = new GridData(GridData.FILL);
-		data.grabExcessHorizontalSpace = true;
 		composite.setLayoutData(data);
 		//Init the button
 		deployToRootfs = new Button(composite,SWT.CHECK);
