@@ -113,7 +113,8 @@ public class MStudioProject {
 	}
 	
 	public boolean getDefaultDeployable() {
-		return getPersistentSettings(MSTUDIO_DEPLOYABLE).equals(MStudioProjectDefaultDeployable.yes.name());
+		String bool = getPersistentSettings(MSTUDIO_DEPLOYABLE);
+		return MStudioProjectDefaultDeployable.yes.name().equals(bool);
 	}
 
 	public boolean isExeTmplType() {
