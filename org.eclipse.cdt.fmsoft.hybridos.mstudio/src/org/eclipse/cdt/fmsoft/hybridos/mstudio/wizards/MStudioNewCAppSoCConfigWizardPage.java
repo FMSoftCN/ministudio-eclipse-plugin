@@ -162,17 +162,17 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
 				GridData.BEGINNING);
 
-		Composite c2 = new Composite(msSocParent, SWT.NONE);
+		Composite cmpstPkgDesc = new Composite(msSocParent, SWT.NONE);
 		GridLayout gl = new GridLayout(2, true);
-		c2.setLayout(gl);
-		c2.setLayoutData(new GridData(GridData.FILL_BOTH));
+		cmpstPkgDesc.setLayout(gl);
+		cmpstPkgDesc.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		table = new Table(c2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
+		table = new Table(cmpstPkgDesc, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		table.setLayoutData(gd);
 
-		packageDesc = new Label(c2, SWT.WRAP);
-		packageDesc.setText(COMMENT);
+		packageDesc = new Label(cmpstPkgDesc, SWT.WRAP);
+		packageDesc.setText(EMPTY_STR);
 		GridData gdx = new GridData(GridData.FILL_BOTH);
 		gdx.verticalAlignment = SWT.TOP;
 		packageDesc.setLayoutData(gdx);
@@ -217,7 +217,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		setCheckboxTableViewerData();
 
-		buttonCheck = new Button(c2, SWT.CHECK);
+		buttonCheck = new Button(cmpstPkgDesc, SWT.CHECK);
 		buttonCheck.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
 		buttonCheck.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttonCheck.addSelectionListener(new SelectionAdapter() {
