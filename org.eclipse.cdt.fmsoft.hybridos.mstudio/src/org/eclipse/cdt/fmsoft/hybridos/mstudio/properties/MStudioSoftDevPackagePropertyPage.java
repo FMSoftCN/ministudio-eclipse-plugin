@@ -5,16 +5,29 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -23,6 +36,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
@@ -35,63 +49,85 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	private Group buttonGroup;
 	private Label contentDes;
 	private Button selectAll;
-	private ArrayList<Button> groupButtonList;
+	private Table table;
+	private ArrayList<String> groupButtonList;
+	private CheckboxTableViewer ctv;
+	
+	private static final String EMPTY_STR = "";
+	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	
 	public MStudioSoftDevPackagePropertyPage() {
-		groupButtonList=new ArrayList<Button>();
+		groupButtonList=new ArrayList<String>();
 	}
 
 	@Override
 	protected Control createContents(Composite parent) {
 		
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout());
-		
-		GridData data = new GridData(GridData.FILL);
-		data.grabExcessHorizontalSpace = true;
-		composite.setLayoutData(data);
+		composite.setLayout(new GridLayout());	
+		composite.setLayoutData(new GridData());
 		
 		Composite composite1 = new Composite(composite,SWT.NONE);
 		composite1.setLayout(new GridLayout());
-		composite1.setLayoutData(new GridData(GridData.FILL));
+		composite1.setLayoutData(new GridData());
 		
 		title = new Label(composite1,SWT.NONE);
 		title.setFont(new Font(title.getFont().getDevice(),"TimesRoman",0,SWT.BOLD));
 		title.setText("Software Development Package");
+		
 		description = new Label(composite1,SWT.NONE);
 		description.setText("Select software development packages for HybridOS");
-		//description.setBounds(description.getBounds().x, description.getBounds().y, description.getBounds().width, description.getBounds().height*3);
 		new Label(composite1,SWT.FULL_SELECTION|SWT.LINE_SOLID);
 		tip = new Label(composite1,SWT.NONE);
 		tip.setText("Please select the packages for your project");		
 		
 		Composite composite2 = new Composite(composite,SWT.NONE);
-		composite2.setLayout(new FillLayout());		
-		//Alert:Dont't use Class GridData in onther Layout Container except Class GridLayout.
-		Composite composite2Left = new Composite(composite2,SWT.NONE);
-		Composite composite2Right = new Composite(composite2,SWT.NONE);
-		composite2Left.setLayout(new GridLayout());
-		composite2Right.setLayout(new GridLayout());
+		GridLayout gl = new GridLayout(2,false);
+		gl.makeColumnsEqualWidth = true;
+		composite2.setLayout(gl);		
+		composite2.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		buttonGroup = new Group(composite2Left,SWT.NONE);
-		buttonGroup.setLayout(new GridLayout());
-		buttonGroup.setLayoutData(new GridData());
+		table = new Table(composite2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL);
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		contentDes = new Label(composite2, SWT.WRAP);
+		contentDes.setText("No Selected Packeg");
+		GridData gdx = new GridData(GridData.FILL_BOTH);
+		gdx.verticalAlignment = SWT.TOP;
+		contentDes.setLayoutData(gdx);
 		
-		contentDes = new Label(composite2Right,SWT.FILL|SWT.WRAP);
-		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		//MStudioEnvInfo envInfo=new MStudioEnvInfo();
-		//clear the button array for insert
-		groupButtonList.clear();	
-		for(Map.Entry<String, String> softInfo : envInfo.getAllSoftPkgs().entrySet())
-		{			
-			Button newButton = new Button(buttonGroup,SWT.CHECK);
-			newButton.setText(softInfo.getKey().toString());
-			newButton.setToolTipText(softInfo.getKey().toString());
-			newButton.addSelectionListener(new ButtonSelectionListen());
-			groupButtonList.add(newButton);
+		ctv = new CheckboxTableViewer(table);
 		
-		}
-		selectAll = new Button(composite2Left,SWT.CHECK);
+		ctv.setContentProvider(new IStructuredContentProvider() {
+			public Object[] getElements(Object inputElement) {
+				return (Object[]) inputElement;
+			}
+			
+			public void dispose() {
+			}
+			
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+			}
+		});
+		ctv.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				return element == null ? EMPTY_STR : element.toString();
+			}
+
+			public Image getImage(Object element) {
+				return IMG;
+			}
+		});
+		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
+			public void selectionChanged(SelectionChangedEvent event) {
+				String obj = (String)((IStructuredSelection)(event.getSelection())).getFirstElement();
+				if (obj != null)
+					contentDes.setText(MStudioPlugin.getDefault().getMStudioEnvInfo().getAllSoftPkgs().get(obj).toString());				
+			}
+		});
+		selectAll = new Button(composite2,SWT.CHECK);
 		selectAll.setText("Select All");
+		selectAll.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		selectAll.addSelectionListener(new ButtonSelectionListen());
 		
 		loadPersistentSettings();
@@ -100,49 +136,38 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	}
 	
 	private void loadPersistentSettings() {
-		//PRIFiX
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());	
-		//here only use ArrayList do not use List<String> ,if use would be error init
-		ArrayList s = new ArrayList<String>();
-		s.add(mStudioProject.getDepPkgs());
-		
-		//List<String> s = Arrays.asList(mStudioProject.getDepPkgs());
-		Iterator<Button> button = groupButtonList.iterator();
-		// judge the select all button is selected
-		boolean isAllSelected=true;
-		while(button.hasNext()){
-			Button b = (Button)button.next();
-			if(s.contains(b.getText())){
-				b.setSelection(true);
-			}
-			else{
-				b.setSelection(false);	
-				isAllSelected = false;
-			}				
+		String[] s = mStudioProject.getDepPkgs();
+		Object[] elements=MStudioPlugin.getDefault().getMStudioEnvInfo().getAllSoftPkgs().keySet().toArray();
+		ctv.add(elements);
+		//init
+		ctv.setCheckedElements(s);		
+		//System.out.println(s.length+"");
+		//Object[] obj = (Object[])ctv.getCheckedElements();		
+		if( elements.length == s.length && s != null && elements != null){
+			//System.out.println(elements.length+"");
+			selectAll.setSelection(true);
 		}
-		//if there is no button in the button list,set the selectAll-Button's selection propertie is false
-		if(0 >= groupButtonList.size()){
-			isAllSelected = false;
-		}
-		selectAll.setSelection(isAllSelected);
+		else
+			selectAll.setSelection(false);
 	}
 	
 	private boolean savePersistentSettings() {
 		 MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
-		 List<String> args = new ArrayList<String>();
-		 /*
-		  * this "for" code function is get the buttons from the control of its parent control 
-		 for(Control button : buttonGroup.getChildren()){
-			 if(((Button)button).getSelection()){
-				 args.add(((Button)button).getText());
-			 }
-		 */
-		 for(Control button : groupButtonList){
-			 if(((Button)button).getSelection()){
-				 args.add(((Button)button).getText());
-			 }
+		 Object[] obj = ctv.getCheckedElements();
+		 String[] list=new String[obj.length];
+		 for(int i=0;i<obj.length;i++){
+			 list[i]=obj[i].toString();
 		 }
-		 return mStudioProject.setDepPkgs((String[])args.toArray(new String[args.size()]));
+		 //return mStudioProject.setDepPkgs(list);
+		 if(!mStudioProject.setDepPkgs(list)){
+			 MessageDialog.openError(this.getShell(), "Error", "store default oucurrend an error");
+			 return false;
+		 }
+		 else{
+			 MessageDialog.openInformation(this.getShell(), "stored", "store ok");
+			 return true;
+		 }
 	}
 	
 	public boolean performOk() {
@@ -150,41 +175,16 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage implements
 	}
 
 	private class ButtonSelectionListen implements SelectionListener{
-
-		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
 			// TODO Auto-generated method stub			
 		}
-
-		@Override
-		public void widgetSelected(SelectionEvent e) {
-			//when the button click ,now find the desciption of the button text to show on the right text zone
-			if(e.getSource().equals(selectAll)){
-				//when user click the selectAll button now all of the button will be checked.
-				if(selectAll.getSelection()){
-					/*
-					for(Control button : buttonGroup.getChildren()){
-						((Button) button).setSelection(true);
-					}
-					*/
-					for(Control button : groupButtonList){
-						((Button) button).setSelection(true);
-					}
-				}
-				else{
-					/*
-					for(Control button : buttonGroup.getChildren()){
-						((Button)button).setSelection(false);
-					}
-					*/
-					for(Control button : groupButtonList){
-						((Button) button).setSelection(false);
-					}
-				}
-				return;
-			}			
-			contentDes.setText(MStudioPlugin.getDefault().getMStudioEnvInfo()
-					.getAllSoftPkgs().get(((Button)(e.getSource())).getText()).toString());
+		public void widgetSelected(SelectionEvent e) {			
+			if(((Button)e.getSource()).getSelection()){
+				ctv.setAllChecked(true);
+			}	
+			else{
+				ctv.setAllChecked(false);
+			}
 		}		
 	}
 }
