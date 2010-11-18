@@ -16,7 +16,7 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
+//import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
@@ -54,13 +54,13 @@ import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 // import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
-import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
+//import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
 import org.eclipse.cdt.ui.newui.CDTPrefUtil;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+//import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
@@ -70,7 +70,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	// private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
 	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
 	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
-	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12");
+//	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12");
 	private static final String EMPTY_STR = "";
 
 	private Table table = null;
@@ -83,7 +83,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	public boolean isVisible = false;
 	private MStudioWizardHandler handler = null;
 	public boolean pagesLoaded = false;
-	private IToolChain[] visitedTCs = null;
+//	private IToolChain[] visitedTCs = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	IWizardPage[] customPages = null;
 	private String socName = MStudioEnvInfo.getCurSoCName();
