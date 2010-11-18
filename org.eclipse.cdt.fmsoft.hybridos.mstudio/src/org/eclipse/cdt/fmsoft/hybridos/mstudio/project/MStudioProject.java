@@ -121,42 +121,32 @@ public class MStudioProject {
 
 	public boolean isExeTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.exe.name()))
-			return true;
 		
-		return false;
+		return MStudioProjectTemplateType.exe.name().equals(tmplType);
 	}
 	
 	public boolean isIALTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.dlcustom.name()))
-			return true;
-
-		return false;
+		
+		return MStudioProjectTemplateType.dlcustom.name().equals(tmplType);
 	}
 	
 	public boolean isMginitModuleTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.mginitmodule.name()))
-			return true;
 		
-		return false;
+		return MStudioProjectTemplateType.mginitmodule.name().equals(tmplType);
 	}
 	
 	public boolean isNormalLibTmplType() {
 		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
-		if (tmplType != null && tmplType.equals(MStudioProjectTemplateType.normallib.name()))
-			return true;
 		
-		return false;
+		return MStudioProjectTemplateType.normallib.name().equals(tmplType);
 	}
 	
 	public boolean isMiniGUIEntryType() {
 		String tmplType = getPersistentEntryType();
-		if (tmplType != null && tmplType.equals(MStudioProjectEntryType.minigui.name()))
-			return true;
-
-		return false;
+		
+		return MStudioProjectEntryType.minigui.name().equals(tmplType);
 	}
 	
 	public String getMStudioBinPath() {
