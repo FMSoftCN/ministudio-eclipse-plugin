@@ -38,7 +38,7 @@ public class MStudioProject {
 	private final static String MSTUDIO_ENTRYTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.entrytype";
 	private final static String MSTUDIO_DEPLOYABLE = "org.eclipse.cdt.feynman.hybridos.mstudio.deployable";
 	
-	private final String DPKGS_SPLIT_CHAR = " ?";  //FIXME , may be only space 
+	private final String DPKGS_SPLIT_CHAR = "|";  //FIXME , may be only space 
 	
 	private IProject wrapped;
 	
@@ -104,7 +104,9 @@ public class MStudioProject {
 	
 	public String[] getDepPkgs() {
 		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
-		return pkgs != null ? pkgs.split(DPKGS_SPLIT_CHAR, 0) : null;
+		if (pkgs != null)
+			return pkgs.split("\\"+DPKGS_SPLIT_CHAR);
+		return new String[0];
 	}
 	
 	public boolean setDefaultDeployable(boolean deployable) {
