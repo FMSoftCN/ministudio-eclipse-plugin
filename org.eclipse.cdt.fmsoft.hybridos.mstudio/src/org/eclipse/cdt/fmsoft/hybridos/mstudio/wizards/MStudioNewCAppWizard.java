@@ -73,6 +73,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	private boolean existingPath = false;
 	private String lastProjectName = null;
 	private URI lastProjectLocation = null;
+	private String[] prjDepLibs = null;
 	private CWizardHandler savedHandler = null;
 
 	public MStudioNewCAppWizard() {
@@ -150,7 +151,9 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			savedHandler.saveState();
 			lastProjectName = fMainPage.getProjectName();
 			lastProjectLocation = fMainPage.getProjectLocation();
-			// start creation process
+
+			prjDepLibs = ((MStudioWizardHandler)savedHandler).getCreateDevPackage();
+			
 			invokeRunnable(getRunnable(defaults, onFinish));
 		}
 		return newProject;
@@ -169,6 +172,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		newProject = null;
 		lastProjectName = null;
 		lastProjectLocation = null;
+		prjDepLibs = null;
 	}
 
 	private boolean invokeRunnable(IRunnableWithProgress runnable) {
@@ -286,6 +290,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	protected IProject continueCreation(IProject prj) {
 		try {
 			MStudioProject mprj = new MStudioProject(prj);
+			mprj.setDepPkgs(prjDepLibs);
 			mprj.addMStudioNature(new NullProgressMonitor());
 			// TODO, initProjectTypeInfo .... 
 			// mprj.initProjectTypeInfo(isMgEntry, type);

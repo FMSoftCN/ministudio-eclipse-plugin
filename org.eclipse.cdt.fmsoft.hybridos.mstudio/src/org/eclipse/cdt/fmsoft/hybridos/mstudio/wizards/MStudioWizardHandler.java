@@ -56,6 +56,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 
 
 public class MStudioWizardHandler extends CWizardHandler {
@@ -458,7 +460,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		mngr.setProjectDescription(project, des);
 		doTemplatesPostProcess(project);
 
-		//createTargetConfiguration(project);
+		createTargetConfiguration(project);
 		doCustom(project);
 	}
 
@@ -466,9 +468,10 @@ public class MStudioWizardHandler extends CWizardHandler {
 	{
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
-		//TODO:
-		String crossToolPrefix = "arm-linux-"; 
-		String socName = MStudioEnvInfo.getCurSoCName();
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		MStudioProject mprj = new MStudioProject(project);
+		String crossToolPrefix = einfo.getToolChainPrefix(); 
+		String socName = einfo.getCurSoCName();
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
 		String hostName = "Host";
 		
@@ -482,29 +485,29 @@ public class MStudioWizardHandler extends CWizardHandler {
 			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
 			newconfig.setDescription(newconfig.getName());
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
-			System.out.println(newconfig.getName());
-			
-			System.out.println("tools length :" + tools.length + "; BuildCommand: "
-					+ newconfig.getBuildCommand());
+//			System.out.println(newconfig.getName());
+//			
+//			System.out.println("tools length :" + tools.length + "; BuildCommand: "
+//					+ newconfig.getBuildCommand());
 
 			for (int j = 0; j < tools.length; j++) {
 				ITool subTool = tools[j];
 
-				System.out.println();
-				System.out.println("Tool Command: " + subTool.getToolCommand()
-						+ "; Command Pattern:" + subTool.getCommandLinePattern());
+//				System.out.println();
+//				System.out.println("Tool Command: " + subTool.getToolCommand()
+//						+ "; Command Pattern:" + subTool.getCommandLinePattern());
 				
 				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
 
 				IOption[] subOpts = subTool.getOptions();
-				System.out.println("subtools option length :" + subOpts.length);
+//				System.out.println("subtools option length :" + subOpts.length);
 
 				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
 					IOption option = subOpts[optIdx];
-					System.out.println(option.getName() + " : ["
-							+ option.getCommand() + "] : " + option.getValue());
+//					System.out.println(option.getName() + " : ["
+//							+ option.getCommand() + "] : " + option.getValue());
 					try {
-						System.out.println("---Value type:" + option.getValueType());
+//						System.out.println("---Value type:" + option.getValueType());
 
 						if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
 							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
@@ -518,13 +521,14 @@ public class MStudioWizardHandler extends CWizardHandler {
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 							
 						} else if (option.getValueType() == IOption.LIBRARIES) {
-							String[] expectedSymbols = { "testlib" };
+							//String[] expectedSymbols = { "testlib" };;
+							String[] expectedSymbols = mprj.getDepPkgs();
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 						} 
 					} catch (BuildException e) {
 
 					}
-					System.out.println();
+//					System.out.println();
 				}
 			}
 		}
@@ -780,4 +784,10 @@ public class MStudioWizardHandler extends CWizardHandler {
 		return true;
 	}
 
+	public String[] getCreateDevPackage () {
+		if (null != fConfigPage)
+			return fConfigPage.getSelectedPackages();
+		else 
+			return new String[0];
+	}
 }

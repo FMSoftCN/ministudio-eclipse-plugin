@@ -45,6 +45,7 @@ public class MStudioEnvInfo {
 	//private final static String SOC_CFG_SECTION_TOOLCHAIN = "toolchain";
 	private final static String SOC_CFG_SECTION_SERVICES = "services";
 	private final static String SOC_CFG_SECTION_MGINIT = "mginit";
+	private final static String SOC_CFG_SECTION_TOOLCHAIN = "toolchain";
 
 	//the ini file object which pointer to SoC used by current workspace
 	private enum MiniGUIRunMode {
@@ -104,6 +105,12 @@ public class MStudioEnvInfo {
 			srvList.add(iniFile.getStringProperty(SOC_CFG_SECTION_SERVICES, "service" + i));
 		}
 		return srvList;
+	}
+	
+	public String getToolChainPrefix() {
+		if (iniFile == null)
+			return null;
+		return iniFile.getStringProperty(SOC_CFG_SECTION_TOOLCHAIN, "prefix");
 	}
 
 	//get all soft packages name and description.
@@ -214,7 +221,7 @@ public class MStudioEnvInfo {
 	}
 
 	//get the SoC used by current workspace. If still not set, return null.
-	public static String getCurSoCName() {
+	public String getCurSoCName() {
 		return SoCName;
 	}
 	

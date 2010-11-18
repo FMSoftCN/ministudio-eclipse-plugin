@@ -15,8 +15,10 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import java.awt.ItemSelectable;
 import java.util.ArrayList;
 //import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -86,8 +88,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 //	private IToolChain[] visitedTCs = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	IWizardPage[] customPages = null;
-	private String socName = MStudioEnvInfo.getCurSoCName();
+	private String socName = msEnvInfo.getCurSoCName();
 	private Button buttonCheck = null;
+	
+	private List<String> selectedPackages = new ArrayList<String>();
 
 	protected static final class PackageItem {
 		String name = null;
@@ -202,6 +206,20 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				if (buttonCheck.getSelection())
 					buttonCheck.setSelection(false);
+				
+//				selectedPackages.clear();
+//				PackageItem[] itms = (PackageItem[]) ctv.getCheckedElements();
+//				for (int i = 0; i < itms.length; i++){
+//					selectedPackages.add(itms[i].getName());
+//				}
+				PackageItem itm = (PackageItem) event.getElement();
+				
+				if (!event.getChecked()) {
+					selectedPackages.remove(itm.getName());
+				} else {
+					selectedPackages.add(itm.getName());
+				}
+				
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
@@ -360,35 +378,19 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		getWizard().getContainer().updateTitleBar();
 	}
 
-	/**
-	 * Edit properties
-	 */
-	private void advancedDialog() {
-		if (getWizard() instanceof MStudioNewCAppWizard) {
-			MStudioNewCAppWizard nmWizard = (MStudioNewCAppWizard) getWizard();
-			IProject newProject = nmWizard.getProject(true, false);
-			if (newProject != null) {
-				boolean oldManage = CDTPrefUtil.getBool(CDTPrefUtil.KEY_NOMNG);
-				// disable manage configurations button
-				CDTPrefUtil.setBool(CDTPrefUtil.KEY_NOMNG, true);
-				try {
-					int res = PreferencesUtil.createPropertyDialogOn(
-							getWizard().getContainer().getShell(), newProject,
-							propertyId, null, null).open();
-					if (res != Window.OK) {
-						// if user presses cancel, remove the project.
-						nmWizard.performCancel();
-					}
-				} finally {
-					CDTPrefUtil.setBool(CDTPrefUtil.KEY_NOMNG, oldManage);
-				}
-			}
-		}
-	}
-
 	public IWizardPage getNextPage() {
 		pagesLoaded = true;
 		//return MBSCustomPageManager.getNextPage(PAGE_ID);
 		return null;
+	}
+	
+	public String[] getSelectedPackages() {
+		String[] ret = new String[selectedPackages.size()];
+		int c = 0;
+		Iterator<String> i = selectedPackages.iterator();
+		while (i.hasNext()){
+			  ret[c++] = i.next();
+		}
+		return ret;
 	}
 }
