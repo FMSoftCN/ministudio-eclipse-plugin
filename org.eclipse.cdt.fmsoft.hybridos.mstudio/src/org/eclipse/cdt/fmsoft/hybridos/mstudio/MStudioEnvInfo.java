@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -266,7 +267,12 @@ public class MStudioEnvInfo {
 				exeProj.add(msProjects[i]);
 			}
 		}
-		return exeProj.size() == 0 ? null : (IProject[])exeProj.toArray();
+		IProject[] ret = new IProject [exeProj.size()];
+		int i = 0;
+		for (Iterator<IProject> it = exeProj.iterator(); it.hasNext(); ){
+			ret[i++] = it.next();
+		}
+		return ret;
 	}
 	
 	public static IProject[] getDlCustomProjects() {
@@ -279,7 +285,12 @@ public class MStudioEnvInfo {
 				dlProj.add(msProjects[i]);
 			}
 		}
-		return dlProj.size() == 0 ? null : (IProject[])dlProj.toArray();
+		IProject[] ret = new IProject [dlProj.size()];
+		int i = 0;
+		for (Iterator<IProject> it = dlProj.iterator(); it.hasNext(); ){
+			ret[i++] = it.next();
+		}
+		return ret;
 	}
 	
 	public static IProject[] getSharedLibProjects() {
@@ -292,7 +303,12 @@ public class MStudioEnvInfo {
 				sProj.add(msProjects[i]);
 			}
 		}
-		return sProj.size() == 0 ? null : (IProject[])sProj.toArray();
+		IProject[] ret = new IProject [sProj.size()];
+		int i = 0;
+		for (Iterator<IProject> it = sProj.iterator(); it.hasNext(); ){
+			ret[i++] = it.next();
+		}
+		return ret;
 	}
 	
 	public static IProject[] getMStudioProjects() {
@@ -304,7 +320,12 @@ public class MStudioEnvInfo {
 					msProjects.add(allProjects[i]);
 			} catch (CoreException ex) {}
 		}
-		return msProjects.size() == 0 ? null : (IProject[])msProjects.toArray();
+		IProject[] ret = new IProject [msProjects.size()];
+		int i = 0;
+		for (Iterator<IProject> it = msProjects.iterator(); it.hasNext(); ){
+			ret[i++] = it.next();
+		}
+		return ret;
 	}
 }
 
