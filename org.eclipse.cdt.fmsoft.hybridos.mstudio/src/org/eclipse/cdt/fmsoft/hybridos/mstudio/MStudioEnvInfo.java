@@ -134,6 +134,37 @@ public class MStudioEnvInfo {
 	public Map<String, List<String>> getAffectedPkgs() {
 		return affectedPkgs;
 	}
+	
+	public String[] getPackageLibs (String pkg) {
+		if (null == allSoftPkgs)
+			return new String[0];
+		
+		MStudioParserIniFile pckCfgFile = allSoftPkgs.get(pkg);
+		if (null == pckCfgFile) 
+			return new String[0];
+		
+		String pName = pckCfgFile.getStringProperty("package", "name");
+		if (null == pName)
+			return new String[0];
+		
+		String libs = pckCfgFile.getStringProperty(pName, "lib");
+		if (null == libs)
+			return new String[0];
+		
+		return libs.split(" ");
+	}
+	
+	public String getIncludePath () {
+		if (null == SoCName)
+			return "";
+		return SoCPathPrefix + SoCName + "/pc_symmetry/include/";
+	}
+	
+	public String getLibraryPath() {
+		if (null == SoCName)
+			return "";
+		return SoCPathPrefix + SoCName + "/pc_symmetry/lib/";
+	}
 
 	//get all valid SoC paths
 	public String[] getSoCPaths() {

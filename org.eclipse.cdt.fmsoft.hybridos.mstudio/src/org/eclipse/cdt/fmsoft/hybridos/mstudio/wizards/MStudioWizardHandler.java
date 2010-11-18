@@ -3,6 +3,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -513,16 +514,30 @@ public class MStudioWizardHandler extends CWizardHandler {
 							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 						} else if (option.getValueType() == IOption.INCLUDE_PATH) {
-							String[] expectedSymbols = { "/opt/hybridos/include" };
+							//String[] expectedSymbols = { "/opt/hybridos/include" };
+							String[] expectedSymbols = { einfo.getIncludePath() };
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 							
 						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							String[] expectedSymbols = { "/opt/hybridos/lib" };
+							//String[] expectedSymbols = { "/opt/hybridos/lib" };
+							String[] expectedSymbols = { einfo.getLibraryPath() };
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 							
 						} else if (option.getValueType() == IOption.LIBRARIES) {
-							//String[] expectedSymbols = { "testlib" };;
-							String[] expectedSymbols = mprj.getDepPkgs();
+							//String[] expectedSymbols = { "testlib" };
+							List<String> depLibs = new ArrayList<String> ();
+							String[] pkgs = mprj.getDepPkgs();
+							for (int idx = 0; idx < pkgs.length; idx++) {
+								String[] libs = einfo.getPackageLibs(pkgs[idx]);
+								for (int c = 0; c < libs.length; c++){
+									depLibs.add(libs[c]);
+								}
+							}
+							String [] expectedSymbols = new String[depLibs.size()];
+							int count = 0;
+							for (Iterator<String> it = depLibs.iterator(); it.hasNext(); ){
+								expectedSymbols [count++] = it.next();
+							}
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 						} 
 					} catch (BuildException e) {
