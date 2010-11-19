@@ -176,6 +176,7 @@ public class MStudioEnvInfo {
 	//retry to get SoC name from preference
 	public void updateSoCName() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		String nullString = new String("null");
 		if(!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME)) {
 			SoCName = null;
 			iniFile = null;
@@ -195,6 +196,11 @@ public class MStudioEnvInfo {
 			allSoftPkgs.clear();
 		
 		SoCName = store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
+		if (SoCName.equals(nullString)) {
+			SoCName = null;
+			iniFile = null;
+			return;
+		}
 		iniFile = new MStudioParserIniFile(getCurSoCConfFileName());
 		if (null == iniFile) 
 			return;

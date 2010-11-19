@@ -252,16 +252,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setControl(msSocParent);
 	}
 
-	private void setCheckboxTableViewerData() {
-		List<PackageItem> pkgs = new ArrayList<PackageItem>();
-
-		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
-			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
-		}
-
-		ctv.setInput(pkgs.toArray());
-	}
-
 	/**
 	 *
 	 * @param handler
@@ -313,6 +303,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			message = errorMessage;
 			return false;
 		}
+		/*
 		if (table.getItemCount() == 0) {
 			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.10");
 			message = errorMessage;
@@ -323,6 +314,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			message = errorMessage;
 			return false;
 		}
+		*/
 		errorMessage = null;
 		message = MESSAGE;
 		return true;
@@ -341,6 +333,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	// ------------------------
+	private void setCheckboxTableViewerData() {
+		List<PackageItem> pkgs = new ArrayList<PackageItem>();
+
+		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
+			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
+		}
+
+		ctv.setInput(pkgs.toArray());
+	}
+
 	private Label setupLabel(Composite composite, String name, int mode) {
 		Label label = new Label(composite, SWT.WRAP);
 		label.setText(name);

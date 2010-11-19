@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
@@ -44,14 +45,16 @@ import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
+import org.eclipse.cdt.ui.CUIPlugin;
+import org.eclipse.cdt.ui.wizards.CWizardHandler;
+import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
-import org.eclipse.cdt.ui.CUIPlugin;
-import org.eclipse.cdt.ui.wizards.CWizardHandler;
-import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 
 
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
@@ -223,6 +226,13 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 	public boolean performCancel() {
 		clearProject();
+
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+
+		if (store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME)) {
+			store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, "null");
+		}
+
 		return true;
 	}
 
