@@ -49,6 +49,7 @@ import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
@@ -59,6 +60,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioProjectTemplateType;
 
 
 public class MStudioWizardHandler extends CWizardHandler {
@@ -67,6 +69,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
 	private static final String PROP_VAL = PROPERTY + ".debug";
+	
+	
+	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
+	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
+	final	String TEMPLATE_TYPE_MGINIT = "MStudioMginitModuleCProject";
+	final String TEMPLATE_TYPE_IAL    = "MStudioCustomIALCProject";
 
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
 	private String propertyId = null;
@@ -561,6 +569,27 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		if (template == null)
 			return;
+		
+		// save the type by template 
+		MStudioProject mprj = new MStudioProject(prj);
+		String tempName = template.getTemplateId();
+		boolean isMgProject = false;
+		MStudioProjectTemplateType MgType = MStudioProjectTemplateType.exe;
+			
+		if (TEMPLATE_TYPE_EXE.equals(tempName)){
+			isMgProject = true;
+			MgType = MStudioProjectTemplateType.exe;
+		} else if (TEMPLATE_TYPE_LIB.equals(tempName)){
+			MgType =  MStudioProjectTemplateType.normallib;
+		} else if (TEMPLATE_TYPE_MGINIT.equals(tempName)){
+			isMgProject = true;
+			MgType =  MStudioProjectTemplateType.mginitmodule;
+		} else if (TEMPLATE_TYPE_IAL.equals(tempName)){
+			isMgProject = true;
+			MgType =  MStudioProjectTemplateType.dlcustom;
+		} 
+
+		mprj.initProjectTypeInfo(isMgProject, MgType);
 
 		List<IConfiguration> configs = new ArrayList<IConfiguration>();
 		for (int i = 0; i < cfgs.length; i++) {
@@ -805,4 +834,5 @@ public class MStudioWizardHandler extends CWizardHandler {
 		else 
 			return new String[0];
 	}
+	
 }

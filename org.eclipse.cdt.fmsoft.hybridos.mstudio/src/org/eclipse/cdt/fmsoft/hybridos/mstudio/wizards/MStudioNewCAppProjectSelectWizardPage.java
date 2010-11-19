@@ -72,7 +72,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	private static final String CLASS_NAME = "class";
 	public  static final String DESC = "EntryDescriptor";
 
-	public CWizardHandler h_selected = null;
+	public MStudioWizardHandler h_selected = null;
 
 	private Tree tree = null;
 	private Composite composite = null;
@@ -86,7 +86,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		super.createControl(parent);
 
 		createDynamicGroup((Composite) getControl());
-		CWizardHandler handler = updateData(tree, composite,
+		MStudioWizardHandler handler = updateData(tree, composite,
 						MStudioNewCAppProjectSelectWizardPage.this, getWizard());
 		switchTo(handler, getDescriptor(tree));
 
@@ -112,7 +112,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 				TreeItem[] tis = tree.getSelection();
 				if (tis == null || tis.length == 0)
 					return;
-				switchTo((CWizardHandler) tis[0].getData(),
+				switchTo((MStudioWizardHandler) tis[0].getData(),
 						(EntryDescriptor) tis[0].getData(DESC));
 				setPageComplete(validatePage());
 			}
@@ -219,7 +219,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		return true;
 	}
 
-	public static CWizardHandler updateData(Tree tree, Composite compos,
+	public static MStudioWizardHandler updateData(Tree tree, Composite compos,
 			IWizardItemsListListener ls, IWizard wizard) {
 		// remember selected item
 		TreeItem[] sel = tree.getSelection();
@@ -293,7 +293,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 					target = target.getItem(0);
 			}
 			tree.setSelection(target);
-			return (CWizardHandler) target.getData();
+			return (MStudioWizardHandler) target.getData();
 		}
 		return null;
 	}
@@ -358,10 +358,10 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		// orphan elements (with not-existing parentId) are ignored
 	}
 
-	private void switchTo(CWizardHandler h, EntryDescriptor ed) {
+	private void switchTo(MStudioWizardHandler h, EntryDescriptor ed) {
 		
 		if (h == null)
-			h = ed.getHandler();
+			h = (MStudioWizardHandler) ed.getHandler();
 		
 		if (ed.isCategory())
 			h = null;

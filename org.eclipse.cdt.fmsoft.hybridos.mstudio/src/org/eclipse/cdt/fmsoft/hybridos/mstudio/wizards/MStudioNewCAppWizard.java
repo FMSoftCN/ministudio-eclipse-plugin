@@ -292,8 +292,6 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			MStudioProject mprj = new MStudioProject(prj);
 			mprj.setDepPkgs(prjDepLibs);
 			mprj.addMStudioNature(new NullProgressMonitor());
-			// TODO, initProjectTypeInfo .... 
-			// mprj.initProjectTypeInfo(isMgEntry, type);
 		} catch (CoreException e) {
 		}
 
