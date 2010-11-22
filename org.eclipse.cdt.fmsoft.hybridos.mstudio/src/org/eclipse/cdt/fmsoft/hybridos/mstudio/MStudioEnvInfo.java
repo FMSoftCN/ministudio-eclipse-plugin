@@ -49,7 +49,7 @@ public class MStudioEnvInfo {
 	private final static String SOC_CFG_SECTION_TOOLCHAIN = "toolchain";
 
 	//the ini file object which pointer to SoC used by current workspace
-	private enum MiniGUIRunMode {
+	public enum MiniGUIRunMode {
 	    thread,
 	    process,
 	    standalone
