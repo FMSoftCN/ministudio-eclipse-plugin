@@ -40,7 +40,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 	
 	public MStudioDeployTypeWizardPage(String pageName) {
 		super(pageName);
-		// TODO Auto-generated constructor stub
+		init();
+	}
+
+	private void init() {
 		setTitle(MStudioMessages.getString("MStudioDeployWizardPage.selectType.pageTitle"));
 		setDescription(MStudioMessages.getString("MStudioDeployWizardPage.selectType.desc"));
 	}
@@ -48,7 +51,7 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 	public MStudioDeployTypeWizardPage(String pageName, String title,
 			ImageDescriptor titleImage) {
 		super(pageName, title, titleImage);
-		// TODO Auto-generated constructor stub
+		init();
 	}
 
 	@Override
@@ -70,8 +73,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
 				if(!targetType.name().equals(event.getNewValue())){
-					if(targetType == MStudioDeployTargetType.Target)
+					if(targetType == MStudioDeployTargetType.Target){
 						targetType = MStudioDeployTargetType.Host;
+						MStudioDeployWizard.deployTypeIsHost=true;
+					}
 					else
 						targetType = MStudioDeployTargetType.Target;					
 				}
@@ -99,12 +104,13 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		setControl(topPanel);
 		setPageComplete(true);
 	}
-	//rewrite
-	public IWizardPage getNextPage() {
+	//ervery time init it or return to this page would be execute this function
+	public IWizardPage getNextPage() {		
 		MStudioDeployWizard wizard = (MStudioDeployWizard) this.getWizard();
         if (wizard == null) {
 			return null;
 		}
+        wizard.getDeployExecuteableWizardPage().update();
         return wizard.getNextPage(this);
     }
 }

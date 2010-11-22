@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
 public class MStudioDeployWizard extends Wizard{
+	
 	private MStudioDeployTypeWizardPage deployTypePage;
 	private MStudioDeployExecutableProjectsWizardPage exeProjectPage;
 	private MStudioDeploySharedLibProjectsWizardPage sharedLibPage;
@@ -15,6 +16,7 @@ public class MStudioDeployWizard extends Wizard{
 	private IProject[] ialProjects;
 	private IProject[] moduleProjects;
 	public MStudioEnvInfo envInfo;
+	public static boolean deployTypeIsHost=false;
 	
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
@@ -37,6 +39,22 @@ public class MStudioDeployWizard extends Wizard{
 		addPage(autobootProjectPage);
 	}
 	
+	public MStudioDeployTypeWizardPage getDeployTypeWizardPage(){
+		return this.deployTypePage;
+	}
+	public MStudioDeployExecutableProjectsWizardPage getDeployExecuteableWizardPage(){
+		return this.exeProjectPage;
+	}
+	public MStudioDeploySharedLibProjectsWizardPage getDeploySharedLibWizardPage(){
+		return this.sharedLibPage;
+	}
+	public MStudioDeployServicesWizardPage getDeployServiceWizardPage(){
+		return this.deployServicesPage;
+	}
+	public MStudioDeployAutobootProjectsWizardPage getDeployAutobootWizardPage(){
+		return this.autobootProjectPage;
+	}
+	
 	@Override
 	public boolean performFinish() {
 		// TODO Auto-generated method stub
@@ -47,6 +65,7 @@ public class MStudioDeployWizard extends Wizard{
 		return true;
 	}
 	
+	
 	private boolean saveDeployInfo(String filename) {
 		return false;
 	}
@@ -56,23 +75,23 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	public boolean isHost() {
-		if (deployTypePage.getTargetType().equals(MStudioDeployTargetType.Host.name()))
-			return true;
-		return false;
+		//if (deployTypePage.getTargetType().equals(MStudioDeployTargetType.Host.name()))
+			//return true;
+		return deployTypeIsHost;
 	}
 	
 	//get executable projects in workspace
-	public IProject[] getExeProjects() {
+	public static IProject[] getExeProjects() {
 		return MStudioEnvInfo.getExecutableProjects();
 	}
 	
 	//get shared library projects in workspace, not include dlcustom ial project.
-	public IProject[] getModuleProjects() {
+	public static IProject[] getModuleProjects() {
 		return MStudioEnvInfo.getSharedLibProjects();
 	}
 	
 	//get dlcustom ial projects in workspace.
-	public IProject[] getIALProjects() {
+	public static IProject[] getIALProjects() {
 		return MStudioEnvInfo.getDlCustomProjects();
 	}
 	
