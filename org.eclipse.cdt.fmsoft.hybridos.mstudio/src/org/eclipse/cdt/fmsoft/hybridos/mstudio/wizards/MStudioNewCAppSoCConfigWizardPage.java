@@ -36,6 +36,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -334,10 +335,26 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	// ------------------------
+	private boolean dailogPkgsChecked(String title, String pkgName, List<String> listPkgs) {
+		int count = listPkgs.size();
+		if (count <= 0)
+			return false;
+		String noteInfo = new String(pkgName);
+		noteInfo = noteInfo.concat(" " + title);
+		for (int i = 0; i < count; i++) {
+			noteInfo = noteInfo.concat(" " + listPkgs.get(i));
+		}
+		noteInfo = noteInfo.concat(", will select all!");
+
+		return MessageDialog.openConfirm(getShell(), title, noteInfo);
+	}
+
 	private void setAffectedPkgsChecked(String affectedPkgs) {
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
 			if (affectedPkgs.equals(info.getKey())) {
 				List<String> affected = info.getValue();
+				if (!dailogPkgsChecked("affected", affectedPkgs, affected))
+					return;
 				for (int i = 0; i < affected.size(); i++) {
 					String depString = affected.get(i);
 					PackageItem pItem = getPackedItem(depString);
@@ -355,6 +372,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
 			if (depPkgs.equals(info.getKey())) {
 				List<String> dep = info.getValue();
+				if (!dailogPkgsChecked("depend", depPkgs, dep))
+					return;
 				for (int i = 0; i < dep.size(); i++) {
 					String depString = dep.get(i);
 					PackageItem pItem = getPackedItem(depString);

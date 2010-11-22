@@ -228,7 +228,7 @@ public class MStudioEnvInfo {
 			
 			// depend packages ...
 			String depends = pfgFile.getStringProperty(sect, "depend");
-			if (null != depends){
+			if (null != depends && !depends.equals("")){
 				String dep[] = depends.split(" ");
 	
 				for (int j = 0; j < dep.length; j++) {
