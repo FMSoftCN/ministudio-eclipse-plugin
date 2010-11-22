@@ -339,14 +339,15 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		int count = listPkgs.size();
 		if (count <= 0)
 			return false;
-		String noteInfo = new String(pkgName);
-		noteInfo = noteInfo.concat(" " + title);
+		String messageInfo = new String(pkgName);
+		messageInfo = messageInfo.concat(" " + title);
 		for (int i = 0; i < count; i++) {
-			noteInfo = noteInfo.concat(" " + listPkgs.get(i));
+			messageInfo = messageInfo.concat(" " + listPkgs.get(i));
 		}
-		noteInfo = noteInfo.concat(", will select all!");
+		messageInfo = messageInfo.concat(", will select all!");
+		MessageDialog.openInformation(getShell(), title, messageInfo);
 
-		return MessageDialog.openConfirm(getShell(), title, noteInfo);
+		return true;
 	}
 
 	private void setAffectedPkgsChecked(String affectedPkgs) {
