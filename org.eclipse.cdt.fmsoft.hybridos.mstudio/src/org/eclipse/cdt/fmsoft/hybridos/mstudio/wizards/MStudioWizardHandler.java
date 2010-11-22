@@ -64,30 +64,29 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioPro
 
 
 public class MStudioWizardHandler extends CWizardHandler {
-	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
 	public static final String EMPTY_STR = "";
+	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
 
 	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
 	private static final String PROP_VAL = PROPERTY + ".debug";
-	
 	
 	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
 	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
 	final	String TEMPLATE_TYPE_MGINIT = "MStudioMginitModuleCProject";
 	final String TEMPLATE_TYPE_IAL    = "MStudioCustomIALCProject";
 
-	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
-	private String propertyId = null;
-	private IProjectType pt = null;
-	protected IWizardItemsListListener listener;
-	protected MStudioNewCAppSoCConfigWizardPage fConfigPage;
-	private IToolChain[] savedToolChains = null;
 	private IWizard wizard;
-	private IWizardPage startingPage;
 	private EntryInfo entryInfo;
+	private IWizardPage startingPage;
+	private IProjectType pt = null;
+	private String propertyId = null;
+	private IToolChain[] savedToolChains = null;
+	private List<String> preferredTCs = new ArrayList<String>();
 	protected CfgHolder[] cfgs = null;
 	protected IWizardPage[] customPages;
-	private List<String> preferredTCs = new ArrayList<String>();
+	protected IWizardItemsListListener listener;
+	protected MStudioNewCAppSoCConfigWizardPage fConfigPage;
+	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
 
 	protected static final class EntryInfo {
 		private SortedMap<String, IToolChain> tcs;
@@ -484,74 +483,82 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
 		String hostName = "Host";
 		
+		List<String> depLibList = new ArrayList<String> ();
+		String[] pkgs = mprj.getDepPkgs();
+		for (int idx = 0; idx < pkgs.length; idx++) {
+			String[] libs = einfo.getPackageLibs(pkgs[idx]);
+			for (int c = 0; c < libs.length; c++){
+				depLibList.add(libs[c]);
+			}
+		}
+		String[] depLibs    	  	  = depLibList.toArray(new String[depLibList.size()]);
+		String[] pcIncludePath 	  = { einfo.getPCIncludePath() };
+		String[] pcLibPath     	  = { einfo.getPCLibraryPath() };
+		String[] crossIncludePath = { einfo.getCrossIncludePath() };
+		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
+		
 		for (int i = 0; i < cur_cfgs.length; i++) {
 			String id = CDataUtil.genId(cur_cfgs[0].getId());
 
-			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[0], id);
-			ITool[] tools = newconfig.getTools();
+			
 
-			//change name
-			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
-			newconfig.setDescription(newconfig.getName());
+			//FOR old Configures ...
+			ITool[] tls = cur_cfgs[i].getTools();
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
-//			System.out.println(newconfig.getName());
-//			
-//			System.out.println("tools length :" + tools.length + "; BuildCommand: "
-//					+ newconfig.getBuildCommand());
-
-			for (int j = 0; j < tools.length; j++) {
-				ITool subTool = tools[j];
-
-//				System.out.println();
-//				System.out.println("Tool Command: " + subTool.getToolCommand()
-//						+ "; Command Pattern:" + subTool.getCommandLinePattern());
+			
+			for (int j = 0; j < tls.length; j++) {
+				ITool subTool = tls[j];
 				
-				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
-
 				IOption[] subOpts = subTool.getOptions();
-//				System.out.println("subtools option length :" + subOpts.length);
 
 				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
 					IOption option = subOpts[optIdx];
-//					System.out.println(option.getName() + " : ["
-//							+ option.getCommand() + "] : " + option.getValue());
-					try {
-//						System.out.println("---Value type:" + option.getValueType());
 
-						if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+					try {
+						/*if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
 							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
-							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
-						} else if (option.getValueType() == IOption.INCLUDE_PATH) {
-							//String[] expectedSymbols = { "/opt/hybridos/include" };
-							String[] expectedSymbols = { einfo.getIncludePath() };
-							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
-							
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, expectedSymbols);
+						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcIncludePath);	
 						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							//String[] expectedSymbols = { "/opt/hybridos/lib" };
-							String[] expectedSymbols = { einfo.getLibraryPath() };
-							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
-							
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcLibPath);		
 						} else if (option.getValueType() == IOption.LIBRARIES) {
-							//String[] expectedSymbols = { "testlib" };
-							List<String> depLibs = new ArrayList<String> ();
-							String[] pkgs = mprj.getDepPkgs();
-							for (int idx = 0; idx < pkgs.length; idx++) {
-								String[] libs = einfo.getPackageLibs(pkgs[idx]);
-								for (int c = 0; c < libs.length; c++){
-									depLibs.add(libs[c]);
-								}
-							}
-							String [] expectedSymbols = new String[depLibs.size()];
-							int count = 0;
-							for (Iterator<String> it = depLibs.iterator(); it.hasNext(); ){
-								expectedSymbols [count++] = it.next();
-							}
-							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, depLibs);
 						} 
 					} catch (BuildException e) {
-
+						System.out.println(" createTargetConfiguration BuildException");
 					}
-//					System.out.println();
+				}
+			}
+
+			// FOR new Configures ....
+			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[0], id);
+			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
+			newconfig.setDescription(newconfig.getName());
+			ITool[] tools = newconfig.getTools();
+			for (int j = 0; j < tools.length; j++) {
+				ITool subTool = tools[j];
+				
+				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
+				IOption[] subOpts = subTool.getOptions();
+
+				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
+					IOption option = subOpts[optIdx];
+
+					try {
+						/*if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
+							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
+							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
+						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
+							ManagedBuildManager.setOption(newconfig, subTool, option, crossIncludePath);	
+						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
+							ManagedBuildManager.setOption(newconfig, subTool, option, crossLibPath);	
+						} else if (option.getValueType() == IOption.LIBRARIES) {
+							ManagedBuildManager.setOption(newconfig, subTool, option, depLibs);
+						} 
+					} catch (BuildException e) {
+						System.out.println(" createTargetConfiguration BuildException");
+					}
 				}
 			}
 		}

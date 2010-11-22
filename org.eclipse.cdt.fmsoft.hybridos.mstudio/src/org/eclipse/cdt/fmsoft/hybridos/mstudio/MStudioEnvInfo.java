@@ -5,7 +5,6 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -155,16 +154,28 @@ public class MStudioEnvInfo {
 		return libs.split(" ");
 	}
 	
-	public String getIncludePath () {
+	public String getPCIncludePath () {
 		if (null == SoCName)
 			return "";
 		return SoCPathPrefix + SoCName + "/pc_symmetry/include/";
 	}
 	
-	public String getLibraryPath() {
+	public String getPCLibraryPath() {
 		if (null == SoCName)
 			return "";
 		return SoCPathPrefix + SoCName + "/pc_symmetry/lib/";
+	}
+	
+	public String getCrossIncludePath(){
+		if (null == SoCName)
+			return "";
+		return SoCPathPrefix + SoCName + "/cross/include/";
+	}
+	
+	public String getCrossLibraryPath() {
+		if (null == SoCName)
+			return "";
+		return SoCPathPrefix + SoCName + "/cross/lib/";
 	}
 
 	//get all valid SoC paths
