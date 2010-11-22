@@ -155,7 +155,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			  return true;
 			  //validatePage();
 		  }
-	 }
+	}
 	protected void updateTipMessage (String tip) {
 		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
 		tipText.setForeground(c);
@@ -176,6 +176,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		}
 	}
 	private void initSizeAndColor(){
+		//TODO
 		String[] resolution = new String[]{"320x240","640x480","1024x768"};
 		String[] colorDepth = new String[]{"16","24","32"};
 		for(int i=0; i<resolution.length; i++){

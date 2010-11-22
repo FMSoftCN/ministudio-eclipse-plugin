@@ -1,10 +1,16 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.MiniGUIRunMode;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -15,12 +21,15 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.views.markers.internal.TableView;
 
 public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 
+	private TableViewer tv=null;
 	private Table table=null;
 	private CheckboxTableViewer ctv=null;
 	private Button selectAll=null;
+	Button upButton,downButton;
 	
 	public MStudioDeployAutobootProjectsWizardPage(String pageName) {
 		super(pageName);
@@ -56,9 +65,12 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		
 		com2.setLayout(new GridLayout(2,false));
 		com2.setLayoutData(new GridData(GridData.FILL_BOTH));
-		table=new Table(com2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.IMAGE_BMP|SWT.FULL_SELECTION);
+		tv=new TableViewer(com2,SWT.MULTI|SWT.CHECK|SWT.V_SCROLL|SWT.H_SCROLL|SWT.FULL_SELECTION);
+		//table=new Table(com2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.IMAGE_BMP|SWT.FULL_SELECTION);
+		table=tv.getTable();
 		table.setLinesVisible(true);
-		table.setHeaderVisible(true);	
+		table.setHeaderVisible(true);
+		//tv.setContentProvider(new IContentProvider());
 		new TableColumn(table,SWT.NONE).setText("Start");
 		new TableColumn(table,SWT.NONE).setText("Program name");
 		
@@ -66,29 +78,58 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		layData2.verticalSpan=2;
 		table.setLayoutData(layData2);
 		
-		Button upButton=new Button(com2,SWT.NONE);
-		upButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		upButton=new Button(com2,SWT.NONE);
+		upButton.setLayoutData(new GridData(GridData.FILL));
 		upButton.setText("Move Up");
-		Button downButton=new Button(com2,SWT.NONE);
-		downButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		downButton=new Button(com2,SWT.NONE);
+		downButton.setLayoutData(new GridData(GridData.FILL));
 		downButton.setText("Move Down");
 		
-		//ctv = new CheckboxTableViewer(table);
+		ctv = new CheckboxTableViewer(table);
+		
 		selectAll=new Button(topPanel,SWT.CHECK);
 		selectAll.setText("Select All");
 		//TODO
-		//initAutoStartProgrames();
+		initAutoStartProgrames();
 		
 		setControl(topPanel);
 		setPageComplete(true);
 
 	}
+	public void update(){
+		
+	}
 	//init the table data
 	private void initAutoStartProgrames(){
-		
+		if(MStudioEnvInfo.getInstance().getMgRunMode() == MiniGUIRunMode.thread.name()){
+			upButton.setEnabled(false);
+			downButton.setEnabled(false);
+			selectAll.setEnabled(false);	
+			//table.addControlListener(new tableSingleCheckListener());
+			
+			ctv.addCheckStateListener(new tableSingleCheckListener());
+		}
+		else{
+			upButton.setEnabled(true);
+			downButton.setEnabled(true);
+			selectAll.setEnabled(true);
+			ctv.addCheckStateListener(new tableMultyCheckListener());
+		}
 	}
 	
 	public IProject[] getDeployAutobootProjects() {
+		
 		return null;
+	}
+	public class tableSingleCheckListener implements ICheckStateListener{
+		public void checkStateChanged(CheckStateChangedEvent event) {
+			ctv.setAllChecked(false);
+			ctv.setChecked(event.getElement(), event.getChecked());
+		}		
+	}
+	public class tableMultyCheckListener implements ICheckStateListener{
+		public void checkStateChanged(CheckStateChangedEvent event) {
+			
+		}
 	}
 }

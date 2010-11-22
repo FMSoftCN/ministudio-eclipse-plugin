@@ -2,6 +2,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -63,7 +64,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		label1.setText("Select system services for rootfs");
 		//label1.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		serviceTable = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
+		serviceTable = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL );
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		serviceTable.setLayoutData(gd);
 		
@@ -82,7 +83,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 				
 			}
 		});
-		//initServiceTable();
+		initServiceTable();
 		
 		setControl(topPanel);
 		setPageComplete(false);
@@ -97,10 +98,20 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
 			return;		
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
+		
 		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
-		ctv.add(MStudioPlugin.getDefault().getMStudioEnvInfo().getServices().toArray());
-		//init default checked item
-		ctv.setCheckedElements(defaultSelServ);
+		
+		List<String> s= MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
+		String[] serv=(String[])s.toArray(new String[s.size()]);
+		if(serv.length>0){
+			ctv.add(serv);		
+			ctv.setCheckedElements(defaultSelServ);
+		}
+		//init button next
+		if(ctv.getCheckedElements().length>0)
+			setPageComplete(true);
+		else
+			setPageComplete(false);
 	}	
 	
 	private void storeService(){
