@@ -265,20 +265,14 @@ public class MStudioEnvInfo {
 	
 	public static IProject[] getExecutableProjects() {
 		IProject[] msProjects = getMStudioProjects();
-		List<IProject> exeProj = new ArrayList<IProject>();
-		
+		List<IProject> exeProj = new ArrayList<IProject>();		
 		for (int i = 0; i < msProjects.length ; i++) {
 			MStudioProject mpr = new MStudioProject (msProjects[i]);
 			if (mpr.isExeTmplType()) {
 				exeProj.add(msProjects[i]);
 			}
 		}
-		IProject[] ret = new IProject [exeProj.size()];
-		int i = 0;
-		for (Iterator<IProject> it = exeProj.iterator(); it.hasNext(); ){
-			ret[i++] = it.next();
-		}
-		return ret;
+		return (IProject[])exeProj.toArray(new IProject[exeProj.size()]);
 	}
 	
 	public static IProject[] getDlCustomProjects() {
@@ -291,12 +285,7 @@ public class MStudioEnvInfo {
 				dlProj.add(msProjects[i]);
 			}
 		}
-		IProject[] ret = new IProject [dlProj.size()];
-		int i = 0;
-		for (Iterator<IProject> it = dlProj.iterator(); it.hasNext(); ){
-			ret[i++] = it.next();
-		}
-		return ret;
+		return (IProject[])dlProj.toArray(new IProject[dlProj.size()]);
 	}
 	
 	public static IProject[] getSharedLibProjects() {
@@ -309,12 +298,7 @@ public class MStudioEnvInfo {
 				sProj.add(msProjects[i]);
 			}
 		}
-		IProject[] ret = new IProject [sProj.size()];
-		int i = 0;
-		for (Iterator<IProject> it = sProj.iterator(); it.hasNext(); ){
-			ret[i++] = it.next();
-		}
-		return ret;
+		return (IProject[])sProj.toArray(new IProject[sProj.size()]);
 	}
 	
 	public static IProject[] getMStudioProjects() {
@@ -324,14 +308,12 @@ public class MStudioEnvInfo {
 			try {
 				if (!allProjects[i].hasNature (MStudioProjectNature.MSTUDIO_NATURE_ID))
 					msProjects.add(allProjects[i]);
-			} catch (CoreException ex) {}
+			} catch (CoreException ex) {
+				ex.printStackTrace();
+				System.out.println(ex.toString());
+			}
 		}
-		IProject[] ret = new IProject [msProjects.size()];
-		int i = 0;
-		for (Iterator<IProject> it = msProjects.iterator(); it.hasNext(); ){
-			ret[i++] = it.next();
-		}
-		return ret;
+		return (IProject[])msProjects.toArray(new IProject[msProjects.size()]);
 	}
 }
 
