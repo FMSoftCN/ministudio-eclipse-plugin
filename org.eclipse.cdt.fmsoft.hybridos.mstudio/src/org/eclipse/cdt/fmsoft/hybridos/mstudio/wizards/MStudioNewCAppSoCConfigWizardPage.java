@@ -4,7 +4,7 @@
  * District, Beijing, P. R. CHINA 100191.
  * All rights reserved.
  *
- * This software is the confidentail and proprietary information of
+ * This software is the confidential and proprietary information of
  * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
  * You shall not disclose such Confidential Information and shall
  * use it only in accordance you entered into with FMSoft.
@@ -90,6 +90,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	IWizardPage[] customPages = null;
 	private String socName = msEnvInfo.getCurSoCName();
 	private Button buttonCheck = null;
+	private List<PackageItem> pkgs = null;
 	
 	private List<String> selectedPackages = new ArrayList<String>();
 
@@ -215,9 +216,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				PackageItem itm = (PackageItem) event.getElement();
 				
 				if (!event.getChecked()) {
-					selectedPackages.remove(itm.getName());
+					setAffectedPkgsChecked(itm.getName());
 				} else {
-					selectedPackages.add(itm.getName());
+					setDepPkgsChecked(itm.getName());
 				}
 				
 				setPageComplete(isCustomPageComplete());
@@ -333,11 +334,54 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	// ------------------------
+	private void setAffectedPkgsChecked(String affectedPkgs) {
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
+			if (affectedPkgs.equals(info.getKey())) {
+				List<String> affected = info.getValue();
+				for (int i = 0; i < affected.size(); i++) {
+					String depString = affected.get(i);
+					PackageItem pItem = getPackedItem(depString);
+					if (null == pItem)
+						break;
+					ctv.setChecked(pItem, false);
+					selectedPackages.remove(depString);
+				}
+			}
+		}
+		selectedPackages.remove(affectedPkgs);
+	}
+
+	private void setDepPkgsChecked(String depPkgs) {
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
+			if (depPkgs.equals(info.getKey())) {
+				List<String> dep = info.getValue();
+				for (int i = 0; i < dep.size(); i++) {
+					String depString = dep.get(i);
+					PackageItem pItem = getPackedItem(depString);
+					if (null == pItem)
+						break;
+					ctv.setChecked(pItem, true);
+					selectedPackages.add(depString);
+				}
+			}
+		}
+		selectedPackages.add(depPkgs);
+	}
+
+	private PackageItem getPackedItem(String findString) {
+		for (int i = 0; i < pkgs.size(); i++) {
+			PackageItem pItem = pkgs.get(i);
+			if (findString.equals(pItem.getName()))
+				return pItem;
+		}
+		return null;
+	}
+
 	private void setCheckboxTableViewerData() {
-		List<PackageItem> pkgs = new ArrayList<PackageItem>();
+		pkgs = new ArrayList<PackageItem>();
 
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
-			pkgs.add(new PackageItem (info.getKey(), info.getValue()));
+			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
 		}
 
 		ctv.setInput(pkgs.toArray());
