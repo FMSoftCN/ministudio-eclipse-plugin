@@ -63,8 +63,8 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		Label typeTitle = new Label(topPanel,SWT.NONE);
 		
 		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", "Select deploy type", 1,
-			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
-							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
+			     			new String[][] {{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()},
+							{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()}},topPanel);
 		//set the default choice value
 		PreferenceStore newTypePreferenceStore=new PreferenceStore();
 		newTypePreferenceStore.setValue(getTargetType(), getTargetType());
