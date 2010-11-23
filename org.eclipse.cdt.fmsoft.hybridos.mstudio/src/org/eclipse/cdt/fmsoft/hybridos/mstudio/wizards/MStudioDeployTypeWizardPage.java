@@ -77,8 +77,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 						targetType = MStudioDeployTargetType.Host;
 						MStudioDeployWizard.deployTypeIsHost=true;
 					}
-					else
-						targetType = MStudioDeployTargetType.Target;					
+					else{
+						targetType = MStudioDeployTargetType.Target;	
+						MStudioDeployWizard.deployTypeIsHost=false;
+					}
 				}
 			}});
 		new Label(topPanel,SWT.FULL_SELECTION|SWT.LINE_SOLID);
