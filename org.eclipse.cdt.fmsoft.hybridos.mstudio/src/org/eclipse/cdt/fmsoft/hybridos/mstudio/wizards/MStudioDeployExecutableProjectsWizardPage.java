@@ -193,6 +193,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	public void update(){
 		bottomPanel4.setVisible(!MStudioDeployWizard.deployTypeIsHost);
 		validatePage();
+		MStudioDeployWizard.deployCanFinish=false;
 	}
 	
 	private String[] getIALProject() {

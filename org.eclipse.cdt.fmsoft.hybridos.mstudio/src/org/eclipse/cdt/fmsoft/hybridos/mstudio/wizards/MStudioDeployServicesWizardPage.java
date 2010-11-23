@@ -86,11 +86,12 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		initServiceTable();
 		
 		setControl(topPanel);
-		setPageComplete(false);
+//		setPageComplete(false);
 	}
 	//更新控件数据
 	public void update(){
 		initServiceTable();
+		MStudioDeployWizard.deployCanFinish=false;
 	}
 	
 	private void initServiceTable(){
@@ -141,6 +142,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		//if (exeProjects == null || exeProjects.length <= 0)
 		//	return null;
 		//wizard.getDeployServiceWizardPage().update();
+		wizard.getDeployAutobootWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 }

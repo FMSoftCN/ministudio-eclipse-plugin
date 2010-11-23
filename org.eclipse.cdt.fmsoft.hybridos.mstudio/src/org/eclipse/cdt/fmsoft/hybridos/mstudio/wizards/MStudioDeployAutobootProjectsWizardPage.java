@@ -97,7 +97,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 
 	}
 	public void update(){
-		
+		MStudioDeployWizard.deployCanFinish=true;
 	}
 	//init the table data
 	private void initAutoStartProgrames(){
