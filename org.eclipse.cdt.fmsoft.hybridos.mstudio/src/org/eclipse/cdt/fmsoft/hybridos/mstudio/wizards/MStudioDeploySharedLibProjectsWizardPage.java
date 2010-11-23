@@ -104,7 +104,9 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	public void update(){
 		initDeploySharedLibTable();
 		initIALTable();
+		MStudioDeployWizard.deployCanFinish=false;
 	}
+	
 	private void initDeploySharedLibTable(){
 		IProject[] libProjects=MStudioDeployWizard.getModuleProjects();
 		if(libProjects==null)
@@ -113,8 +115,14 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		for(int i=0;i<libProjects.length;i++){
 			list.add(libProjects[i].getName());
 		}
-		ctvLabraries.add(list);		
+		
+		ctvLabraries.setItemCount(0);
+		
+		if(libProjects.length>0){
+			ctvLabraries.add(list);	
+		}
 	}
+	
 	private void initIALTable(){
 		IProject[] ial=MStudioDeployWizard.getIALProjects();
 		if(ial==null)
@@ -123,7 +131,11 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		for(int i=0;i<ial.length;i++){
 			list.add(ial[i].getName());
 		}
-		ctvIAL.add(list);
+		
+		ctvIAL.setItemCount(0);
+		if(ial.length>0){
+			ctvIAL.add(list);
+		}
 	}
 	
 	public IProject getDeployIALProject() {
@@ -166,7 +178,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		//skip next page
 		//if (exeProjects == null || exeProjects.length <= 0)
 		//	return null;
-		//wizard.getDeployServiceWizardPage().update();
+		wizard.getDeployServiceWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 }
