@@ -2,7 +2,6 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPage.MStudioDeployTargetType;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
@@ -77,8 +76,6 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	public boolean isHost() {
-		//if (deployTypePage.getTargetType().equals(MStudioDeployTargetType.Host.name()))
-			//return true;
 		return deployTypeIsHost;
 	}
 	
