@@ -1,9 +1,22 @@
+/*********************************************************************
+ * Copyright (C) 2005 - 2010, Beijing FMSoft Technology Co., Ltd.
+ * Room 902, Floor 9, Taixing, No.11, Huayuan East Road, Haidian
+ * District, Beijing, P. R. CHINA 100191.
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance you entered into with FMSoft.
+ *
+ *			http://www.minigui.com
+ *
+ *********************************************************************/
+
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-//import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +25,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -19,6 +34,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
+
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
@@ -37,6 +53,7 @@ import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIPlugin;
 import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
 import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
 import org.eclipse.cdt.managedbuilder.ui.wizards.ManagedBuildWizard;
+
 import org.eclipse.cdt.ui.newui.CDTPrefUtil;
 import org.eclipse.cdt.ui.templateengine.IWizardDataPage;
 import org.eclipse.cdt.ui.templateengine.Template;
@@ -46,16 +63,19 @@ import org.eclipse.cdt.ui.templateengine.pages.UIWizardPage;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-//import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
@@ -64,40 +84,43 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioPro
 
 
 public class MStudioWizardHandler extends CWizardHandler {
-	public static final String EMPTY_STR = "";
+
 	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
+	public static final String EMPTY_STR = "";
 
 	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
 	private static final String PROP_VAL = PROPERTY + ".debug";
-	
+
 	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
 	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
-	final	String TEMPLATE_TYPE_MGINIT = "MStudioMginitModuleCProject";
+	final String TEMPLATE_TYPE_MGINIT = "MStudioMginitModuleCProject";
 	final String TEMPLATE_TYPE_IAL    = "MStudioCustomIALCProject";
 
-	private IWizard wizard;
-	private EntryInfo entryInfo;
-	private IWizardPage startingPage;
+	private IWizard wizard = null;
+	private IWizardPage startingPage = null;
 	private IProjectType pt = null;
-	private String propertyId = null;
 	private IToolChain[] savedToolChains = null;
+	private EntryInfo entryInfo = null;
+	private String propertyId = null;
 	private List<String> preferredTCs = new ArrayList<String>();
+
+	protected IWizardPage[] customPages = null;
+	protected IWizardItemsListListener listener = null;
 	protected CfgHolder[] cfgs = null;
-	protected IWizardPage[] customPages;
-	protected IWizardItemsListListener listener;
-	protected MStudioNewCAppSoCConfigWizardPage fConfigPage;
+	protected MStudioNewCAppSoCConfigWizardPage fConfigPage = null;
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
 
 	protected static final class EntryInfo {
-		private SortedMap<String, IToolChain> tcs;
-		private EntryDescriptor entryDescriptor;
-		private Template template;
-		private boolean initialized;
-		private boolean isValid;
-		private String templateId;
-		private IWizardPage[] templatePages;
-		private IWizardPage predatingPage;
-		private IWizardPage followingPage;
+
+		private IWizardPage[] templatePages = null;
+		private IWizardPage predatingPage = null;
+		private IWizardPage followingPage = null;
+		private Template template = null;
+		private EntryDescriptor entryDescriptor = null;
+		private boolean initialized = false;
+		private boolean isValid = false;
+		private String templateId = null;
+		private SortedMap<String, IToolChain> tcs = null;
 
 		public EntryInfo(EntryDescriptor dr, SortedMap<String, IToolChain> _tcs) {
 			entryDescriptor = dr;
@@ -119,8 +142,10 @@ public class MStudioWizardHandler extends CWizardHandler {
 		}
 
 		private void initialize() {
+
 			if (initialized)
 				return;
+
 			do {
 				if (entryDescriptor == null)
 					break;
@@ -152,10 +177,10 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		public Template getInitializedTemplate(IWizardPage predatingPage,
 				IWizardPage followingPage, Map<String, String> map) {
+
 			getNextPage(predatingPage, followingPage);
 
 			Template template = getTemplate();
-
 			if (template != null) {
 				Map<String, String> valueStore = template.getValueStore();
 				// valueStore.clear();
@@ -171,16 +196,19 @@ public class MStudioWizardHandler extends CWizardHandler {
 					valueStore.putAll(map);
 				}
 			}
+
 			return template;
 		}
 
 		public IWizardPage getNextPage(IWizardPage predatingPage, IWizardPage followingPage) {
+
 			initialize();
-			if (this.templatePages == null
-					|| this.predatingPage != predatingPage
+
+			if (this.templatePages == null || this.predatingPage != predatingPage
 					|| this.followingPage != followingPage) {
 				this.predatingPage = predatingPage;
 				this.followingPage = followingPage;
+
 				if (template != null) {
 					this.templatePages = template.getTemplateWizardPages(
 							predatingPage, followingPage, predatingPage.getWizard());
@@ -192,30 +220,41 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 			if (templatePages.length != 0)
 				return templatePages[0];
+
 			return followingPage;
 		}
 
 		private boolean canFinish(IWizardPage predatingPage, IWizardPage followingPage) {
+
 			getNextPage(predatingPage, followingPage);
+
 			for (int i = 0; i < templatePages.length; i++) {
 				if (!templatePages[i].isPageComplete())
 					return false;
 			}
+
 			return true;
 		}
 
 		protected Set<String> tc_filter() {
+
 			Set<String> full = tcs.keySet();
+
 			if (entryDescriptor == null)
 				return full;
+
 			Set<String> out = new LinkedHashSet<String>(full.size());
-			for (String s : full)
+
+			for (String s : full) {
 				if (isToolChainAcceptable(s))
 					out.add(s);
+			}
+
 			return out;
 		}
 
 		public boolean isToolChainAcceptable(String tcId) {
+
 			if (template == null || template.getTemplateInfo() == null)
 				return true;
 
@@ -238,6 +277,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 						|| (ss[i] != null && ss[i].equals(id2)))
 					return true;
 			}
+
 			return false;
 		}
 
@@ -281,37 +321,49 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public Map<String, String> getMainPageData() {
+
 		WizardNewProjectCreationPage page = (WizardNewProjectCreationPage) getStartingPage();
 		Map<String, String> data = new HashMap<String, String>();
 		String projName = page.getProjectName();
+
 		projName = projName != null ? projName.trim() : EMPTY_STR;
+
 		data.put("projectName", projName); //$NON-NLS-1$
 		data.put("baseName", getBaseName(projName)); //$NON-NLS-1$
 		data.put("baseNameUpper", getBaseName(projName).toUpperCase()); //$NON-NLS-1$
 		data.put("baseNameLower", getBaseName(projName).toLowerCase()); //$NON-NLS-1$
+
 		String location = page.getLocationPath().toOSString();
 		if (location == null)
 			location = EMPTY_STR;
+
 		data.put("location", location);
+
 		return data;
 	}
 
 	private String getBaseName(String name) {
+
 		String baseName = name;
 		int dot = baseName.lastIndexOf('.');
+
 		if (dot != -1) {
 			baseName = baseName.substring(dot + 1);
 		}
+
 		dot = baseName.indexOf(' ');
+
 		if (dot != -1) {
 			baseName = baseName.substring(0, dot);
 		}
+
 		return baseName;
 	}
 
 	public void handleSelection() {
+
 		List<String> preferred = CDTPrefUtil.getPreferredTCs();
-		
+
 		updatePreferred(preferred);
 		loadCustomPages();
 
@@ -320,6 +372,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	private void loadCustomPages() {
+
 		if (!(getWizard() instanceof MStudioNewCAppWizard))
 			return; // not probable
 
@@ -345,18 +398,21 @@ public class MStudioWizardHandler extends CWizardHandler {
 			for (int k = 0; k < customPages.length; k++)
 				customPages[k].setWizard(wz);
 		}
+
 		setCustomPagesFilter(wz);
 	}
 
 	private void setCustomPagesFilter(MStudioNewCAppWizard wz) {
+
 		String[] natures = wz.getNatures();
-		if (natures == null || natures.length == 0)
+
+		if (natures == null || natures.length == 0) {
 			MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
 					MBSCustomPageManager.NATURE, null);
-		else if (natures.length == 1)
+		} else if (natures.length == 1) {
 			MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
 					MBSCustomPageManager.NATURE, natures[0]);
-		else {
+		} else {
 			TreeSet<String> x = new TreeSet<String>();
 			for (int i = 0; i < natures.length; i++)
 				x.add(natures[i]);
@@ -376,6 +432,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		int n = (tcs == null) ? 0 : tcs.length;
 		ArrayList<IToolChain> x = new ArrayList<IToolChain>();
 		TreeSet<String> y = new TreeSet<String>();
+
 		for (int i = 0; i < n; i++) {
 			if (tcs[i] == null) // --- NO TOOLCHAIN ---
 				continue; // has no custom pages.
@@ -388,16 +445,18 @@ public class MStudioWizardHandler extends CWizardHandler {
 			if (pt != null)
 				y.add(pt.getId());
 		}
+
 		MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
 				MBSCustomPageManager.TOOLCHAIN, x);
 
 		if (ptIsNull) {
-			if (y.size() > 0)
+			if (y.size() > 0) {
 				MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
 						MBSCustomPageManager.PROJECT_TYPE, y);
-			else
+			} else {
 				MBSCustomPageManager.addPageProperty(MBSCustomPageManager.PAGE_ID,
 						MBSCustomPageManager.PROJECT_TYPE, null);
+			}
 		}
 	}
 
@@ -429,6 +488,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 					ManagedBuilderUIPlugin.getUniqueIdentifier(),
 					MStudioMessages.getString("MStudioWizardHandler.6"))); 
 		}
+
 		Configuration cf = (Configuration) cfgs[0].getConfiguration();
 		ManagedProject mProj = new ManagedProject(project, cf.getProjectType());
 		info.setManagedProject(mProj);
@@ -453,7 +513,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			if (bld != null) {
 				bld.setManagedBuildOn(true);
 			}
-			
+
 			config.setName(cfgs[i].getName());
 			config.setArtifactName(removeSpaces(project.getName()));
 
@@ -472,8 +532,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 		doCustom(project);
 	}
 
-	private void createTargetConfiguration(IProject project)
-	{
+	private void createTargetConfiguration(IProject project) {
+
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
@@ -482,31 +542,31 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String socName = einfo.getCurSoCName();
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
 		String hostName = "Host";
-		
 		List<String> depLibList = new ArrayList<String> ();
 		String[] pkgs = mprj.getDepPkgs();
+
 		for (int idx = 0; idx < pkgs.length; idx++) {
 			String[] libs = einfo.getPackageLibs(pkgs[idx]);
 			for (int c = 0; c < libs.length; c++){
 				depLibList.add(libs[c]);
 			}
 		}
-		String[] depLibs    	  	  = depLibList.toArray(new String[depLibList.size()]);
-		String[] pcIncludePath 	  = { einfo.getPCIncludePath() };
-		String[] pcLibPath     	  = { einfo.getPCLibraryPath() };
+
+		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
+		String[] pcIncludePath    = { einfo.getPCIncludePath() };
+		String[] pcLibPath        = { einfo.getPCLibraryPath() };
 		String[] crossIncludePath = { einfo.getCrossIncludePath() };
 		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
-		
+
 		for (int i = 0; i < cur_cfgs.length; i++) {
 			String id = CDataUtil.genId(cur_cfgs[0].getId());
 
 			//FOR old Configures ...
 			ITool[] tls = cur_cfgs[i].getTools();
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
-			
+
 			for (int j = 0; j < tls.length; j++) {
 				ITool subTool = tls[j];
-				
 				IOption[] subOpts = subTool.getOptions();
 
 				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
@@ -517,9 +577,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
 							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, expectedSymbols);
 						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcIncludePath);	
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcIncludePath);
 						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcLibPath);		
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcLibPath);
 						} else if (option.getValueType() == IOption.LIBRARIES) {
 							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, depLibs);
 						} 
@@ -534,9 +594,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
 			newconfig.setDescription(newconfig.getName());
 			ITool[] tools = newconfig.getTools();
+
 			for (int j = 0; j < tools.length; j++) {
 				ITool subTool = tools[j];
-				
 				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
 				IOption[] subOpts = subTool.getOptions();
 
@@ -548,9 +608,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
 							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
 						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
-							ManagedBuildManager.setOption(newconfig, subTool, option, crossIncludePath);	
+							ManagedBuildManager.setOption(newconfig, subTool, option, crossIncludePath);
 						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							ManagedBuildManager.setOption(newconfig, subTool, option, crossLibPath);	
+							ManagedBuildManager.setOption(newconfig, subTool, option, crossLibPath);
 						} else if (option.getValueType() == IOption.LIBRARIES) {
 							ManagedBuildManager.setOption(newconfig, subTool, option, depLibs);
 						} 
@@ -560,12 +620,13 @@ public class MStudioWizardHandler extends CWizardHandler {
 				}
 			}
 		}
-		
+
 		if (cur_cfgs.length > 0)
-			ManagedBuildManager.saveBuildInfo(project, false);		
+			ManagedBuildManager.saveBuildInfo(project, false);
 	}
-	
+
 	protected void doTemplatesPostProcess(IProject prj) {
+
 		if (entryInfo == null)
 			return;
 
@@ -574,13 +635,13 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 		if (template == null)
 			return;
-		
+
 		// save the type by template 
 		MStudioProject mprj = new MStudioProject(prj);
 		String tempName = template.getTemplateId();
 		boolean isMgProject = false;
 		MStudioProjectTemplateType MgType = MStudioProjectTemplateType.exe;
-			
+
 		if (TEMPLATE_TYPE_EXE.equals(tempName)){
 			isMgProject = true;
 			MgType = MStudioProjectTemplateType.exe;
@@ -614,6 +675,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		if (fConfigPage == null) {
 			fConfigPage = new MStudioNewCAppSoCConfigWizardPage(this);
 		}
+
 		return fConfigPage;
 	}
 
@@ -646,11 +708,14 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public boolean isChanged() {
+
 		if (savedToolChains == null)
 			return true;
+
 		IToolChain[] tcs = getSelectedToolChains();
 		if (savedToolChains.length != tcs.length)
 			return true;
+
 		for (int i = 0; i < savedToolChains.length; i++) {
 			boolean found = false;
 			for (int j = 0; j < tcs.length; j++) {
@@ -662,6 +727,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			if (!found)
 				return true;
 		}
+
 		return false;
 	}
 
@@ -670,18 +736,22 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public IToolChain[] getSelectedToolChains() {
+
 		if (entryInfo != null) {
 			int i = 0;
 			Set <String> tcString = entryInfo.tc_filter();
 			IToolChain[] ts = new IToolChain[tcString.size()];
+
 			for (String s : tcString) {
 				Object obj = full_tcs.get(s);
 				if (obj instanceof IToolChain) {
 					ts[i++] = (IToolChain) obj;
 				}
 			}
+
 			return ts;
 		}
+
 		return new IToolChain[0];
 	}
 
@@ -714,7 +784,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	protected void doCustom(IProject newProject) {
+
 		IRunnableWithProgress[] operations = MBSCustomPageManager.getOperations();
+
 		if (operations != null){
 			for (int k = 0; k < operations.length; k++){
 				try {
@@ -745,6 +817,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 	 *            - affected project
 	 */
 	private void deleteExtraConfigs(IProject newProject) {
+
 		if (isChanged())
 			return; // no need to delete
 		if (listener != null && listener.isCurrent())
@@ -755,11 +828,14 @@ public class MStudioWizardHandler extends CWizardHandler {
 		ICProjectDescription prjd = CoreModel.getDefault().getProjectDescription(newProject, true);
 		if (prjd == null)
 			return;
+
 		ICConfigurationDescription[] all = prjd.getConfigurations();
 		if (all == null)
 			return;
+
 		CfgHolder[] req = getCfgItems(false);
 		boolean modified = false;
+
 		for (int i = 0; i < all.length; i++) {
 			boolean found = false;
 			for (int j = 0; j < req.length; j++) {
@@ -773,6 +849,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 				prjd.removeConfiguration(all[i]);
 			}
 		}
+
 		if (modified)
 			try {
 				CoreModel.getDefault().setProjectDescription(newProject, prjd);
@@ -786,11 +863,14 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public void initialize(EntryDescriptor data) throws CoreException {
+
 		EntryInfo info = new EntryInfo(data, full_tcs);
+
 		if (!info.isValid()) {
 			throw new CoreException(new Status(IStatus.ERROR,
 					ManagedBuilderUIPlugin.getUniqueIdentifier(), "inappropriate descriptor")); //$NON-NLS-1$
 		}
+
 		entryInfo = info;
 	}
 
@@ -798,7 +878,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 	 * Clones itself.
 	 */
 	public Object clone() {
+
 		MStudioWizardHandler clone = (MStudioWizardHandler) super.clone();
+
 		if (clone != null) {
 			clone.propertyId = propertyId;
 			clone.pt = pt;
@@ -808,10 +890,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 			clone.fConfigPage = fConfigPage; // the same !
 			clone.full_tcs = full_tcs; // the same !
 		}
+
 		return clone;
 	}
 
 	public boolean canFinish() {
+
 		if (entryInfo == null)
 			return false;
 
@@ -833,11 +917,11 @@ public class MStudioWizardHandler extends CWizardHandler {
 		return true;
 	}
 
-	public String[] getCreateDevPackage () {
+	public String[] getCreateDevPackage() {
 		if (null != fConfigPage)
 			return fConfigPage.getSelectedPackages();
 		else 
 			return new String[0];
 	}
-	
 }
+
