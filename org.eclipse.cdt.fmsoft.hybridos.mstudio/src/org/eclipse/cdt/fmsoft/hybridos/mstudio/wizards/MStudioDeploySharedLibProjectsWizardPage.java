@@ -58,7 +58,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		
 		Label label1=new Label(topPanel,SWT.NONE);
 		label1.setText("dynamic libraries");
-		label1.setLayoutData(new GridData(GridData.FILL_BOTH));
+		label1.setLayoutData(new GridData());
 		
 		tableLabraries = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 		GridData gd = new GridData(GridData.FILL_BOTH);
@@ -116,13 +116,8 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		ArrayList<String> list=new ArrayList<String>();
 		for(int i=0;i<libProjects.length;i++){
 			list.add(libProjects[i].getName());
-		}
-		
-		ctvLabraries.setItemCount(0);
-		
-		if(libProjects.length>0){
-			ctvLabraries.add(list);	
-		}
+		}		
+		ctvLabraries.add(list.toArray(new String[libProjects.length]));
 	}
 	
 	private void initIALTable(){
@@ -133,11 +128,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		for(int i=0;i<ial.length;i++){
 			list.add(ial[i].getName());
 		}
-		
-		ctvIAL.setItemCount(0);
-		if(ial.length>0){
-			ctvIAL.add(list);
-		}
+		ctvIAL.add(list.toArray(new String[ial.length]));
 	}
 	
 	public IProject getDeployIALProject() {
@@ -175,11 +166,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard==null)
-			return null;
-		//IProject[] exeProjects = wizard.getDeployExeProjects();
-		//skip next page
-		//if (exeProjects == null || exeProjects.length <= 0)
-		//	return null;
+			return null;	
 		wizard.getDeployServiceWizardPage().update();
 		return wizard.getNextPage(this);
 	}

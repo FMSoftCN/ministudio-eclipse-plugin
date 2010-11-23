@@ -1,9 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -13,7 +10,9 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 public class MStudioDeployTypeWizardPage extends WizardPage {
@@ -63,24 +62,21 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		Label typeTitle = new Label(topPanel,SWT.NONE);
 		
 		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", "Select deploy type", 1,
-			     			new String[][] {{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()},
-							{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()}},topPanel);
-		//set the default choice value
-		//typ
-		PreferenceStore store=new PreferenceStore();
+			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
+							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
+		
+		Composite rg=typeRadioGroup.getRadioBoxControl(topPanel);
+		Control[] radioButton=(Control[])(rg.getChildren());		
 		if(MStudioDeployWizard.deployTypeIsHost){
-			store.setDefault(MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name());
-			store.setValue(MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name());
-			//typeRadioGroup.getRadioBoxControl(topPanel).setData(MStudioDeployTargetType.Host.name());
+			if(radioButton.length>0){
+				((Button)radioButton[0]).setSelection(true);
+			}
 		}
 		else{
-			store.setDefault(MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name());
-			store.setValue(MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name());
-			//typeRadioGroup.getRadioBoxControl(topPanel).setData(MStudioDeployTargetType.Target.name());
+			if(radioButton.length>=1){
+				((Button)radioButton[1]).setSelection(true);
+			}
 		}
-		typeRadioGroup.setPreferenceStore(store);
-		typeRadioGroup.load();
-		//typeRadioGroup.loadDefault();
 		
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
@@ -101,10 +97,11 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 							new String[][]{{MStudioDeployBuildType.Release.name(),MStudioDeployBuildType.Release.name()},
 							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},topPanel);
 		//set the default choice value
-		PreferenceStore newPreferenceStore = new PreferenceStore();
-		newPreferenceStore.setValue(getBuildType(), getBuildType());
-		rootfsRadioGroup.setPreferenceStore(newPreferenceStore);
-		rootfsRadioGroup.load();
+		Composite tt=rootfsRadioGroup.getRadioBoxControl(topPanel);
+		Control[] radioButtons=(Control[])(tt.getChildren());
+		if(radioButtons.length>0){
+			((Button)radioButtons[0]).setSelection(true);
+		}
 		rootfsRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
 				if(!buildType.name().equals(event.getNewValue())){
@@ -126,6 +123,7 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 			return null;
 		}
         wizard.getDeployExecuteableWizardPage().update();
+        MStudioDeployWizard.deployCanFinish=false;
         return wizard.getNextPage(this);
     }
 }

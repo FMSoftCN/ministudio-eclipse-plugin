@@ -1,6 +1,5 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
@@ -8,43 +7,29 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.MiniGUIRunMode;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.views.markers.internal.TableView;
 
 public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 
-	//private TableViewer tv=null;
 	private Table table=null;
-	//private CheckboxTableViewer ctv=null;
-	private TableColumn tc0=null;
-	private TableColumn tc1=null;
 	private Button selectAll=null;
 	private Button upButton,downButton;
 	private IProject[] projects;
@@ -84,35 +69,18 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		com2.setLayoutData(new GridData(GridData.FILL_BOTH));
 		GridData dg=new GridData(GridData.FILL_BOTH);
 		dg.verticalSpan=2;
-		//com3.setLayoutData(dg);
 		
-		//tv=new TableViewer(com3,SWT.MULTI|SWT.CHECK|SWT.V_SCROLL|SWT.H_SCROLL|SWT.FULL_SELECTION|SWT.FILL);
-		//table=new Table(com2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.FULL_SELECTION|SWT.FILL);
-		//table.s
-		//tv.setContentProvider(new TableViewerContentProvider());
-		//tv.setLabelProvider(new TableViewerLabelProvider());
-		//table=tv.getTable();
 		table=new Table(com2, SWT.CHECK|SWT.V_SCROLL|SWT.H_SCROLL|SWT.FULL_SELECTION|SWT.FILL|SWT.MULTI|SWT.BORDER);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		table.setLayout(new GridLayout());
 		table.setLayoutData(dg);
-		//table.setLayout(new GridLayout());
-		//table.setLayoutData(dg);
-		//TableLayout tl=new TableLayout();
-		//table.setLayout(tl);
-		//tl.addColumnData(new ColumnWeightData(50));
 		TableColumn col1=new TableColumn(table,SWT.NONE);
 		col1.setText("Start");
 		col1.setWidth(50);
-		//tl.addColumnData(new ColumnWeightData(100));
 		TableColumn col2=new TableColumn(table,SWT.NONE); 	
 		col2.setText("Program Name");
 		col2.setWidth(100);
-		//tv.addSelectionChangedListener(new ISelectionChangedListener(){			
-		//	public void selectionChanged(SelectionChangedEvent event) {				
-		//		updateButtons();				
-		//	}});		
 		
 		upButton=new Button(com2,SWT.NONE);
 		upButton.setLayoutData(new GridData(GridData.FILL));
@@ -215,14 +183,10 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}
 	private void updateTable(){
 		if(projects!=null){
-			//List<String> list=new ArrayList<String>();
 			for(int i=0;i<projects.length;i++){
 				TableItem item=new TableItem(table,SWT.NONE);
 				item.setText(1,projects[i].getName());
-				//list.add(projects[i].getName());
 			}
-			
-			//tv.add(list);
 		}
 	}
 	//init the table data
@@ -232,12 +196,9 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 			return;
 		projects=wizard.getDeployExeProjects();		
 		if(projects!=null){
-			//List<String> list=new ArrayList<String>();
 			for(int i=0;i<projects.length;i++){
-				//list.add(projects[i].getName());
 				TableItem item=new TableItem(table,SWT.NONE);
 			}
-			//tv.add(list);
 		}		
 		updateButtons();
 	}
@@ -252,20 +213,14 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}	
 	
 	public class TableViewerContentProvider implements IStructuredContentProvider{
-
-		@Override
 		public Object[] getElements(Object inputElement) {
 			if(inputElement instanceof List)
 				return ((List)inputElement).toArray();
 			return new Object[0];
 		}
-
-		@Override
 		public void dispose() {
 			
 		}
-
-		@Override
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 			//TODO
 		}
@@ -275,7 +230,6 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 
 		@Override
 		public Image getColumnImage(Object element, int columnIndex) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 

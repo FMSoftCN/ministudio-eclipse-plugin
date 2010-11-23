@@ -12,8 +12,6 @@ public class MStudioDeployWizard extends Wizard{
 	private MStudioDeploySharedLibProjectsWizardPage sharedLibPage;
 	private MStudioDeployServicesWizardPage deployServicesPage;
 	private MStudioDeployAutobootProjectsWizardPage autobootProjectPage;
-	private IProject[] ialProjects;
-	private IProject[] moduleProjects;
 	public MStudioEnvInfo envInfo;
 
 	public static boolean deployTypeIsHost=false;
