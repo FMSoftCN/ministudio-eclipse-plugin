@@ -93,8 +93,8 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 			}
 		});
 		
-		//initDeploySharedLibTable();
-		//initIALTable();
+		initDeploySharedLibTable();
+		initIALTable();
 		
 		setControl(topPanel);
 		setPageComplete(true);
@@ -102,7 +102,9 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 
 	//change the state with the last wizard page select state
 	public void update(){
-		initDeploySharedLibTable();
+		ctvLabraries.setItemCount(0);
+		ctvIAL.setItemCount(0);
+		initDeploySharedLibTable();		
 		initIALTable();
 		MStudioDeployWizard.deployCanFinish=false;
 	}
