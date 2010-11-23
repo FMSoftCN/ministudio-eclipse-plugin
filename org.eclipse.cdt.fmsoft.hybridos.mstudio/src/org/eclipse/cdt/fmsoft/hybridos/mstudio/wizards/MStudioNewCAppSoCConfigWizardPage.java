@@ -15,14 +15,14 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
-import java.awt.ItemSelectable;
+//import java.awt.ItemSelectable;
 import java.util.ArrayList;
 //import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IProject;
+//import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -33,14 +33,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
+//import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-// import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -50,17 +50,18 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 //import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.dialogs.PreferencesUtil;
+//import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-// import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
+import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
 //import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
-import org.eclipse.cdt.ui.newui.CDTPrefUtil;
+//import org.eclipse.cdt.ui.newui.CDTPrefUtil;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 //import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
@@ -70,7 +71,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public static final String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage";
 
-	// private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
 	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
 	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
 //	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12");
@@ -80,7 +81,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private CheckboxTableViewer ctv = null;
 	private Label packageDesc = null;
 	private Composite msSocParent = null;
-	private String propertyId = null;
+//	private String propertyId = null;
 	private String errorMessage = null;
 	private String message = MESSAGE;
 	public boolean isVisible = false;
@@ -94,7 +95,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private List<PackageItem> pkgs = null;
 	
 	private List<String> selectedPackages = new ArrayList<String>();
-
+/*
 	protected static final class PackageItem {
 		String name = null;
 		String description = null;
@@ -112,6 +113,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			return description;
 		}
 	}
+*/
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
@@ -200,9 +202,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				return element == null ? EMPTY_STR : ((PackageItem)element).getName();
 			}
 
-			// public Image getImage(Object element) {
-			// 	return IMG;
-			// }
+			public Image getImage(Object element) {
+				return IMG;
+			}
 		});
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {

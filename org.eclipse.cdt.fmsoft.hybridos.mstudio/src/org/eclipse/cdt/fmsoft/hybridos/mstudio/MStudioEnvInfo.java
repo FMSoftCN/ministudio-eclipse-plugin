@@ -59,6 +59,24 @@ public class MStudioEnvInfo {
 	private MiniGUIRunMode mgRunMode = MiniGUIRunMode.thread;
 	
 	private static MStudioEnvInfo instance = new MStudioEnvInfo();
+
+	public static final class PackageItem {
+		String name = null;
+		String description = null;
+
+		public PackageItem(String name, String desc) {
+			this.name = name;
+			this.description = desc;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
 	
 	private MStudioEnvInfo() {
 		updateSoCName();
@@ -327,5 +345,4 @@ public class MStudioEnvInfo {
 		return (IProject[])msProjects.toArray(new IProject[msProjects.size()]);
 	}
 }
-
 
