@@ -225,8 +225,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			ArrayList<String> list = new ArrayList<String>();
 			for(int i=0; i < projects.length; i++){			
 				list.add(projects[i].getName());
-			}			
-			ctv.add(list);
+			}		
+			
+			ctv.setItemCount(0);
+			if(projects.length>0){
+				ctv.add(list);	
+			}
 		}
 	}
 	
