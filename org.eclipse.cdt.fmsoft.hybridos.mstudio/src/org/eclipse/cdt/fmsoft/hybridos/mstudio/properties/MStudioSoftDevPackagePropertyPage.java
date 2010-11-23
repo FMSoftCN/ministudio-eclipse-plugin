@@ -49,6 +49,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.core.resources.IProject;
 
 import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
@@ -58,8 +59,14 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	implements IWorkbenchPropertyPage {
 
-	private static final String EMPTY_STR = "";
 	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	private static final String TITLE = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.titleLable");
+	private static final String SHOW_SELECT =
+										MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showSelect");
+	private static final String AFFECTED = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.affected");
+	private static final String DEPEND = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.depend");
+	private static final String MSP_SPACE = " ";
+	private static final String EMPTY_STR = "";
 
 	private Label title = null;
 	private Label description = null;
@@ -86,14 +93,14 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		composite1.setLayoutData(new GridData());
 
 		title = new Label(composite1, SWT.NONE);
-		title.setFont(new Font(title.getFont().getDevice(), "TimesRoman", 0, SWT.BOLD));
-		title.setText("Software Development Package");
+		title.setFont(new Font(title.getFont().getDevice(), EMPTY_STR, 0, SWT.BOLD));
+		title.setText(TITLE);
 
 		description = new Label(composite1, SWT.NONE);
-		description.setText("Select software development packages for HybridOS");
+		description.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.descriptionLable"));
 		new Label(composite1, SWT.FULL_SELECTION|SWT.LINE_SOLID);
 		tip = new Label(composite1, SWT.NONE);
-		tip.setText("Please select the packages for your project");
+		tip.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.tipLable"));
 
 		Composite composite2 = new Composite(composite, SWT.NONE);
 		GridLayout gl = new GridLayout(2, false);
@@ -105,7 +112,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		contentDes = new Label(composite2, SWT.WRAP);
-		contentDes.setText("No Selected Packeg");
+		contentDes.setText(EMPTY_STR);
 		GridData gdx = new GridData(GridData.FILL_BOTH);
 		gdx.verticalAlignment = SWT.TOP;
 		contentDes.setLayoutData(gdx);
@@ -154,7 +161,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		});
 
 		selectAll = new Button(composite2, SWT.CHECK);
-		selectAll.setText("Select All");
+		selectAll.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.selectAll"));
 		selectAll.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		selectAll.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -210,10 +217,14 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 		// return mStudioProject.setDepPkgs(list);
 		if (!mStudioProject.setDepPkgs(list)) {
-			 MessageDialog.openError(this.getShell(), "Error", "store default oucurrend an error");
+			 MessageDialog.openError(this.getShell(),
+					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.error"),
+					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.errorMessages"));
 			 return false;
 		} else {
-			 MessageDialog.openInformation(this.getShell(), "stored", "depend paksge store ok !");
+			 MessageDialog.openInformation(this.getShell(),
+					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.storeOK"),
+					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.storeOKMessages"));
 			 return true;
 		}
 	}
@@ -225,12 +236,12 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			return false;
 
 		String messageInfo = new String(pkgName);
-		messageInfo = messageInfo.concat(" " + title);
+		messageInfo = messageInfo.concat(MSP_SPACE + title);
 
 		for (int i = 0; i < count; i++) {
-			messageInfo = messageInfo.concat(" " + listPkgs.get(i));
+			messageInfo = messageInfo.concat(MSP_SPACE + listPkgs.get(i));
 		}
-		messageInfo = messageInfo.concat(", will select all!");
+		messageInfo = messageInfo.concat(SHOW_SELECT);
 		MessageDialog.openInformation(this.getShell(), title, messageInfo);
 
 		return true;
@@ -242,7 +253,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			if (affectedPkgs.equals(info.getKey())) {
 				List<String> affected = info.getValue();
 
-				if (!dailogPkgsChecked("affected", affectedPkgs, affected))
+				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
 					return;
 
 				for (int i = 0; i < affected.size(); i++) {
@@ -262,7 +273,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			if (depPkgs.equals(info.getKey())) {
 				List<String> dep = info.getValue();
 
-				if (!dailogPkgsChecked("depend", depPkgs, dep))
+				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
 					return;
 
 				for (int i = 0; i < dep.size(); i++) {

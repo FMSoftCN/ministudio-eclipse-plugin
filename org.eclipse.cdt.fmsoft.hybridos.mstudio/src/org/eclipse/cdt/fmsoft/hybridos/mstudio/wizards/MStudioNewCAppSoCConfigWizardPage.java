@@ -15,15 +15,11 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
-//import java.awt.ItemSelectable;
 import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-//import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -33,10 +29,11 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
-//import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -49,22 +46,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
-//import org.eclipse.swt.widgets.TableItem;
-//import org.eclipse.ui.dialogs.PreferencesUtil;
 
 import org.eclipse.cdt.managedbuilder.core.IProjectType;
 import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.managedbuilder.ui.wizards.CfgHolder;
-//import org.eclipse.cdt.managedbuilder.ui.wizards.MBSCustomPageManager;
-//import org.eclipse.cdt.ui.newui.CDTPrefUtil;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
-//import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
@@ -74,46 +67,30 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
 	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
 	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
-//	private static final String COMMENT = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.12");
+	private static final String SHOW_SELECT_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.14");
+	private static final String AFFECTED = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.affected");
+	private static final String DEPEND = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.depend");
 	private static final String EMPTY_STR = "";
+	private static final String MSW_SPACE = " ";
 
+	private MStudioWizardHandler handler = null;
+	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
+	private List<String> selectedPackages = new ArrayList<String>();
+
+	private Label packageDesc = null;
+	private Button buttonCheck = null;
+	private Composite msSocParent = null;
 	private Table table = null;
 	private CheckboxTableViewer ctv = null;
-	private Label packageDesc = null;
-	private Composite msSocParent = null;
-//	private String propertyId = null;
 	private String errorMessage = null;
 	private String message = MESSAGE;
-	public boolean isVisible = false;
-	private MStudioWizardHandler handler = null;
-	public boolean pagesLoaded = false;
-//	private IToolChain[] visitedTCs = null;
-	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-	IWizardPage[] customPages = null;
 	private String socName = msEnvInfo.getCurSoCName();
-	private Button buttonCheck = null;
-	private List<PackageItem> pkgs = null;
-	
-	private List<String> selectedPackages = new ArrayList<String>();
-/*
-	protected static final class PackageItem {
-		String name = null;
-		String description = null;
 
-		public PackageItem(String name, String desc) {
-			this.name = name;
-			this.description = desc;
-		}
+	public boolean isVisible = false;
+	public boolean pagesLoaded = false;
 
-		public String getName() {
-			return name;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-	}
-*/
+	IWizardPage[] customPages = null;
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
@@ -127,6 +104,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
+
 		msSocParent = new Composite(parent, SWT.NONE);
 		msSocParent.setFont(msSocParent.getFont());
 		msSocParent.setLayout(new GridLayout());
@@ -210,20 +188,15 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				if (buttonCheck.getSelection())
 					buttonCheck.setSelection(false);
-				
-//				selectedPackages.clear();
-//				PackageItem[] itms = (PackageItem[]) ctv.getCheckedElements();
-//				for (int i = 0; i < itms.length; i++){
-//					selectedPackages.add(itms[i].getName());
-//				}
+
 				PackageItem itm = (PackageItem) event.getElement();
-				
+
 				if (!event.getChecked()) {
 					setAffectedPkgsChecked(itm.getName());
 				} else {
 					setDepPkgsChecked(itm.getName());
 				}
-				
+
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
@@ -262,19 +235,20 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	 * @return
 	 */
 	static public CfgHolder[] getDefaultCfgs(MStudioWizardHandler handler) {
+
 		String id = handler.getPropertyId();
 		IProjectType pt = handler.getProjectType();
 		ArrayList<CfgHolder> out = new ArrayList<CfgHolder>();
 
 		for (IToolChain tc : handler.getSelectedToolChains()) {
 			CfgHolder[] cfgs = null;
-			if (id != null)
+			if (id != null) {
 				cfgs = CfgHolder.cfgs2items(ManagedBuildManager
 						.getExtensionConfigurations(tc, MStudioWizardHandler.ARTIFACT, id));
-			else if (pt != null)
+			} else if (pt != null) {
 				cfgs = CfgHolder.cfgs2items(ManagedBuildManager
 						.getExtensionConfigurations(tc, pt));
-			else { // Create default configuration for StdProject
+			} else { // Create default configuration for StdProject
 				cfgs = new CfgHolder[1];
 				cfgs[0] = new CfgHolder(tc, null);
 			}
@@ -287,6 +261,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				out.add(cfgs[j]);
 			}
 		}
+
 		return out.toArray(new CfgHolder[out.size()]);
 	}
 
@@ -299,6 +274,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public boolean isCustomPageComplete() {
+
 		if (!isVisited())
 			return true;
 
@@ -321,15 +297,19 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		*/
 		errorMessage = null;
 		message = MESSAGE;
+
 		return true;
 	}
 
 	public void setVisible(boolean visible) {
+
 		msSocParent.setVisible(visible);
 		isVisible = visible;
+
 		if (visible && handler != null && !isVisited()) {
 			setPageComplete(isCustomPageComplete());
 		}
+
 		if (visible) {
 			msSocParent.getParent().layout(true, true);
 			update();
@@ -338,26 +318,32 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	// ------------------------
 	private boolean dailogPkgsChecked(String title, String pkgName, List<String> listPkgs) {
+
 		int count = listPkgs.size();
 		if (count <= 0)
 			return false;
+
 		String messageInfo = new String(pkgName);
-		messageInfo = messageInfo.concat(" " + title);
+		messageInfo = messageInfo.concat(MSW_SPACE + title);
+
 		for (int i = 0; i < count; i++) {
-			messageInfo = messageInfo.concat(" " + listPkgs.get(i));
+			messageInfo = messageInfo.concat(MSW_SPACE + listPkgs.get(i));
 		}
-		messageInfo = messageInfo.concat(", will select all!");
+		messageInfo = messageInfo.concat(SHOW_SELECT_ALL);
 		MessageDialog.openInformation(getShell(), title, messageInfo);
 
 		return true;
 	}
 
 	private void setAffectedPkgsChecked(String affectedPkgs) {
+
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
 			if (affectedPkgs.equals(info.getKey())) {
 				List<String> affected = info.getValue();
-				if (!dailogPkgsChecked("affected", affectedPkgs, affected))
+
+				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
 					return;
+
 				for (int i = 0; i < affected.size(); i++) {
 					String depString = affected.get(i);
 					PackageItem pItem = getPackedItem(depString);
@@ -372,11 +358,14 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void setDepPkgsChecked(String depPkgs) {
+
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
 			if (depPkgs.equals(info.getKey())) {
 				List<String> dep = info.getValue();
-				if (!dailogPkgsChecked("depend", depPkgs, dep))
+
+				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
 					return;
+
 				for (int i = 0; i < dep.size(); i++) {
 					String depString = dep.get(i);
 					PackageItem pItem = getPackedItem(depString);
@@ -391,16 +380,17 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private PackageItem getPackedItem(String findString) {
+
 		for (int i = 0; i < pkgs.size(); i++) {
 			PackageItem pItem = pkgs.get(i);
 			if (findString.equals(pItem.getName()))
 				return pItem;
 		}
+
 		return null;
 	}
 
 	private void setCheckboxTableViewerData() {
-		pkgs = new ArrayList<PackageItem>();
 
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
 			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
@@ -410,6 +400,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private Label setupLabel(Composite composite, String name, int mode) {
+
 		Label label = new Label(composite, SWT.WRAP);
 		label.setText(name);
 		GridData gd = new GridData(mode);
@@ -417,6 +408,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		label.setLayoutData(gd);
 		Composite cmpst = label.getParent();
 		label.setFont(cmpst.getFont());
+
 		return label;
 	}
 
@@ -453,12 +445,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 	
 	public String[] getSelectedPackages() {
+
 		String[] ret = new String[selectedPackages.size()];
-		int c = 0;
 		Iterator<String> i = selectedPackages.iterator();
+		int c = 0;
+
 		while (i.hasNext()){
 			  ret[c++] = i.next();
 		}
+
 		return ret;
 	}
 }
+

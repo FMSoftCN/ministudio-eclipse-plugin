@@ -31,10 +31,13 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
+
 import org.eclipse.osgi.util.TextProcessor;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleAdapter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
@@ -47,6 +50,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 
 import org.eclipse.cdt.ui.CUIPlugin;
@@ -54,7 +58,6 @@ import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
-
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.template.MStudioNewWizardTemplate;
 import org.eclipse.cdt.internal.ui.CPluginImages;
@@ -253,7 +256,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 					w.setDependentControl(compos, ls);
 					// for (EntryDescriptor ed : w.createItems(show_sup.getSelection(), wizard)) {
 					for (EntryDescriptor ed : w.createItems(false, wizard)) {
-					 	items.add(ed);
+						items.add(ed);
 					}
 				}
 			}
@@ -359,23 +362,23 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	}
 
 	private void switchTo(MStudioWizardHandler h, EntryDescriptor ed) {
-		
+
 		if (h == null)
 			h = (MStudioWizardHandler) ed.getHandler();
-		
+
 		if (ed.isCategory())
 			h = null;
-		
+
 		try {
 			if (h != null)
 				h.initialize(ed);
 		} catch (CoreException e) {
 			h = null;
 		}
-		
+
 		if (h_selected != null)
 			h_selected.handleUnSelection();
-		
+
 		h_selected = h;
 		h_selected.handleSelection();
 	}
