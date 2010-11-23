@@ -332,6 +332,8 @@ public class MStudioEnvInfo {
 	
 	public static IProject[] getMStudioProjects() {
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		if(null == allProjects)
+			return null;
 		List<IProject> msProjects = new ArrayList<IProject>();
 		for (int i = 0; i < allProjects.length; ++i) {
 			try {
