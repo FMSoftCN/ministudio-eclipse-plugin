@@ -16,8 +16,8 @@ public class MStudioDeployWizard extends Wizard{
 	private IProject[] ialProjects;
 	private IProject[] moduleProjects;
 	public MStudioEnvInfo envInfo;
-//	public static boolean deployTypeIsHost=false;
-	public static boolean deployTypeIsHost=true;
+	public static boolean deployTypeIsHost=false;
+	public static boolean deployCanFinish=false;
 	
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
@@ -72,7 +72,7 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	public boolean canFinish() {
-		return true;
+		return deployCanFinish;
 	}
 
 	public boolean isHost() {
