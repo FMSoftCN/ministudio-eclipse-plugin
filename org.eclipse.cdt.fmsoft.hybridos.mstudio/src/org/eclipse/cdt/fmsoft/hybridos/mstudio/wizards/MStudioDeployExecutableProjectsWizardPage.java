@@ -163,14 +163,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	private void initGALAndIAL(){
 		String[] galP = getGALProject();
-//		String[] galP = new String[]{"galp1","galp2","galp3"};//for test
 		if(galP != null){
 			for(int i=0; i<galP.length; i++){
 				gal.add(galP[i].toString());
 			}
 		}
 		String[] ialP = getIALProject();
-//		String[] ialP = new String[]{"ialp1","ialp2","ialp3"};//for test
 		if(ialP != null){
 			for(int i=0; i<ialP.length; i++){
 				ial.add(ialP[i].toString());
@@ -191,6 +189,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		colorCombo.select(0);
 	}
 	public void update(){
+		//System.out.println(MStudioDeployWizard.deployTypeIsHost+"");
 		bottomPanel4.setVisible(!MStudioDeployWizard.deployTypeIsHost);
 		validatePage();
 		MStudioDeployWizard.deployCanFinish=false;
