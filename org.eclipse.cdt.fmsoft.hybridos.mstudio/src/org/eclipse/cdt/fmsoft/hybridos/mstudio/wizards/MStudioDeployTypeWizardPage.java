@@ -66,12 +66,25 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 			     			new String[][] {{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()},
 							{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()}},topPanel);
 		//set the default choice value
-		PreferenceStore newTypePreferenceStore=new PreferenceStore();
-		newTypePreferenceStore.setValue(getTargetType(), getTargetType());
-		typeRadioGroup.setPreferenceStore(newTypePreferenceStore);
+		//typ
+		PreferenceStore store=new PreferenceStore();
+		if(MStudioDeployWizard.deployTypeIsHost){
+			store.setDefault(MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name());
+			store.setValue(MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name());
+			//typeRadioGroup.getRadioBoxControl(topPanel).setData(MStudioDeployTargetType.Host.name());
+		}
+		else{
+			store.setDefault(MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name());
+			store.setValue(MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name());
+			//typeRadioGroup.getRadioBoxControl(topPanel).setData(MStudioDeployTargetType.Target.name());
+		}
+		typeRadioGroup.setPreferenceStore(store);
 		typeRadioGroup.load();
+		//typeRadioGroup.loadDefault();
+		
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
+				//System.out.println(event.getOldValue().toString()+"|new Value="+event.getNewValue().toString());				
 				if(!targetType.name().equals(event.getNewValue())){
 					if(targetType == MStudioDeployTargetType.Target){
 						targetType = MStudioDeployTargetType.Host;
