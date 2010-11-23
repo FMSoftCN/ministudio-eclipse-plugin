@@ -149,11 +149,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		  if (!file.exists()) {
 			  updateTipMessage("Path is invalid !");	
 			  return false;
-			  //validatePage();
 		  } else {
 			  updateTipMessage("");
 			  return true;
-			  //validatePage();
 		  }
 	}
 	protected void updateTipMessage (String tip) {
@@ -189,7 +187,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		colorCombo.select(0);
 	}
 	public void update(){
-		//System.out.println(MStudioDeployWizard.deployTypeIsHost+"");
 		bottomPanel4.setVisible(!MStudioDeployWizard.deployTypeIsHost);
 		validatePage();
 		MStudioDeployWizard.deployCanFinish=false;
@@ -221,17 +218,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private void initExeProjects() {
 		projects=MStudioDeployWizard.getExeProjects();
-		if(projects != null){			
-			ArrayList<String> list = new ArrayList<String>();
-			for(int i=0; i < projects.length; i++){			
-				list.add(projects[i].getName());
-			}		
-			
-			ctv.setItemCount(0);
-			if(projects.length>0){
-				ctv.add(list);	
-			}
-		}
+		if(projects == null)
+			return;			
+		ArrayList<String> list = new ArrayList<String>();
+		for(int i=0; i < projects.length; i++){			
+			list.add(projects[i].getName());
+		}			
+		ctv.add(list.toArray(new String[projects.length]));
 	}
 	
 	private boolean validateResolution(String resolution) {
@@ -296,35 +289,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard==null)
 			return null;
-		//IProject[] libProjects, ialProjects;
-		
-		//libProjects = wizard.getModuleProjects();
-		//ialProjects = wizard.getIALProjects();
-		
-		//skip next page
-		//if ((libProjects == null || libProjects.length <= 0)
-		//		&& (ialProjects == null || ialProjects.length <= 0))
-		//	return wizard.getNextPage(this).getNextPage();
 		wizard.getDeploySharedLibWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 	
 	protected class SelectedChangeListener implements SelectionListener{
-		private void check(){
-			if(validatePage())
-				setPageComplete(true);
-			else
-				setPageComplete(false);
-		}
-
-		@Override
 		public void widgetDefaultSelected(SelectionEvent e) {
-			check();
+			validatePage();
 		}
-
-		@Override
 		public void widgetSelected(SelectionEvent e) {
-			check();			
+			validatePage();			
 		}		
 	}
 }
