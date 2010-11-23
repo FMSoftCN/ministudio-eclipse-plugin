@@ -15,8 +15,10 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -68,7 +70,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		serviceTable.setLayoutData(gd);
 		
-		ctv = new CheckboxTableViewer(serviceTable);
+		ctv = new CheckboxTableViewer(serviceTable);		
 		
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
@@ -90,6 +92,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	}
 	//更新控件数据
 	public void update(){
+		ctv.setItemCount(0);
 		initServiceTable();
 		MStudioDeployWizard.deployCanFinish=false;
 	}
@@ -98,14 +101,13 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();		
 		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
 			return;		
-		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
-		
+		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
 		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
-		
+		//ctv.get
 		List<String> s= MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
 		String[] serv=(String[])s.toArray(new String[s.size()]);
 		if(serv.length>0){
-			ctv.add(serv);		
+			ctv.add(serv);			
 			ctv.setCheckedElements(defaultSelServ);
 		}
 		//init button next
@@ -141,7 +143,6 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		//skip next page
 		//if (exeProjects == null || exeProjects.length <= 0)
 		//	return null;
-		//wizard.getDeployServiceWizardPage().update();
 		wizard.getDeployAutobootWizardPage().update();
 		return wizard.getNextPage(this);
 	}
