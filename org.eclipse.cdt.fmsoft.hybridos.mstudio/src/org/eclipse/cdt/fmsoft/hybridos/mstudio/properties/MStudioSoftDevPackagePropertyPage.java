@@ -48,6 +48,12 @@ import org.eclipse.ui.dialogs.PropertyPage;
 
 import org.eclipse.core.resources.IProject;
 
+import org.eclipse.cdt.managedbuilder.core.BuildException;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IOption;
+import org.eclipse.cdt.managedbuilder.core.ITool;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
@@ -179,7 +185,11 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	}
 
 	public boolean performOk() {
-		return savePersistentSettings();
+		if (savePersistentSettings()){
+			resetProjectConfigurations((IProject) getElement());
+			return true;
+		}
+		return false;
 	}
 
 	protected void performDefaults() {
@@ -292,6 +302,46 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
 			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
 		}
+	}
+	
+	private void resetProjectConfigurations(IProject project)
+	{
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		
+		List<String> depLibList = new ArrayList<String> ();
+		Object[] obj = ctv.getCheckedElements();
+		for (int idx = 0; idx < obj.length; idx++) {
+			String[] libs = einfo.getPackageLibs(obj[idx].toString());
+			for (int c = 0; c < libs.length; c++){
+				depLibList.add(libs[c]);
+			}
+		}
+		String[] depLibs = depLibList.toArray(new String[depLibList.size()]);
+		
+		for (int i = 0; i < cur_cfgs.length; i++) {
+			ITool[] tls = cur_cfgs[i].getTools();
+			for (int j = 0; j < tls.length; j++) {
+				ITool subTool = tls[j];
+				
+				IOption[] subOpts = subTool.getOptions();
+
+				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
+					IOption option = subOpts[optIdx];
+					try {
+						if (option.getValueType() == IOption.LIBRARIES) {
+							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, depLibs);
+						} 
+					} catch (BuildException e) {
+						System.out.println(" resetProjectConfigurations BuildException");
+					}
+				}
+			}
+		}
+		
+		if (cur_cfgs.length > 0)
+			ManagedBuildManager.saveBuildInfo(project, false);		
 	}
 }
 

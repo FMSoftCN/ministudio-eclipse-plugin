@@ -500,8 +500,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		for (int i = 0; i < cur_cfgs.length; i++) {
 			String id = CDataUtil.genId(cur_cfgs[0].getId());
 
-			
-
 			//FOR old Configures ...
 			ITool[] tls = cur_cfgs[i].getTools();
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
