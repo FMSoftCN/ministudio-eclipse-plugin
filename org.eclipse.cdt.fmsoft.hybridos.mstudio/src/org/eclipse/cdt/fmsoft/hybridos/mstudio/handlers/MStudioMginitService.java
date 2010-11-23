@@ -1,6 +1,5 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.handlers;
 
-import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -21,7 +20,6 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.commands.IElementUpdater;
@@ -36,14 +34,15 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	private boolean mginitHasRunning()
 	{
 		File file = new File(mginitTmpFile);
+	
+//		FIXME, for windows ...
+//		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
+//			......
+//        }
 		
-		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
-            //TODO .... for windows ...
-        }
 		return file.exists();
 	}
 	
-	@Override
 	public void updateElement(UIElement element, Map parameters) {
 		if (mginitHasRunning())
 			element.setText(MStudioMessages.getString("MStudioMenu.mginit.stop.label"));
@@ -51,7 +50,6 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 			element.setText(MStudioMessages.getString("MStudioMenu.mginit.start.label"));
 	}
 
-	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ICommandService commandService = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		final String commandId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice";
@@ -60,8 +58,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 		
 		if (mginitHasRunning()) {
 			stopMginit();
-		}
-		else {
+		} else {
 			startMginit();
 		}
 		
@@ -82,63 +79,47 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
         }
         return env;
     }
-	/*
-	private static IPath removeFileName(IPath path) {
-        if (path == null)
-            return null;
-        if (path.hasTrailingSeparator())
-            return path;
-        return path.removeLastSegments(1);
-    }
-    */
 	
 	private void startMginit()
 	{
-		//File files=new File(mginitTmpFile);
 		if(mginitHasRunning())
 		{
 			try {
-				/*
-				IProgressMonitor monitor = new NullProgressMonitor();
-		    	SubMonitor subMonitor = SubMonitor.convert(monitor, 2);
-		    	subMonitor.newChild(1).subTask("mStudio Runner - Collecting Data");
-		    	*/
-		        CommandLauncher launcher = new CommandLauncher();
-		        launcher.showCommand(true);
-		        //IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		        
-		        //IFile ifile = root.getFileForLocation(file); 
-		        StringBuffer cmd = new StringBuffer("mginit");
-
-		        // FIXME, for windows .....
-		        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
-		            cmd.append(".exe");
-		        }
-		        MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		        String binPath = envInfo.getMginitBinPath();
-		        if(binPath == null)
-		        	return;
-		        //binPath="/home/jxzhang/work/mg-samples/trunk/mginit";
-		        Path editCommand;
-		        if (binPath == null || binPath.equals("")) {
-		        	editCommand = new Path (cmd.toString());
-		        }
-		        else
+				CommandLauncher launcher = new CommandLauncher();
+				launcher.showCommand(true);
+				StringBuffer cmd = new StringBuffer("mginit");
+				
+//				FIXME, for windows .....
+//				if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
+//					cmd.append(".exe");
+//				}
+				MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+				String binPath = envInfo.getMginitBinPath();
+				if(binPath == null)
+					return;
+				Path editCommand;
+				if (binPath == null || binPath.equals("")){
+					editCommand = new Path (cmd.toString());
+				} else {
 		        	editCommand = new Path (binPath + File.separatorChar +cmd.toString());
+		        }
 		        
-		        List<String> args = new ArrayList<String>();	
-		        
-		        //mginit server would be run with args,arg -c is direct to the mginit config file url
-		        args.add("-c");
-		        args.add(envInfo.getMginitCfgFile().toString());
-		        IPath workingDir= new Path (binPath);
-		        
-		        Properties envProps = EnvironmentReader.getEnvVars();
-		        envProps.setProperty("CWD", workingDir.toOSString());
-		        envProps.setProperty("PWD", workingDir.toOSString());	        
-		        
-		        miniguiServer= launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]), 
-		            		createEnvStringList(envProps), workingDir);		        
+				List<String> args = new ArrayList<String>();	
+		      
+				//mginit server would be run with args,
+				//arg -c is direct to the mginit config file url
+				
+				args.add("-c");
+				args.add(envInfo.getMginitCfgFile().toString());
+				IPath workingDir= new Path (binPath);
+				
+				Properties envProps = EnvironmentReader.getEnvVars();
+				envProps.setProperty("CWD", workingDir.toOSString());
+				envProps.setProperty("PWD", workingDir.toOSString());	        
+				
+				miniguiServer= launcher.execute(editCommand, 
+						(String[])args.toArray(new String[args.size()]), 
+						createEnvStringList(envProps), workingDir);		        
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -151,18 +132,13 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	{
 		try{
 			//if mginitServer exist kill it
-			if(miniguiServer != null)
-			{			
+			if(miniguiServer != null){			
 				miniguiServer.destroy();
 				miniguiServer = null;
-			}
-			else
-			{				
+			} else {				
 				//find mginit process in all processes ,if find kill it.
 				List<String> args = new ArrayList<String>();
 				List<String> returnValues=new ArrayList<String>();
-				//args.add("ps");
-				//args.add("aux");
 				args.add("pgrep");
 				args.add("-o");
 				args.add("mginit");
@@ -170,15 +146,12 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				InputStream is = p.getInputStream();
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String line="";
-				while((line=br.readLine())!=null)
-				{
+				while((line=br.readLine())!=null){
 					returnValues.add(line.toString());
 				}
 				br.close();
-				if(returnValues.size()>0)
-				{
-					for(int i=0;i<returnValues.size();i++)
-					{
+				if(returnValues.size() > 0){
+					for(int i = 0; i < returnValues.size(); i++) {
 						args.clear();
 						args.add("kill");
 						args.add(returnValues.get(i).toString());
@@ -189,8 +162,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 			}				
 			//find the temp file, if exist delete it
 			File file=new File(mginitTmpFile);
-			if(file.exists())
-			{
+			if(file.exists()){
 				file.delete();
 			}
 		}catch(Exception ex){
