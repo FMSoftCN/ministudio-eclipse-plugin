@@ -104,7 +104,7 @@ public class MStudioEnvInfo {
 		updateSoCName();
 	}
 
-	public static MStudioEnvInfo getInstance () {
+	public static MStudioEnvInfo getInstance() {
 		return instance;
 	}
 
@@ -121,7 +121,7 @@ public class MStudioEnvInfo {
 		return iniFile;
 	}
 
-	public String getMginitBinPath () {
+	public String getMginitBinPath() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 
@@ -144,9 +144,11 @@ public class MStudioEnvInfo {
 			return null;
 
 		List<String> srvList = new ArrayList<String>(srvCount);
+
 		for (int i = 0; i < srvCount; i++) {
 			srvList.add(iniFile.getStringProperty(SOC_CFG_SECTION_SERVICES, "service" + i));
 		}
+
 		return srvList;
 	}
 
@@ -159,7 +161,8 @@ public class MStudioEnvInfo {
 
 	//get all soft packages name and description.
 	public Map<String, String> getAllSoftPkgs() {
-		Map<String, String> mapRet =  new HashMap<String, String>();
+
+		Map<String, String> mapRet = new HashMap<String, String>();
 
 		if (null != allSoftPkgs) {
 			for (Map.Entry<String, MStudioParserIniFile> entry : allSoftPkgs.entrySet()) {
@@ -181,7 +184,7 @@ public class MStudioEnvInfo {
 		return affectedPkgs;
 	}
 
-	public String[] getPackageLibs (String pkg) {
+	public String[] getPackageLibs(String pkg) {
 		if (null == allSoftPkgs)
 			return new String[0];
 
@@ -200,7 +203,7 @@ public class MStudioEnvInfo {
 		return libs.split(MSE_SPACE);
 	}
 
-	public String getPCIncludePath () {
+	public String getPCIncludePath() {
 		if (null == SoCName)
 			return EMPTY_STR;
 		return SoCPathPrefix + SoCName + "/pc_symmetry/include/";
@@ -284,7 +287,7 @@ public class MStudioEnvInfo {
 			// ".../.XXXX" -->>-- "XXXX"
 			pkgName = pkgName.substring(pkgName.lastIndexOf('.') + 1);
 
-			MStudioParserIniFile pfgFile = new MStudioParserIniFile(socDir.getAbsolutePath() + "/"+ hpkgFiles[i]);
+			MStudioParserIniFile pfgFile = new MStudioParserIniFile(socDir.getAbsolutePath() + "/" + hpkgFiles[i]);
 			allSoftPkgs.put(pkgName, pfgFile);
 
 			// parse the pfgFile
@@ -334,7 +337,7 @@ public class MStudioEnvInfo {
 		List<IProject> exeProj = new ArrayList<IProject>();
 
 		for (int i = 0; i < msProjects.length ; i++) {
-			MStudioProject mpr = new MStudioProject (msProjects[i]);
+			MStudioProject mpr = new MStudioProject(msProjects[i]);
 			if (mpr.isExeTmplType()) {
 				exeProj.add(msProjects[i]);
 			}
@@ -349,7 +352,7 @@ public class MStudioEnvInfo {
 		List<IProject> dlProj = new ArrayList<IProject>();
 
 		for (int i = 0; i < msProjects.length ; i++) {
-			MStudioProject mpr = new MStudioProject (msProjects[i]);
+			MStudioProject mpr = new MStudioProject(msProjects[i]);
 			if (mpr.isIALTmplType()) {
 				dlProj.add(msProjects[i]);
 			}
@@ -364,7 +367,7 @@ public class MStudioEnvInfo {
 		List<IProject> sProj = new ArrayList<IProject>();
 
 		for (int i = 0; i < msProjects.length ; i++) {
-			MStudioProject mpr = new MStudioProject (msProjects[i]);
+			MStudioProject mpr = new MStudioProject(msProjects[i]);
 			if (mpr.isNormalLibTmplType()) {
 				sProj.add(msProjects[i]);
 			}
@@ -383,7 +386,7 @@ public class MStudioEnvInfo {
 
 		for (int i = 0; i < allProjects.length; ++i) {
 			try {
-				if (!allProjects[i].hasNature (MStudioProjectNature.MSTUDIO_NATURE_ID))
+				if (!allProjects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID))
 					msProjects.add(allProjects[i]);
 			} catch (CoreException ex) {
 				ex.printStackTrace();
