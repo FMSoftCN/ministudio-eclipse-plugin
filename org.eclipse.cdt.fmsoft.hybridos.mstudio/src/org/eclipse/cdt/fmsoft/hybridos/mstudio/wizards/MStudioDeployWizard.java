@@ -16,6 +16,7 @@ public class MStudioDeployWizard extends Wizard{
 	private IProject[] ialProjects;
 	private IProject[] moduleProjects;
 	public MStudioEnvInfo envInfo;
+
 	public static boolean deployTypeIsHost=false;
 	public static boolean deployCanFinish=false;
 	
