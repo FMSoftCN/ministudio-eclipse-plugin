@@ -47,16 +47,14 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		// TODO Auto-generated method stub
 		Composite topPanel;
 		topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		
-		Label label1=new Label(topPanel,SWT.NONE);
+		Label label1 = new Label(topPanel,SWT.NONE);
 		label1.setText("Select system services for rootfs");
-		//label1.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		serviceTable = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL );
 		GridData gd = new GridData(GridData.FILL_BOTH);
@@ -73,12 +71,10 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 			}
 		});
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
-			public void selectionChanged(SelectionChangedEvent event) {
-				
+			public void selectionChanged(SelectionChangedEvent event) {				
 			}
 		});
-		initServiceTable();
-		
+		initServiceTable();		
 		setControl(topPanel);
 		setPageComplete(false);
 	}
@@ -86,7 +82,6 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	public void update(){
 		ctv.setItemCount(0);
 		initServiceTable();
-		MStudioDeployWizard.deployCanFinish=false;
 	}
 	
 	private void initServiceTable(){
@@ -95,10 +90,9 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 			return;		
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
 		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
-		//ctv.get
-		List<String> s= MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
-		String[] serv=(String[])s.toArray(new String[s.size()]);
-		if(serv.length>0){
+		List<String> s = MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
+		String[] serv = (String[])s.toArray(new String[s.size()]);
+		if(serv.length > 0){
 			ctv.add(serv);			
 			ctv.setCheckedElements(defaultSelServ);
 		}
@@ -112,10 +106,10 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	private void storeService(){
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();			
 		String servToStore = new String(); 
-		Object[] serv=ctv.getCheckedElements();
-		if(serv.length>=1){
-			servToStore=serv[0].toString();
-			for(int i=1;i<serv.length;i++){
+		Object[] serv = ctv.getCheckedElements();
+		if(serv.length >= 1){
+			servToStore = serv[0].toString();
+			for(int i=1; i<serv.length; i++){
 				servToStore += STORE_SERV_SPLIT + serv[i].toString();
 			}			
 		}	
@@ -129,7 +123,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
-		if(wizard==null)
+		if(wizard == null)
 			return null;
 		wizard.getDeployAutobootWizardPage().update();
 		return wizard.getNextPage(this);
