@@ -386,7 +386,7 @@ public class MStudioEnvInfo {
 
 		for (int i = 0; i < allProjects.length; ++i) {
 			try {
-				if (!allProjects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID))
+				if (allProjects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID))
 					msProjects.add(allProjects[i]);
 			} catch (CoreException ex) {
 				ex.printStackTrace();
