@@ -65,8 +65,8 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
 							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
 		
-		Composite rg=typeRadioGroup.getRadioBoxControl(topPanel);
-		Control[] radioButton=(Control[])(rg.getChildren());		
+		Composite rg = typeRadioGroup.getRadioBoxControl(topPanel);
+		Control[] radioButton = (Control[])(rg.getChildren());		
 		if(MStudioDeployWizard.deployTypeIsHost){
 			if(radioButton.length>0){
 				((Button)radioButton[0]).setSelection(true);
@@ -80,15 +80,14 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
-				//System.out.println(event.getOldValue().toString()+"|new Value="+event.getNewValue().toString());				
 				if(!targetType.name().equals(event.getNewValue())){
 					if(targetType == MStudioDeployTargetType.Target){
 						targetType = MStudioDeployTargetType.Host;
-						MStudioDeployWizard.deployTypeIsHost=true;
+						MStudioDeployWizard.deployTypeIsHost = true;
 					}
 					else{
 						targetType = MStudioDeployTargetType.Target;	
-						MStudioDeployWizard.deployTypeIsHost=false;
+						MStudioDeployWizard.deployTypeIsHost = false;
 					}
 				}
 			}});
@@ -97,8 +96,8 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 							new String[][]{{MStudioDeployBuildType.Release.name(),MStudioDeployBuildType.Release.name()},
 							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},topPanel);
 		//set the default choice value
-		Composite tt=rootfsRadioGroup.getRadioBoxControl(topPanel);
-		Control[] radioButtons=(Control[])(tt.getChildren());
+		Composite tt = rootfsRadioGroup.getRadioBoxControl(topPanel);
+		Control[] radioButtons = (Control[])(tt.getChildren());
 		if(radioButtons.length>0){
 			((Button)radioButtons[0]).setSelection(true);
 		}
@@ -123,7 +122,6 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 			return null;
 		}
         wizard.getDeployExecuteableWizardPage().update();
-        MStudioDeployWizard.deployCanFinish=false;
         return wizard.getNextPage(this);
     }
 }

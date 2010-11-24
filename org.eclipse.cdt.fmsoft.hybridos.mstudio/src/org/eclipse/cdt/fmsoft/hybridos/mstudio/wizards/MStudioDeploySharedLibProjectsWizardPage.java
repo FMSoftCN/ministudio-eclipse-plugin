@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 
 public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 
@@ -56,7 +57,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		
-		Label label1=new Label(topPanel,SWT.NONE);
+		Label label1 = new Label(topPanel,SWT.NONE);
 		label1.setText("dynamic libraries");
 		label1.setLayoutData(new GridData());
 		
@@ -68,28 +69,28 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		
 		ctvLabraries.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				//TODO
 			}
 		});
 		ctvLabraries.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent event) {
-				//TODO
 			}
 		});
-		Label label2=new Label(topPanel,SWT.NONE);
+		Label label2 = new Label(topPanel,SWT.NONE);
 		label2.setText("Custom IAL Engine");
-		tableIAL=new Table(topPanel,SWT.BORDER | SWT.RADIO | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
-		GridData gd2=new GridData(GridData.FILL_BOTH);
+		tableIAL = new Table(topPanel,SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL |SWT.SINGLE);
+		GridData gd2 = new GridData(GridData.FILL_BOTH);
 		tableIAL.setLayoutData(gd2);
-		ctvIAL=new CheckboxTableViewer(tableIAL);
+		ctvIAL = new CheckboxTableViewer(tableIAL);
+		ctvIAL.setAllGrayed(true);
 		ctvIAL.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				//TODO
+				ctvIAL.setAllChecked(false);
+				ctvIAL.setChecked(event.getElement(), event.getChecked());				
 			}
 		});
 		ctvIAL.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent event) {
-				//TODO
+				
 			}
 		});
 		
@@ -106,39 +107,38 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		ctvIAL.setItemCount(0);
 		initDeploySharedLibTable();		
 		initIALTable();
-		MStudioDeployWizard.deployCanFinish=false;
 	}
 	
 	private void initDeploySharedLibTable(){
-		IProject[] libProjects=MStudioDeployWizard.getModuleProjects();
-		if(libProjects==null)
+		IProject[] libProjects = MStudioDeployWizard.getModuleProjects();
+		if(libProjects == null)
 			return;
-		ArrayList<String> list=new ArrayList<String>();
-		for(int i=0;i<libProjects.length;i++){
+		ArrayList<String> list = new ArrayList<String>();
+		for(int i=0; i<libProjects.length; i++){
 			list.add(libProjects[i].getName());
 		}		
 		ctvLabraries.add(list.toArray(new String[libProjects.length]));
 	}
 	
 	private void initIALTable(){
-		IProject[] ial=MStudioDeployWizard.getIALProjects();
-		if(ial==null)
+		IProject[] ial = MStudioDeployWizard.getIALProjects();
+		if(ial == null)
 			return;
 		ArrayList<String> list = new ArrayList<String>();
-		for(int i=0;i<ial.length;i++){
+		for(int i=0; i<ial.length; i++){
 			list.add(ial[i].getName());
 		}
 		ctvIAL.add(list.toArray(new String[ial.length]));
 	}
 	
 	public IProject getDeployIALProject() {
-		IProject[] ial=MStudioDeployWizard.getIALProjects();
-		Object[] s=ctvIAL.getCheckedElements();
-		if(s.length<=0)
+		IProject[] ial = MStudioDeployWizard.getIALProjects();
+		Object[] s = ctvIAL.getCheckedElements();
+		if(s.length <= 0)
 			return null;
 		else{
-			String sChecked=s[0].toString();
-			for(int i=0;i<ial.length;i++){
+			String sChecked = s[0].toString();
+			for(int i=0; i<ial.length; i++){
 				if(ial[i].getName().equals(sChecked)){
 					return ial[i];
 				}
@@ -148,15 +148,14 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	}
 	
 	public IProject[] getDeploySharedLibProjects() {
-		//TODO
-		IProject[] lab=MStudioDeployWizard.getModuleProjects();
-		Object[] s=ctvLabraries.getCheckedElements();
-		ArrayList<String> sList=new ArrayList<String>();
-		for(int i=0;i<s.length;i++){
+		IProject[] lab = MStudioDeployWizard.getModuleProjects();
+		Object[] s = ctvLabraries.getCheckedElements();
+		ArrayList<String> sList = new ArrayList<String>();
+		for(int i=0; i<s.length; i++){
 			sList.add(s[i].toString());
 		}
-		List<IProject> list=new ArrayList<IProject>();
-		for(int i=0;i<lab.length;i++){
+		List<IProject> list = new ArrayList<IProject>();
+		for(int i=0; i<lab.length; i++){
 			if(sList.contains(lab[i].getName())){
 				list.add(lab[i]);
 			}
@@ -165,7 +164,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	}
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
-		if(wizard==null)
+		if(wizard == null)
 			return null;	
 		wizard.getDeployServiceWizardPage().update();
 		return wizard.getNextPage(this);
