@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPage.MStudioDeployBuildType;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPage.MStudioDeployTargetType;
 import org.eclipse.core.resources.IProject;
@@ -13,6 +15,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -102,6 +105,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				}});
 		//filePath.setPropertyChangeListener(null);
 		//bottomPanel3
+	    
+	    IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+	    if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+	    	return;
+	    
+	    locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));
 		
 		Composite bottomPanel3=new Composite(topPanel,SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout(4,false));
