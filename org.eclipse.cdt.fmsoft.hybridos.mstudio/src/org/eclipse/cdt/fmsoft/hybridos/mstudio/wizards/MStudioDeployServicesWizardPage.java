@@ -123,8 +123,8 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	}
 	
 	
-	public String[] getDeployServices() {		
-		return (String[])(ctv.getCheckedElements());
+	public Object[] getDeployServices() {		
+		return ctv.getCheckedElements();
 	}	
 	
 	public IWizardPage getNextPage() {

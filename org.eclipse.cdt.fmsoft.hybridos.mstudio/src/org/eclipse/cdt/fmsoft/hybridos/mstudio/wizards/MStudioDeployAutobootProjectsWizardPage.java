@@ -204,7 +204,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}
 	
 	public IProject[] getDeployAutobootProjects() {
-		return null;
+		return projects;
 	}
 	public class tableSelectChangedListener implements ISelectionChangedListener{
 		public void selectionChanged(SelectionChangedEvent event) {
