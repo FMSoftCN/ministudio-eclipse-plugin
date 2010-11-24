@@ -107,10 +107,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		//bottomPanel3
 	    
 	    IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-	    if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
-	    	return;
-	    
-	    locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));
+	    if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+	    {
+		    locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));	    
+	    }
 		
 		Composite bottomPanel3=new Composite(topPanel,SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout(4,false));
