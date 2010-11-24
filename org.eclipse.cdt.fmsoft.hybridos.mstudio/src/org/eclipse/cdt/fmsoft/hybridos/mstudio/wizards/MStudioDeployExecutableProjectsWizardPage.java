@@ -83,7 +83,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		bottomPanel1.setLayout(new GridLayout(1,false));
 		bottomPanel1.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		chooseTable = new Table(bottomPanel1, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.IMAGE_BMP);
+		chooseTable = new Table(bottomPanel1, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.IMAGE_BMP);
 		chooseTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ctv = new CheckboxTableViewer(chooseTable);
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
@@ -93,10 +93,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			}});
 		initExeProjects();		
 		//bottomPanel2		
-		Composite bottomPanel2=new Composite(topPanel,SWT.NONE);
+		Composite bottomPanel2 = new Composite(topPanel,SWT.NONE);
 		bottomPanel2.setLayout(new GridLayout());
 		bottomPanel2.setLayoutData(new GridData(GridData.FILL_BOTH));
-		locationPath=new DirectoryFieldEditor("filePath","Deploy location",bottomPanel2);
+		locationPath = new DirectoryFieldEditor("filePath",MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.locationTitle"),bottomPanel2);
 	    locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				validatePage();
@@ -112,24 +112,24 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		bottomPanel3.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Label title = new Label(bottomPanel3,SWT.FILL);
-		title.setText("Configuration:");
+		title.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.configTitle"));
 		GridData gd = new GridData();
 		gd.horizontalAlignment = GridData.FILL;
 		gd.horizontalSpan = 4;
 		title.setLayoutData(gd);
 		
 		Label sizeLabel = new Label(bottomPanel3,SWT.NONE);
-		sizeLabel.setText("Resolution");
+		sizeLabel.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
 		sizeCombo = new Combo(bottomPanel3,SWT.READ_ONLY);		
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
 		
 		Label colorLabel = new Label(bottomPanel3,SWT.NONE);
-		colorLabel.setText("Color Depth");
+		colorLabel.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.colorLabel"));
 		colorCombo = new Combo(bottomPanel3,SWT.READ_ONLY);
 		colorCombo.addSelectionListener(new SelectedChangeListener());
 		initSizeAndColor();
 				
-		bottomPanel4=new Composite(topPanel,SWT.NONE);
+		bottomPanel4 = new Composite(topPanel,SWT.NONE);
 		bottomPanel4.setLayout(new GridLayout(4,false));
 		bottomPanel4.setLayoutData(new GridData(GridData.FILL_BOTH));
 			
@@ -150,7 +150,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		  String l = locationPath.getStringValue();
 		  File file = new File(l);
 		  if (!file.exists()) {
-			  updateTipMessage("Path is invalid !");	
+			  updateTipMessage(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.filePathError"));	
 			  return false;
 		  } else {
 			  updateTipMessage("");
