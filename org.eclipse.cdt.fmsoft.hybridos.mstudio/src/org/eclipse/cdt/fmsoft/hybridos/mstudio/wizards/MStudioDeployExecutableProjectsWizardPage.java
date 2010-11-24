@@ -240,7 +240,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return false;
 		}
 		if(!MStudioDeployWizard.deployTypeIsHost){
-			if(0 >= gal.getSelectionIndex() || 0 >= ial.getSelectionIndex()){	
+			if(0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()){	
 				setPageComplete(false);
 				return false;			
 			}
