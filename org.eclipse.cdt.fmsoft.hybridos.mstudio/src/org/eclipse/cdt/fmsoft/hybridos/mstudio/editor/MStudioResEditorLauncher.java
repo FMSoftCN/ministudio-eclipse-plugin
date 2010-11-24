@@ -104,19 +104,13 @@ public class MStudioResEditorLauncher implements IEditorLauncher {
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
 
-		try {
-			Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
-					createEnvStringList(envProps), workingDir, monitor);
-			if (p != null) {
-				subMonitor.newChild(1).subTask(MSEL_TASK_STARTING + launcher.getCommandLine());
-				if (serverThread != null)
-					serverThread.addBuilderProcs(projectDir.lastSegment(), p);
-			}
-		} catch (CoreException e) {
-			System.out.println(e);
+		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
+				createEnvStringList(envProps), workingDir);
+		if (p != null) {
+			subMonitor.newChild(1).subTask(MSEL_TASK_STARTING + launcher.getCommandLine());
+			if (serverThread != null)
+				serverThread.addBuilderProcs(projectDir.lastSegment(), p);
 		}
-
-		monitor.done();
 	}
 
 	private static IPath removeFileName(IPath path) {
