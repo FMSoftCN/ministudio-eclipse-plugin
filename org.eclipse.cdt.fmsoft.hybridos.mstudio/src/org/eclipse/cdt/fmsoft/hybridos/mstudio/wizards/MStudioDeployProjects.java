@@ -1,5 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
@@ -26,7 +27,7 @@ public class MStudioDeployProjects extends AbstractHandler implements IHandler {
 		try{
 			dialog.create();
 		}catch(Exception e){
-			MessageDialog.openError(window.getShell(), "error", "An error ocurred \n" + e.toString());
+			MessageDialog.openError(window.getShell(), MStudioMessages.getString("MStudioDeployProject.error.title"), MStudioMessages.getString("MStudioDeployProject.error.content") + e.toString());
 		}
 		if (dialog.open() == WizardDialog.OK) {
 		}				
