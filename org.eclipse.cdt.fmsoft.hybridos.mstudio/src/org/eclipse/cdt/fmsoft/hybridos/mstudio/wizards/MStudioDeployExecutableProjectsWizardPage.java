@@ -47,12 +47,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	private IProject[] ialProject = null;
 	private IProject[] galProject = null;
 	private IProject[] projects = null;
-	private FileFieldEditor filePath=null;
+	private FileFieldEditor filePath = null;
 	private Combo sizeCombo = null;
-	private Combo colorCombo=null;
-	private Combo gal=null;
-	private Combo ial=null;
-	//private MStudioDeployWizard wizard;
+	private Combo colorCombo = null;
+	private Combo gal = null;
+	private Combo ial = null;
 	private Composite bottomPanel4;
 	private DirectoryFieldEditor locationPath;
 	
@@ -80,11 +79,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		tipText = new Label (topPanel,SWT.NONE);
 		//init the Graphic
 		//bottomPanel1		
-		Composite bottomPanel1=new Composite(topPanel,SWT.NONE);
+		Composite bottomPanel1 = new Composite(topPanel,SWT.NONE);
 		bottomPanel1.setLayout(new GridLayout(1,false));
 		bottomPanel1.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		chooseTable=new Table(bottomPanel1, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.IMAGE_BMP);
+		chooseTable = new Table(bottomPanel1, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL|SWT.H_SCROLL|SWT.IMAGE_BMP);
 		chooseTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 		ctv = new CheckboxTableViewer(chooseTable);
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
@@ -93,8 +92,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				validatePage();
 			}});
 		initExeProjects();		
-		//bottomPanel2
-		
+		//bottomPanel2		
 		Composite bottomPanel2=new Composite(topPanel,SWT.NONE);
 		bottomPanel2.setLayout(new GridLayout());
 		bottomPanel2.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -103,35 +101,31 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			public void modifyText(ModifyEvent e) {
 				validatePage();
 				}});
-		//filePath.setPropertyChangeListener(null);
-		//bottomPanel3
-	    
+		//bottomPanel3	    
 	    IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 	    if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
 	    {
 		    locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));	    
-	    }
-		
-		Composite bottomPanel3=new Composite(topPanel,SWT.NONE);
+	    }		
+		Composite bottomPanel3 = new Composite(topPanel,SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout(4,false));
 		bottomPanel3.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		Label title=new Label(bottomPanel3,SWT.FILL);
+		Label title = new Label(bottomPanel3,SWT.FILL);
 		title.setText("Configuration:");
-		GridData gd=new GridData();
-		gd.horizontalAlignment=GridData.FILL;
-		gd.horizontalSpan=4;
+		GridData gd = new GridData();
+		gd.horizontalAlignment = GridData.FILL;
+		gd.horizontalSpan = 4;
 		title.setLayoutData(gd);
 		
-		Label sizeLabel=new Label(bottomPanel3,SWT.NONE);
+		Label sizeLabel = new Label(bottomPanel3,SWT.NONE);
 		sizeLabel.setText("Resolution");
 		sizeCombo = new Combo(bottomPanel3,SWT.READ_ONLY);		
-		sizeCombo.addSelectionListener(new SelectedChangeListener());	
+		sizeCombo.addSelectionListener(new SelectedChangeListener());
 		
-		
-		Label colorLabel=new Label(bottomPanel3,SWT.NONE);
+		Label colorLabel = new Label(bottomPanel3,SWT.NONE);
 		colorLabel.setText("Color Depth");
-		colorCombo=new Combo(bottomPanel3,SWT.READ_ONLY);
+		colorCombo = new Combo(bottomPanel3,SWT.READ_ONLY);
 		colorCombo.addSelectionListener(new SelectedChangeListener());
 		initSizeAndColor();
 				
@@ -139,13 +133,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		bottomPanel4.setLayout(new GridLayout(4,false));
 		bottomPanel4.setLayoutData(new GridData(GridData.FILL_BOTH));
 			
-		Label galLabel=new Label(bottomPanel4,SWT.NONE);
+		Label galLabel = new Label(bottomPanel4,SWT.NONE);
 		galLabel.setText("GAL Engine");
-		gal=new Combo(bottomPanel4,SWT.READ_ONLY);
+		gal = new Combo(bottomPanel4,SWT.READ_ONLY);
 		gal.addSelectionListener(new SelectedChangeListener());
 		Label ialLabel=new Label(bottomPanel4,SWT.NONE);
 		ialLabel.setText("IAL Engine");
-		ial=new Combo(bottomPanel4,SWT.READ_ONLY);
+		ial = new Combo(bottomPanel4,SWT.READ_ONLY);
 		ial.addSelectionListener(new SelectedChangeListener());
 		initGALAndIAL();
 		
@@ -183,13 +177,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		}
 	}
 	private void initSizeAndColor(){
-		//TODO
 		String[] resolution = new String[]{"320x240","640x480","1024x768"};
 		String[] colorDepth = new String[]{"16","24","32"};
 		for(int i=0; i<resolution.length; i++){
 			sizeCombo.add(resolution[i].toString());
 		}
-		sizeCombo.select(0);//default
+		//set the default value
+		sizeCombo.select(0);
 		for(int i=0; i<colorDepth.length; i++){
 			colorCombo.add(colorDepth[i].toString());
 		}
@@ -198,16 +192,15 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	public void update(){
 		bottomPanel4.setVisible(!MStudioDeployWizard.deployTypeIsHost);
 		validatePage();
-		MStudioDeployWizard.deployCanFinish=false;
 	}
 	
 	private String[] getIALProject() {
-		String[] ialString=null;
-		ialProject=MStudioDeployWizard.getIALProjects();		
+		String[] ialString = null;
+		ialProject = MStudioDeployWizard.getIALProjects();		
 		if(ialProject != null){
-			ialString=new String[ialProject.length];
-			for(int i=0;i<ialProject.length;i++){
-				ialString[i]=ialProject[i].getName().toString();
+			ialString = new String[ialProject.length];
+			for(int i=0; i<ialProject.length; i++){
+				ialString[i] = ialProject[i].getName().toString();
 			}
 		}
 		return ialString;
@@ -215,18 +208,18 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private String[] getGALProject() {
 		String[] galString = null;
-		galProject=MStudioDeployWizard.getExeProjects();
+		galProject = MStudioDeployWizard.getExeProjects();
 		if(galProject != null){
-			galString=new String[galProject.length];
-			for(int i=0;i<galProject.length;i++){
-				galString[i]=galProject[i].getName().toString();
+			galString = new String[galProject.length];
+			for(int i=0; i<galProject.length; i++){
+				galString[i] = galProject[i].getName().toString();
 			}
 		}
 		return galString;
 	}
 
 	private void initExeProjects() {
-		projects=MStudioDeployWizard.getExeProjects();
+		projects = MStudioDeployWizard.getExeProjects();
 		if(projects == null)
 			return;			
 		ArrayList<String> list = new ArrayList<String>();
@@ -259,14 +252,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	public IProject[] getDeployExeProjects() {
-		Object[] exeChecked=ctv.getCheckedElements();
-		IProject[] exeProjects=MStudioDeployWizard.getExeProjects();
-		ArrayList<String> sList=new ArrayList<String>();
-		for(int i=0;i<exeChecked.length;i++){
+		Object[] exeChecked = ctv.getCheckedElements();
+		IProject[] exeProjects = MStudioDeployWizard.getExeProjects();
+		ArrayList<String> sList = new ArrayList<String>();
+		
+		for(int i=0; i<exeChecked.length; i++){
 			sList.add(exeChecked[i].toString());
 		}
-		List<IProject> list=new ArrayList<IProject>();
-		for(int i=0;i<exeProjects.length;i++){
+		
+		List<IProject> list = new ArrayList<IProject>();
+		for(int i=0; i<exeProjects.length; i++){
 			if(sList.contains(exeProjects[i].getName())){
 				list.add(exeProjects[i]);
 			}
@@ -280,9 +275,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	
 	//resolution format: 320x240-16bpp
 	public String getResolution() {
-		String re=sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
-		if(validateResolution(re))
-			return re;
+		String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
+		if(validateResolution(resolution))
+			return resolution;
 		return null;
 	}
 	
@@ -295,19 +290,19 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	public IWizardPage getNextPage() {
-		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
-		if(wizard==null)
+		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
+		if(wizard == null)
 			return null;
 		wizard.getDeploySharedLibWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 	
 	protected class SelectedChangeListener implements SelectionListener{
-		public void widgetDefaultSelected(SelectionEvent e) {
-			validatePage();
+		public void widgetDefaultSelected(SelectionEvent e) {			
+			validatePage();			
 		}
 		public void widgetSelected(SelectionEvent e) {
-			validatePage();			
+			validatePage();
 		}		
 	}
 }
