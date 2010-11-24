@@ -61,7 +61,7 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 		Label typeTitle = new Label(topPanel,SWT.NONE);
 		
-		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", "Select deploy type", 1,
+		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", MStudioMessages.getString("MStudioDeployWizardPage.selectType.pageName"), 1,
 			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
 							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
 		
@@ -92,7 +92,7 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 				}
 			}});
 		new Label(topPanel,SWT.FULL_SELECTION|SWT.LINE_SOLID);
-		RadioGroupFieldEditor rootfsRadioGroup = new RadioGroupFieldEditor("rootfs","Select rootfs type",1,
+		RadioGroupFieldEditor rootfsRadioGroup = new RadioGroupFieldEditor("rootfs",MStudioMessages.getString("MStudioDeployWizardPage.selectRootfs.pageName"),1,
 							new String[][]{{MStudioDeployBuildType.Release.name(),MStudioDeployBuildType.Release.name()},
 							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},topPanel);
 		//set the default choice value
