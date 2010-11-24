@@ -88,7 +88,7 @@ public class MStudioNewWizardTemplate extends AbstractCWizard {
 					for (int tmplIdx = 0; tmplIdx < templates.length; tmplIdx++) {
 						TemplateInfo templateInfo = templates[tmplIdx].getTemplateInfo();
 
-						if(templateInfo.getProjectType().equals(MSTUDIO_TYPE[size])) {
+						if (templateInfo.getProjectType().equals(MSTUDIO_TYPE[size])) {
 							items.add(new EntryDescriptor(templates[tmplIdx].getTemplateId(),
 								//null,
 								vs[bpvIdx].getId(),

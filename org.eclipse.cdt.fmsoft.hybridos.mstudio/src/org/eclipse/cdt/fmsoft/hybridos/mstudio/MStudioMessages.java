@@ -1,27 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 2004, 2008 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/*********************************************************************
+ * Copyright (C) 2005 - 2010, Beijing FMSoft Technology Co., Ltd.
+ * Room 902, Floor 9, Taixing, No.11, Huayuan East Road, Haidian
+ * District, Beijing, P. R. CHINA 100191.
+ * All rights reserved.
  *
- * Contributors:
- * IBM - Initial API and implementation
- *******************************************************************************/
+ * This software is the confidential and proprietary information of
+ * Beijing FMSoft Technology Co., Ltd. ("Confidential Information").
+ * You shall not disclose such Confidential Information and shall
+ * use it only in accordance you entered into with FMSoft.
+ *
+ *			http://www.minigui.com
+ *
+ *********************************************************************/
+
 package org.eclipse.cdt.fmsoft.hybridos.mstudio;
 
 import java.text.MessageFormat;
+
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 
 /**
  * @since 2.0
  */
 public class MStudioMessages {
+
 	// Bundle ID
 	private static final String BUNDLE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioResources"; 
+
 	//Resource bundle.
-	private static ResourceBundle resourceBundle;
+	private static ResourceBundle resourceBundle = null;
 
 	static {
 		try {
@@ -52,5 +61,5 @@ public class MStudioMessages {
 	private MStudioMessages() {
 		// No constructor
 	}
-
 }
+
