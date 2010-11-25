@@ -145,6 +145,14 @@ public class MStudioDeployWizard extends Wizard{
 		return MStudioEnvInfo.getDlCustomProjects();
 	}
 	
+	public IProject getDeployDLCustom(){
+		return sharedLibPage.getDeployIALProject();
+	}
+	
+	public IProject[] getDeployModules(){
+		return sharedLibPage.getDeploySharedLibProjects();
+	}
+	
 	public IProject[] getDeployExeProjects() {
 		return exeProjectPage.getDeployExeProjects();
 	}
