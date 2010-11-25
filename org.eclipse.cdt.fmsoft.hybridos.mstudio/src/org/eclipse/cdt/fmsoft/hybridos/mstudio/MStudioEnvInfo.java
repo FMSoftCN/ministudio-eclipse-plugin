@@ -311,6 +311,7 @@ public class MStudioEnvInfo {
 			allSoftPkgs.clear();
 
 		SoCName = store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
+//		System.out.println("in MStudioEnfInfo updateSoCName : SoCName -- " + SoCName);
 		if (SoCName.equals(nullString)) {
 			SoCName = null;
 			iniFile = null;
@@ -321,7 +322,7 @@ public class MStudioEnvInfo {
 		if (null == iniFile)
 			return;
 
-		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE));
+//		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE));
 		mgRunMode = MiniGUIRunMode.valueOf((
 					iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE)));
 
@@ -381,7 +382,7 @@ public class MStudioEnvInfo {
 		return SoCName;
 	}
 
-	public static IProject[] getExecutableProjects() {
+	public IProject[] getExecutableProjects() {
 
 		IProject[] msProjects = getMStudioProjects();
 		List<IProject> exeProj = new ArrayList<IProject>();
@@ -396,7 +397,7 @@ public class MStudioEnvInfo {
 		return (IProject[])exeProj.toArray(new IProject[exeProj.size()]);
 	}
 
-	public static IProject[] getDlCustomProjects() {
+	public IProject[] getDlCustomProjects() {
 
 		IProject[] msProjects = getMStudioProjects();
 		List<IProject> dlProj = new ArrayList<IProject>();
@@ -411,7 +412,7 @@ public class MStudioEnvInfo {
 		return (IProject[])dlProj.toArray(new IProject[dlProj.size()]);
 	}
 
-	public static IProject[] getSharedLibProjects() {
+	public IProject[] getSharedLibProjects() {
 
 		IProject[] msProjects = getMStudioProjects();
 		List<IProject> sProj = new ArrayList<IProject>();
@@ -426,7 +427,7 @@ public class MStudioEnvInfo {
 		return (IProject[])sProj.toArray(new IProject[sProj.size()]);
 	}
 
-	public static IProject[] getMStudioProjects() {
+	public IProject[] getMStudioProjects() {
 
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		if(null == allProjects)

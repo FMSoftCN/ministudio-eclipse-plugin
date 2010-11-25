@@ -125,17 +125,17 @@ public class MStudioDeployWizard extends Wizard{
 	
 	//get executable projects in workspace
 	public static IProject[] getExeProjects() {
-		return MStudioEnvInfo.getExecutableProjects();
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getExecutableProjects();
 	}
 	
 	//get shared library projects in workspace, not include dlcustom ial project.
 	public static IProject[] getModuleProjects() {
-		return MStudioEnvInfo.getSharedLibProjects();
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getSharedLibProjects();
 	}
 	
 	//get dlcustom ial projects in workspace.
 	public static IProject[] getIALProjects() {
-		return MStudioEnvInfo.getDlCustomProjects();
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getDlCustomProjects();
 	}
 	//get dlcustom project in wizard page user select
 	public IProject getDeployDLCustom(){
