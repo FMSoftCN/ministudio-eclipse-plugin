@@ -58,7 +58,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		
 		
 		Label label1 = new Label(topPanel,SWT.NONE);
-		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.title"));
+		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.dynamicTitle"));
 		label1.setLayoutData(new GridData());
 		
 		tableLabraries = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
