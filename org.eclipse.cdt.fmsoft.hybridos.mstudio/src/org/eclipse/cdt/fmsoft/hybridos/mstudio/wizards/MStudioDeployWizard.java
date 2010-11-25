@@ -2,6 +2,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.wizard.Wizard;
 
@@ -12,7 +13,6 @@ public class MStudioDeployWizard extends Wizard{
 	private MStudioDeploySharedLibProjectsWizardPage sharedLibPage;
 	private MStudioDeployServicesWizardPage deployServicesPage;
 	private MStudioDeployAutobootProjectsWizardPage autobootProjectPage;
-	public MStudioEnvInfo envInfo;
 
 	public static boolean deployTypeIsHost = false;
 	
@@ -26,19 +26,16 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String DEPLOY_MODULES_SECTION = "deploy_modules";
 	private final static String DEPLOY_AUTOBOOT_SECTION = "deploy_autoboot";
 	private final static String DEPLOY_APPS_SECTION = "deploy_apps";
-	private final static String USER_LOGIN_SECTION = "userlogin";
-	private final static String SOCKET_SERVICE_SECTION = "socket_service";
+	
+	private final static String MINIGUI_CFG_PROPERTY = "minigui_cfg";
+	private final static String MGNCS_CFG_PROPERTY = "mgncs_cfg";
+	private final static String MINIGUI_RUNMODE_PROPERTY = "minigui_runmode";
 	
 	private final static String SERVICES_NUMBER_PROPERTY = "services_number";
 	private final static String SERVICE_NAME_PROPERTY = "name";
 	
 	private final static String AUTOBOOT_NUMBERS_PROPERTY = "autoboot_numbers";
 	private final static String AUTOBOOT_NAME_PROPERTY = "name";
-	
-/*	private final static String MINIGUI_CFG_PROPERTY = "minigui_cfg";
-	private final static String MGNCS_CFG_PROPERTY = "mgncs_cfg";
-	private final static String MINIGUI_RUNMODE_PROPERTY = "minigui_runmode";
-	
 	
 	private final static String DLCUSTOM_PROGRAM_PROPERTY = "program";
 	
@@ -52,10 +49,14 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String MODULES_DEPLIBS_PROPERTY = "deplibs";
 	private final static String MODULES_DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
 	
-	
 	private final static String APPS_NUMBER_PROPERTY = "apps_number";
 	private final static String APPS_NAME_PROPERTY = "name";
 	
+	
+	
+	
+	
+/*	
 	private final static String USER_LOGIN_PROGRAM_PROPERTY = "program";
 	private final static String USER_LOGIN_PROGRAM_CFG_PROPERTY = "program_cfg";
 	private final static String USER_LOGIN_PROGRAM_DEPLOY_PROPERTY = "program_deploy";
@@ -111,7 +112,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		saveDeployIniFile();
+		saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME);
 		return true;
 	}
 
@@ -120,9 +121,30 @@ public class MStudioDeployWizard extends Wizard{
 		return true;
 	}
 	
-	
 	private boolean saveDeployInfo(String filename) {
-		return false;
+		
+		iniFile = new MStudioParserIniFile(filename);
+		if (null == iniFile)
+			return false;
+
+		String[] sections = iniFile.getAllSectionNames();
+		if (null != sections) {
+			for(int i=0; i<sections.length; i++) {
+				iniFile.removeSection(sections[i]);
+			}
+		}
+		
+		iniFile.addSection(DEPLOY_CFG_SECTION, null);
+
+		setCfgsSection();
+		setServicesSection();
+		setDlcustomSection();
+		setModulesSection();
+		setAutobootSection();
+		setAppsSection();
+	
+		iniFile.save();
+		return true;
 	}
 	
 	public boolean isHost() {
@@ -159,42 +181,24 @@ public class MStudioDeployWizard extends Wizard{
 	public MStudioParserIniFile getDeployIniFile() {
 		return iniFile;
 	}
-
-	public boolean saveDeployIniFile() {
-		iniFile = new MStudioParserIniFile(DEPLOY_INI_PATH + DEPLOY_INI_NAME);
-		if (null == iniFile)
-			return false;
+	
+	private boolean setCfgsSection() {
 		
-		modifyCfgsSection();
-		modifyServicesSection();
-		modifyDlcustomSection();
-		modifyModulesSection();
-		modifyAutobootSection();
-		modifyAppsSection();
-		modifyUserLoginSection();	
-		modifySocketServiceSection();
-	
-		iniFile.save();
-		return true;
-	}
-	
-	private boolean modifyCfgsSection() {
-		iniFile.removeSection(DEPLOY_CFG_SECTION);
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-/*		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
-				"/home/eclipse/workspace/.metadata/MiniGUI.cfg.target", null);
+		
+		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
+				MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitCfgFile(), null);
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, 
-				"/home/eclipse/WorkSpace/.metadata/mgncs.cfg", null);
+				MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath(), null);
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
-				"ths", null);
-*/			
+				MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode(), null);
+			
 		return true;
 	}
 	
-	private boolean modifyServicesSection() {
-		iniFile.removeSection(DEPLOY_SERVICES_SECTION);
-		iniFile.addSection(DEPLOY_SERVICES_SECTION, null);
+	private boolean setServicesSection() {
 		
+		iniFile.addSection(DEPLOY_SERVICES_SECTION, null);
 		Object[] serv = deployServicesPage.getDeployServices();
 		if (null == serv) {
 			return false;
@@ -203,31 +207,55 @@ public class MStudioDeployWizard extends Wizard{
 		iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION, SERVICES_NUMBER_PROPERTY, 
 				serv.length, null);
 		
-		if(serv.length >= 1) {
-			for(int i=0; i<serv.length; i++) {
-				iniFile.setStringProperty(DEPLOY_SERVICES_SECTION, (SERVICE_NAME_PROPERTY + i), 
-					serv[i].toString(), null);
-			}			
-		}	
+		for(int i=0; i<serv.length; i++) {
+			iniFile.setStringProperty(DEPLOY_SERVICES_SECTION, (SERVICE_NAME_PROPERTY + i), 
+				serv[i].toString(), null);
+		}			
 		return true;
 	}
 	
-	private boolean modifyDlcustomSection() {
-		iniFile.removeSection(DEPLOY_DLCUSTOM_SECTION);
+	private boolean setDlcustomSection() {
+		
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
-//		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY, 
-//				"/home/xwyan/WorkSpace/dlcustom/Release4S3C2410/libdlcustom.so", null);
+		IProject project = getDeployDLCustom();
+		if (null == project) {
+			return false;
+		}
+		
+		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY, 
+				project.toString(), null);
 		return true;
 	}
 	
-	private boolean modifyModulesSection() {
+	private boolean setModulesSection() {
+				
+		iniFile.addSection(DEPLOY_MODULES_SECTION, null);
+		IProject[] projects = getDeployModules();
+		if (null == projects) {
+			return false;
+		}
+		
+		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY, 
+				projects.length, null);
+		
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_MODULES_SECTION, (MODULES_NAME_PROPERTY + i), 
+					projects[i].toString(), null);
+		}			
+		
+		for (int i=0; i<projects.length; i++) {
+			iniFile.addSection(projects[i].toString(), null);
+			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_DEPLOY_PROPERTY , 
+					"11", null);
+			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_CFG_PROPERTY, 
+					"22", null);			
+		}
 		return true;
 	}
 
-	private boolean modifyAutobootSection() {
-		iniFile.removeSection(DEPLOY_AUTOBOOT_SECTION);
-		iniFile.addSection(DEPLOY_AUTOBOOT_SECTION, null);
+	private boolean setAutobootSection() {
 		
+		iniFile.addSection(DEPLOY_AUTOBOOT_SECTION, null);
 		IProject[] projects = autobootProjectPage.getDeployAutobootProjects();
 		if (null == projects) {
 			return false;
@@ -236,24 +264,34 @@ public class MStudioDeployWizard extends Wizard{
 		iniFile.setIntegerProperty(DEPLOY_AUTOBOOT_SECTION, AUTOBOOT_NUMBERS_PROPERTY, 
 				projects.length, null);
 		
-		if(projects.length >= 1) {
-			for (int i=0; i<projects.length; i++) {
-				iniFile.setStringProperty(DEPLOY_AUTOBOOT_SECTION, (AUTOBOOT_NAME_PROPERTY + i), 
-						projects[i].getName(), null);
-			}			
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_AUTOBOOT_SECTION, (AUTOBOOT_NAME_PROPERTY + i), 
+					projects[i].getName(), null);
 		}	
 		return true;
 	}
 	
-	private boolean modifyAppsSection() {
-		return true;
-	}
-	
-	private boolean modifyUserLoginSection() {
-		return true;
-	}
-	
-	private boolean modifySocketServiceSection() {
+	private boolean setAppsSection() {
+		
+		iniFile.addSection(DEPLOY_APPS_SECTION, null);
+		IProject[] projects = getDeployModules();
+		if (null == projects) {
+			return false;
+		}
+		
+		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
+				projects.length, null);
+				
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i), 
+					projects[i].toString(), null);
+		}			
+		
+		for (int i=0; i<projects.length; i++) {
+			iniFile.addSection(projects[i].toString(), null);
+			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_DEPLOY_PROPERTY , 
+					"11", null);
+		}
 		return true;
 	}
 }
