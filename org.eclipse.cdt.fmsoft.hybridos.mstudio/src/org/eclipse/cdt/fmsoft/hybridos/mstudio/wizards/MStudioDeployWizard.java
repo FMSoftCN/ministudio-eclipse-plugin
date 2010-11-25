@@ -111,7 +111,6 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		// TODO Auto-generated method stub
 		saveDeployIniFile();
 		return true;
 	}
@@ -144,11 +143,11 @@ public class MStudioDeployWizard extends Wizard{
 	public static IProject[] getIALProjects() {
 		return MStudioEnvInfo.getDlCustomProjects();
 	}
-	
+	//get dlcustom project in wizard page user select
 	public IProject getDeployDLCustom(){
 		return sharedLibPage.getDeployIALProject();
 	}
-	
+	//get shard library projects in wizard page user select
 	public IProject[] getDeployModules(){
 		return sharedLibPage.getDeploySharedLibProjects();
 	}
