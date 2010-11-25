@@ -134,11 +134,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		bottomPanel4.setLayoutData(new GridData(GridData.FILL_BOTH));
 			
 		Label galLabel = new Label(bottomPanel4,SWT.NONE);
-		galLabel.setText("GAL Engine");
+		galLabel.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.galLabel"));
 		gal = new Combo(bottomPanel4,SWT.READ_ONLY);
 		gal.addSelectionListener(new SelectedChangeListener());
 		Label ialLabel=new Label(bottomPanel4,SWT.NONE);
-		ialLabel.setText("IAL Engine");
+		ialLabel.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.ialLabel"));
 		ial = new Combo(bottomPanel4,SWT.READ_ONLY);
 		ial.addSelectionListener(new SelectedChangeListener());
 		initGALAndIAL();
