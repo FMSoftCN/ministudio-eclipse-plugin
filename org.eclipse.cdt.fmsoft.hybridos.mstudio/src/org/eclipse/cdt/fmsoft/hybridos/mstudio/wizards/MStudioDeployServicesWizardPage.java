@@ -54,7 +54,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		
 		
 		Label label1 = new Label(topPanel,SWT.NONE);
-		label1.setText("Select system services for rootfs");
+		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectServices.title"));
 		
 		serviceTable = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL );
 		GridData gd = new GridData(GridData.FILL_BOTH);
