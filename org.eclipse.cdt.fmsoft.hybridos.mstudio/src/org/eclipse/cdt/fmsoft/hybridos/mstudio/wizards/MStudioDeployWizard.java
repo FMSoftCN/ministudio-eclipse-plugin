@@ -42,13 +42,13 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private final static String MODULES_NUMBERS_PROPERTY = "modules_numbers";
 	private final static String MODULES_NAME_PROPERTY = "name";
-	private final static String MODULES_PROGRAM_PROPERTY = "program";
-	private final static String MODULES_PROGRAM_DEPLOY_PROPERTY = "program_deploy";
-	private final static String MODULES_PROGRAM_CFG_PROPERTY = "program_cfg";
-	private final static String MODULES_RESPACK_PROPERTY = "respack";
-	private final static String MODULES_RESPACK_DEPLOY_PROPERTY = "respack_deploy";
-	private final static String MODULES_DEPLIBS_PROPERTY = "deplibs";
-	private final static String MODULES_DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
+	private final static String PROGRAM_PROPERTY = "program";
+	private final static String PROGRAM_DEPLOY_PROPERTY = "program_deploy";
+	private final static String PROGRAM_CFG_PROPERTY = "program_cfg";
+	private final static String RESPACK_PROPERTY = "respack";
+	private final static String RESPACK_DEPLOY_PROPERTY = "respack_deploy";
+	private final static String DEPLIBS_PROPERTY = "deplibs";
+	private final static String DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
 	
 	private final static String APPS_NUMBER_PROPERTY = "apps_number";
 	private final static String APPS_NAME_PROPERTY = "name";
@@ -116,9 +116,7 @@ public class MStudioDeployWizard extends Wizard{
 			else
 				return false;
 		}
-		else{
-			return false;
-		}		
+		return false;
 	}
 	
 	public boolean isHost() {
@@ -166,15 +164,16 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean setCfgsSection(){		
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);	
-		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitCfgFile();
+		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitCfgFile();//TODO
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
 				temp == null ? "" : temp, null);
-		temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath();
+		temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath();//TODO
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, 
 				temp == null ? "" : temp, null);
 		temp=MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);			
+
 		return true;
 	}
 	
@@ -185,7 +184,7 @@ public class MStudioDeployWizard extends Wizard{
 			return false;		
 		iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION, SERVICES_NUMBER_PROPERTY, 
 				serv.length, null);		
-		for(int i=0; i<serv.length; i++) {
+		for (int i=0; i<serv.length; i++) {
 			iniFile.setStringProperty(DEPLOY_SERVICES_SECTION, (SERVICE_NAME_PROPERTY + i), 
 				serv[i], null);
 		}			
@@ -213,9 +212,9 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(DEPLOY_MODULES_SECTION, (MODULES_NAME_PROPERTY + i), 
 					projects[i].getName(), null);
 			iniFile.addSection(projects[i].getName(), null);
-			iniFile.setStringProperty(projects[i].getName(), MODULES_PROGRAM_DEPLOY_PROPERTY, 
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY, 
 					projects[i].getFullPath().toOSString(), null);
-			iniFile.setStringProperty(projects[i].getName(), MODULES_PROGRAM_CFG_PROPERTY, 
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY, 
 					projects[i].getFullPath().toOSString(), null);
 		}
 		return true;
@@ -237,7 +236,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean setAppsSection(){		
 		iniFile.addSection(DEPLOY_APPS_SECTION, null);
-		IProject[] projects = getDeployModules();
+		IProject[] projects = getDeployExeProjects();
 		if (null == projects)
 			return false;		
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
@@ -245,6 +244,21 @@ public class MStudioDeployWizard extends Wizard{
 		for (int i=0; i<projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i), 
 					projects[i].toString(), null);
+			iniFile.addSection(projects[i].toString(), null);
+			iniFile.setStringProperty(projects[i].toString(), PROGRAM_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), PROGRAM_DEPLOY_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), PROGRAM_CFG_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), RESPACK_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), RESPACK_DEPLOY_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), DEPLIBS_PROPERTY, 
+					"", null);
+			iniFile.setStringProperty(projects[i].toString(), DEPLIBS_DEPLOY_PROPERTY, 
+					"", null);
 		}
 		return true;
 	}
