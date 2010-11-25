@@ -264,6 +264,18 @@ public class MStudioEnvInfo {
 			return EMPTY_STR;
 		return SoCPathPrefix + SoCName + "/cross/etc/mgncs.cfg";
 	}
+	
+	public String getPCMgCfgFileName() {
+		if (null == SoCName)
+			return EMPTY_STR;
+		return SoCPathPrefix + SoCName + "/pc_symmetry/etc/MiniGUI.cfg";
+	}
+	
+	public String getPCMgNcsCfgFileName() {
+		if (null == SoCName)
+			return EMPTY_STR;
+		return SoCPathPrefix + SoCName + "/pc_symmetry/etc/mgncs.cfg";
+	}
 
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
