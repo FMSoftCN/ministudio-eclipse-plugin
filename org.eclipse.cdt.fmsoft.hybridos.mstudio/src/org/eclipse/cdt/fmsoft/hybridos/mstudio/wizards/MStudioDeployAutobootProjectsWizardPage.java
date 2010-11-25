@@ -55,7 +55,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		com1.setLayout(new GridLayout());
 		com1.setLayoutData(new GridData());
 		Label title = new Label(com1,SWT.FILL);
-		title.setText("Auto start programes");
+		title.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.title"));
 		title.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
 		Composite com2 = new Composite(topPanel,SWT.NONE);		
@@ -72,15 +72,15 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		table.setLayoutData(dg);
 		table.addListener(SWT.Selection,new TableListener());
 		TableColumn col1 = new TableColumn(table,SWT.NONE);
-		col1.setText("Start");
+		col1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.tableCol0Title"));
 		col1.setWidth(50);
 		TableColumn col2 = new TableColumn(table,SWT.NONE); 	
-		col2.setText("Program Name");
+		col2.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.tableCol1Title"));
 		col2.setWidth(100);
 		
 		upButton = new Button(com2,SWT.NONE);
 		upButton.setLayoutData(new GridData(GridData.FILL));
-		upButton.setText("Move Up");
+		upButton.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.upButtonText"));
 		upButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 				
@@ -100,7 +100,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 			});
 		downButton = new Button(com2,SWT.NONE);
 		downButton.setLayoutData(new GridData(GridData.FILL));
-		downButton.setText("Move Down");
+		downButton.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.downButtonText"));
 		downButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {	
 			}
@@ -119,7 +119,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		});
 				
 		selectAll = new Button(topPanel,SWT.CHECK);
-		selectAll.setText("Select All");
+		selectAll.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.selectAllButtonText"));
 		selectAll.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
