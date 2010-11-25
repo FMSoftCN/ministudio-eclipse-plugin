@@ -92,13 +92,15 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
 		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
 		List<String> s = MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
-		String[] serv = (String[])s.toArray(new String[s.size()]);
-		if(serv.length > 0){
-			ctv.add(serv);			
-			ctv.setCheckedElements(defaultSelServ);
+		if(null != s){
+			String[] serv = (String[])s.toArray(new String[s.size()]);
+			if(serv.length > 0){
+				ctv.add(serv);			
+				ctv.setCheckedElements(defaultSelServ);
+			}
 		}
 		//init button next
-		if(ctv.getCheckedElements().length>0)
+		if(ctv.getCheckedElements().length > 0)
 			setPageComplete(true);
 		else
 			setPageComplete(false);
