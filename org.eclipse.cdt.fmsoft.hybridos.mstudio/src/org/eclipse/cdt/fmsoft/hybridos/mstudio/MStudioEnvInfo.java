@@ -60,6 +60,8 @@ public class MStudioEnvInfo {
 	private final static String SOC_CFG_SECTION_SERVICES = "services";
 	private final static String SOC_CFG_SECTION_MGINIT = "mginit";
 	private final static String SOC_CFG_SECTION_TOOLCHAIN = "toolchain";
+	private final static String SOC_CFG_SECTION_GAL = "gal";
+	private final static String SOC_CFG_SECTION_IAL = "ial";
 
 	private final static String EMPTY_STR = "";
 	private final static String MSE_SPACE = " ";
@@ -157,6 +159,30 @@ public class MStudioEnvInfo {
 			return null;
 
 		return iniFile.getStringProperty(SOC_CFG_SECTION_TOOLCHAIN, "prefix");
+	}
+	
+	public String[] getGalEngines() {
+		if (iniFile == null)
+			return new String[0];
+		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_GAL, "num");
+		String[] ret = new String[num];
+		for (int i = 0; i < num; i++) {
+			String key = "gal" + i;
+			ret[i] = iniFile.getStringProperty(SOC_CFG_SECTION_GAL, key);
+		}
+		return ret;
+	}
+	
+	public String[] getIalEngines() {
+		if (iniFile == null)
+			return new String[0];
+		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_IAL, "num");
+		String[] ret = new String[num];
+		for (int i = 0; i < num; i++) {
+			String key = "ial" + i;
+			ret[i] = iniFile.getStringProperty(SOC_CFG_SECTION_IAL, key);
+		}
+		return ret;
 	}
 
 	//get all soft packages name and description.
