@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
@@ -163,13 +164,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		tipText.setText(tip);
 	}
 	private void initGALAndIAL(){
-		String[] galP = getGALProject();
+		String[] galP = MStudioEnvInfo.getInstance().getGalEngines();
 		if(galP != null){
 			for(int i=0; i<galP.length; i++){
 				gal.add(galP[i].toString());
 			}
 		}
-		String[] ialP = getIALProject();
+		String[] ialP = MStudioEnvInfo.getInstance().getIalEngines();
 		if(ialP != null){
 			for(int i=0; i<ialP.length; i++){
 				ial.add(ialP[i].toString());
@@ -193,7 +194,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		bottomPanel4.setVisible(!MStudioDeployWizard.deployTypeIsHost);
 		validatePage();
 	}
-	
+	/*
 	private String[] getIALProject() {
 		String[] ialString = null;
 		ialProject = MStudioDeployWizard.getIALProjects();		
@@ -217,7 +218,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		}
 		return galString;
 	}
-
+*/
 	private void initExeProjects() {
 		projects = MStudioDeployWizard.getExeProjects();
 		if(projects == null)
