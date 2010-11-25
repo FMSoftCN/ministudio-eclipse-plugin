@@ -142,7 +142,7 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 		}
 
 		String url = getUrl();
-		Shell shell = new Shell(window.getShell());
+		Shell shell = new Shell(window.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
 		shell.setText(MStudioMessages.getString("MStudioUpdateCaption.desc"));
 
