@@ -14,8 +14,7 @@ public class MStudioDeployWizard extends Wizard{
 	private MStudioDeployAutobootProjectsWizardPage autobootProjectPage;
 	public MStudioEnvInfo envInfo;
 
-	public static boolean deployTypeIsHost=false;
-	public static boolean deployCanFinish=false;
+	public static boolean deployTypeIsHost = false;
 	
 	private MStudioParserIniFile iniFile = null;
 	private final static String DEPLOY_INI_PATH = "/opt/hybridos/";
@@ -118,6 +117,7 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	public boolean performCancel(){
+		this.dispose();
 		return true;
 	}
 	
@@ -125,11 +125,7 @@ public class MStudioDeployWizard extends Wizard{
 	private boolean saveDeployInfo(String filename) {
 		return false;
 	}
-
-	public boolean canFinish() {
-		return deployCanFinish;
-	}
-
+	
 	public boolean isHost() {
 		return deployTypeIsHost;
 	}
