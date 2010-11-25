@@ -252,6 +252,18 @@ public class MStudioEnvInfo {
 			return EMPTY_STR;
 		return SoCPathPrefix + SoCName + "/cross/lib/";
 	}
+	
+	public String getCrossMgCfgFileName() {
+		if (null == SoCName)
+			return EMPTY_STR;
+		return SoCPathPrefix + SoCName + "/cross/etc/MiniGUI.cfg";
+	}
+	
+	public String getCrossMgNcsCfgFileName() {
+		if (null == SoCName)
+			return EMPTY_STR;
+		return SoCPathPrefix + SoCName + "/cross/etc/mgncs.cfg";
+	}
 
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
