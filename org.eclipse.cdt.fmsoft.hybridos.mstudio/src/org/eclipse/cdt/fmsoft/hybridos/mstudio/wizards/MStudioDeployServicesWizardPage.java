@@ -1,5 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -117,8 +118,15 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	}
 	
 	
-	public Object[] getDeployServices() {		
-		return ctv.getCheckedElements();
+	public String[] getDeployServices() {
+		Object[] obj=ctv.getCheckedElements();
+		if(obj == null)
+			return null;
+		ArrayList<String> lists=new ArrayList<String>();
+		for(int i=0; i<obj.length; i++){
+			lists.add(obj[i].toString());
+		}
+		return (String[])lists.toArray(new String[obj.length]);
 	}	
 	
 	public IWizardPage getNextPage() {
