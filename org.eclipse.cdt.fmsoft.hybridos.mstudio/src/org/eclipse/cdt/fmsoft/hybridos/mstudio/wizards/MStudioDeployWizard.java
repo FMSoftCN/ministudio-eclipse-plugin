@@ -4,6 +4,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 
 public class MStudioDeployWizard extends Wizard{
@@ -18,7 +19,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private MStudioParserIniFile iniFile = null;
 	private final static String DEPLOY_INI_PATH = "/opt/hybridos/";
-	private final static String DEPLOY_INI_NAME = "deploy.ini";	
+	private final static String DEPLOY_INI_NAME = "deploy.ini";
 	
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
 	private final static String DEPLOY_SERVICES_SECTION = "deploy_services";
@@ -51,28 +52,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private final static String APPS_NUMBER_PROPERTY = "apps_number";
 	private final static String APPS_NAME_PROPERTY = "name";
-	
-	
-	
-	
-	
-/*	
-	private final static String USER_LOGIN_PROGRAM_PROPERTY = "program";
-	private final static String USER_LOGIN_PROGRAM_CFG_PROPERTY = "program_cfg";
-	private final static String USER_LOGIN_PROGRAM_DEPLOY_PROPERTY = "program_deploy";
-	private final static String USER_LOGIN_RESPACK_PROPERTY = "respack";
-	private final static String USER_LOGIN_RESPACK_DEPLOY_PROPERTY = "respack_deploy";
-	private final static String USER_LOGIN_DEPLIBS_PROPERTY = "deplibs";
-	private final static String USER_LOGIN_DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
 
-	private final static String SOCKET_SERVICES_PROPERTY = "program";
-	private final static String SOCKET_SERVICES_PROGRAM_CFG_PROPERTY = "program_cfg";
-	private final static String SOCKET_SERVICES_PROGRAM_DEPLOY_PROPERTY = "program_deploy";
-	private final static String SOCKET_SERVICES_RESPACK_PROPERTY = "respack";
-	private final static String SOCKET_SERVICES_RESPACK_DEPLOY_PROPERTY = "respack_deploy";
-	private final static String SOCKET_SERVICES_DEPLIBS_PROPERTY = "deplibs";
-	private final static String SOCKET_SERVICES_DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
-	*/
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
 	}
@@ -112,7 +92,10 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME);
+		if(!saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
+			MessageDialog.openWarning(getShell(), "", "");
+			return false;
+		}
 		return true;
 	}
 
@@ -121,30 +104,21 @@ public class MStudioDeployWizard extends Wizard{
 		return true;
 	}
 	
-	private boolean saveDeployInfo(String filename) {
-		
+	private boolean saveDeployInfo(String filename){
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
 			return false;
-
-		String[] sections = iniFile.getAllSectionNames();
-		if (null != sections) {
-			for(int i=0; i<sections.length; i++) {
-				iniFile.removeSection(sections[i]);
+		if(setCfgsSection() && setServicesSection() && setDlcustomSection() &&
+				setModulesSection() && setAutobootSection() && setAppsSection()){
+			if(iniFile.save()){
+				return true;
 			}
+			else
+				return false;
 		}
-		
-		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-
-		setCfgsSection();
-		setServicesSection();
-		setDlcustomSection();
-		setModulesSection();
-		setAutobootSection();
-		setAppsSection();
-	
-		iniFile.save();
-		return true;
+		else{
+			return false;
+		}		
 	}
 	
 	public boolean isHost() {
@@ -178,92 +152,82 @@ public class MStudioDeployWizard extends Wizard{
 		return exeProjectPage.getDeployExeProjects();
 	}
 	
-	public MStudioParserIniFile getDeployIniFile() {
+	public MStudioParserIniFile getDeployIniFile(){
 		return iniFile;
 	}
 	
-	private boolean setCfgsSection() {
-		
-		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-		
+	public String[] getDeployService(){
+		return deployServicesPage.getDeployServices();
+	}
+	
+	public IProject[] getDeployAutobootProject(){
+		return autobootProjectPage.getDeployAutobootProjects();
+	}
+	
+	private boolean setCfgsSection(){		
+		iniFile.addSection(DEPLOY_CFG_SECTION, null);	
+		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitCfgFile();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
-				MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitCfgFile(), null);
+				temp == null ? "" : temp, null);
+		temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, 
-				MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath(), null);
+				temp == null ? "" : temp, null);
+		temp=MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
-				MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode(), null);
-			
+				temp == null ? "" : temp, null);			
 		return true;
 	}
 	
-	private boolean setServicesSection() {
-		
+	private boolean setServicesSection(){		
 		iniFile.addSection(DEPLOY_SERVICES_SECTION, null);
-		Object[] serv = deployServicesPage.getDeployServices();
-		if (null == serv) {
-			return false;
-		}
-		
+		String[] serv = getDeployService();
+		if (null == serv) 
+			return false;		
 		iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION, SERVICES_NUMBER_PROPERTY, 
-				serv.length, null);
-		
+				serv.length, null);		
 		for(int i=0; i<serv.length; i++) {
 			iniFile.setStringProperty(DEPLOY_SERVICES_SECTION, (SERVICE_NAME_PROPERTY + i), 
-				serv[i].toString(), null);
+				serv[i], null);
 		}			
 		return true;
 	}
 	
-	private boolean setDlcustomSection() {
-		
+	private boolean setDlcustomSection() {		
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
 		IProject project = getDeployDLCustom();
-		if (null == project) {
-			return false;
-		}
-		
+		if (null == project)
+			return false;		
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY, 
-				project.toString(), null);
+				project.getName(), null);
 		return true;
 	}
 	
-	private boolean setModulesSection() {
-				
+	private boolean setModulesSection() {				
 		iniFile.addSection(DEPLOY_MODULES_SECTION, null);
 		IProject[] projects = getDeployModules();
-		if (null == projects) {
-			return false;
-		}
-		
+		if (null == projects)
+			return false;		
 		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY, 
-				projects.length, null);
-		
+				projects.length, null);		
 		for (int i=0; i<projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_MODULES_SECTION, (MODULES_NAME_PROPERTY + i), 
-					projects[i].toString(), null);
-		}			
-		
-		for (int i=0; i<projects.length; i++) {
-			iniFile.addSection(projects[i].toString(), null);
-			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_DEPLOY_PROPERTY , 
-					"11", null);
-			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_CFG_PROPERTY, 
-					"22", null);			
+					projects[i].getName(), null);
+			iniFile.addSection(projects[i].getName(), null);
+			iniFile.setStringProperty(projects[i].getName(), MODULES_PROGRAM_DEPLOY_PROPERTY, 
+					projects[i].getFullPath().toOSString(), null);
+			iniFile.setStringProperty(projects[i].getName(), MODULES_PROGRAM_CFG_PROPERTY, 
+					projects[i].getFullPath().toOSString(), null);
 		}
 		return true;
 	}
 
-	private boolean setAutobootSection() {
-		
+	private boolean setAutobootSection() {		
 		iniFile.addSection(DEPLOY_AUTOBOOT_SECTION, null);
-		IProject[] projects = autobootProjectPage.getDeployAutobootProjects();
-		if (null == projects) {
-			return false;
-		}
-		
+		IProject[] projects = getDeployAutobootProject();
+		if (null == projects)
+			return false;		
 		iniFile.setIntegerProperty(DEPLOY_AUTOBOOT_SECTION, AUTOBOOT_NUMBERS_PROPERTY, 
-				projects.length, null);
-		
+				projects.length, null);		
 		for (int i=0; i<projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_AUTOBOOT_SECTION, (AUTOBOOT_NAME_PROPERTY + i), 
 					projects[i].getName(), null);
@@ -271,26 +235,16 @@ public class MStudioDeployWizard extends Wizard{
 		return true;
 	}
 	
-	private boolean setAppsSection() {
-		
+	private boolean setAppsSection(){		
 		iniFile.addSection(DEPLOY_APPS_SECTION, null);
 		IProject[] projects = getDeployModules();
-		if (null == projects) {
-			return false;
-		}
-		
+		if (null == projects)
+			return false;		
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
-				projects.length, null);
-				
+				projects.length, null);				
 		for (int i=0; i<projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i), 
 					projects[i].toString(), null);
-		}			
-		
-		for (int i=0; i<projects.length; i++) {
-			iniFile.addSection(projects[i].toString(), null);
-			iniFile.setStringProperty(projects[i].toString(), MODULES_PROGRAM_DEPLOY_PROPERTY , 
-					"11", null);
 		}
 		return true;
 	}
