@@ -58,7 +58,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		
 		
 		Label label1 = new Label(topPanel,SWT.NONE);
-		label1.setText("dynamic libraries");
+		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.title"));
 		label1.setLayoutData(new GridData());
 		
 		tableLabraries = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
@@ -76,7 +76,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 			}
 		});
 		Label label2 = new Label(topPanel,SWT.NONE);
-		label2.setText("Custom IAL Engine");
+		label2.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.ialTitle"));
 		tableIAL = new Table(topPanel,SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL |SWT.SINGLE);
 		GridData gd2 = new GridData(GridData.FILL_BOTH);
 		tableIAL.setLayoutData(gd2);
