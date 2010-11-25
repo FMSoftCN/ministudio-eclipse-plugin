@@ -56,6 +56,7 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 	private static String builderVersion = null;
 	private static String pluginVersion = null;
 	private static StringBuffer builderCmd = new StringBuffer(MSCU_GUIBUILDER);
+    private static String exeSuffix = ".exe";
 	
 	private void parseVersionLine(String line) {
 		StringBuffer buf = new StringBuffer();
@@ -70,9 +71,11 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 		String binPath = MStudioToolsPreferencePage.getMStudioBinPath(defVersion);
 		Path cmd = null;
 
-		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
-			builderCmd.append(".exe");
-		}
+        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0 
+                && builderCmd.lastIndexOf(exeSuffix) == -1) {
+            //append correct exe suffix
+            builderCmd.append(exeSuffix);
+        }
 
 		if (binPath == null || binPath.equals(MSCU_EMPTY)) {
 			binPath = System.getenv("GUIBUILDER_PATH");
