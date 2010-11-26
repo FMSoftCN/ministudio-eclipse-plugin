@@ -162,12 +162,14 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			for(int i=0; i<galP.length; i++){
 				gal.add(galP[i].toString());
 			}
+			gal.select(0);
 		}
 		String[] ialP = MStudioEnvInfo.getInstance().getIalEngines();
 		if(ialP != null){
 			for(int i=0; i<ialP.length; i++){
 				ial.add(ialP[i].toString());
 			}
+			ial.select(0);
 		}
 	}
 	private void initSizeAndColor(){
@@ -264,7 +266,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	public String getDeployLocation() {
-		return filePath.getStringValue();
+		return locationPath.getStringValue().trim();
+//		return filePath.getStringValue();
 	}
 	
 	public String getColorDepth(){

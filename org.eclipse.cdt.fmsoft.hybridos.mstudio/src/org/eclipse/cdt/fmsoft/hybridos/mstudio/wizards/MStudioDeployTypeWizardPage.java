@@ -66,16 +66,16 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
 		
 		Composite rg = typeRadioGroup.getRadioBoxControl(topPanel);
-		Control[] radioButton = (Control[])(rg.getChildren());		
-		if(MStudioDeployWizard.deployTypeIsHost){
-			if(radioButton.length>0){
-				((Button)radioButton[0]).setSelection(true);
-			}
-		}
-		else{
-			if(radioButton.length>=1){
-				((Button)radioButton[1]).setSelection(true);
-			}
+		MStudioDeployWizard.deployTypeIsHost = false;
+		Control[] radioButton = (Control[])(rg.getChildren());
+//		if(MStudioDeployWizard.deployTypeIsHost){
+//			if(radioButton.length>0){
+//				((Button)radioButton[0]).setSelection(true);
+//			}
+//		}
+//		else{
+		if (radioButton.length > 1) {
+			((Button)radioButton[1]).setSelection(true);
 		}
 		
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
