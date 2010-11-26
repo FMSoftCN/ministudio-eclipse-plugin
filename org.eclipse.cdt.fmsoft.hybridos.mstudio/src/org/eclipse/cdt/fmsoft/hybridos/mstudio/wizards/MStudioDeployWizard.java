@@ -183,16 +183,13 @@ public class MStudioDeployWizard extends Wizard{
 		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
 		if (null == cfgFile)
 			return false;		
-		String tempGal = "";
-		String tempIal = "";
+		
 		if (!deployTypeIsHost) {
-			tempGal = exeProjectPage.getGALEngine();
-			tempIal = exeProjectPage.getIALEngine();
-		}
-		cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY, 
-				tempGal, null);	
-		cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY, 
-				tempIal, null);
+			cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY, 
+					exeProjectPage.getGALEngine(), null);	
+			cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY, 
+					exeProjectPage.getIALEngine(), null);
+		}		
 		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
 								exeProjectPage.getResolution() + "-" + 
 								exeProjectPage.getColorDepth()+"bpp", null);		
