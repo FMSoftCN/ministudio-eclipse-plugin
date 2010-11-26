@@ -9,17 +9,11 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPage.MStudioDeployBuildType;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployTypeWizardPage.MStudioDeployTargetType;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -31,7 +25,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -231,7 +224,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*[x][1-9]+[0-9]*";		
+		String regexString = "[1-9]+[0-9]*[xX][1-9]+[0-9]*";		
 		return Pattern.matches(regexString, resolution);		
 	}
 	
@@ -274,7 +267,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return filePath.getStringValue();
 	}
 	
-	//resolution format: 320x240-16bpp
+	public String getColorDepth(){
+		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
+	}
+	//resolution format: 320x240
 	public String getResolution() {
 		String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
 		if(validateResolution(resolution))
