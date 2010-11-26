@@ -124,8 +124,10 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	public IProject getProject(boolean defaults, boolean onFinish) {
+
 		if (newProject != null && isChanged())
 			clearProject();
+
 		if (newProject == null) {
 			existingPath = false;
 			try {
@@ -159,6 +161,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			
 			invokeRunnable(getRunnable(defaults, onFinish));
 		}
+
 		return newProject;
 	}
 
@@ -179,7 +182,9 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	private boolean invokeRunnable(IRunnableWithProgress runnable) {
+
 		IRunnableWithProgress opRunnable = new WorkspaceModifyDelegatingOperation(runnable);
+
 		try {
 			getContainer().run(true, true, opRunnable);
 		} catch (InvocationTargetException e) {
@@ -190,14 +195,17 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			clearProject();
 			return false;
 		}
+
 		return true;
 	}
 
 	public boolean performFinish() {
+
 		boolean needsPost = (newProject != null && !isChanged());
 		// create project if it is not created yet
 		if (getProject(fMainPage.isCurrent(), true) == null)
 			return false;
+
 		fMainPage.h_selected.postProcess(newProject, needsPost);
 		try {
 			setCreated();
@@ -205,12 +213,15 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			e.printStackTrace();
 			return false;
 		}
+
 		BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 		selectAndReveal(newProject);
+
 		return true;
 	}
 
 	protected boolean setCreated() throws CoreException {
+
 		ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
 		ICProjectDescription des = mngr.getProjectDescription(newProject, false);
 
@@ -227,6 +238,9 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	public boolean performCancel() {
 		clearProject();
 
+		if (MStudioNewCAppSoCConfigWizardPage.isOnlyOneSoC())
+			return true;
+
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 
 		if (store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME)) {
@@ -242,6 +256,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	private IRunnableWithProgress getRunnable(boolean _defaults, final boolean onFinish) {
+
 		final boolean defaults = _defaults;
 		return new IRunnableWithProgress() {
 			public void run(IProgressMonitor imonitor)
@@ -316,10 +331,12 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		if (fMainPage.h_selected != null) {
 			if (!fMainPage.h_selected.canFinish())
 				return false;
+
 			String string = fMainPage.h_selected.getErrorMessage();
 			if (string  != null)
 				return false;
 		}
+
 		return super.canFinish();
 	}
 

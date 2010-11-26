@@ -87,6 +87,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private String message = MESSAGE;
 	private String socName = msEnvInfo.getCurSoCName();
 
+	private static boolean isOnlyOne = false;
+
 	public boolean isVisible = false;
 	public boolean pagesLoaded = false;
 
@@ -123,6 +125,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		if (null != socName) {
 			combo.setText(socName);
 			combo.setEnabled(false);
+			isOnlyOne = true;
 		} else {
 			combo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -264,6 +267,11 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		return out.toArray(new CfgHolder[out.size()]);
 	}
+
+	public static boolean isOnlyOneSoC() {
+		return isOnlyOne;
+	}
+
 
 	private boolean isVisited() {
 		if (table == null || handler == null)
