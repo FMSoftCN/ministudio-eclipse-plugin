@@ -1,25 +1,17 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
-
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
 
 public class MStudioDeployWizard extends Wizard{
 	
@@ -33,10 +25,9 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private MStudioParserIniFile iniFile = null;
 	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath();
-//	private String mgncsCFGNewName = null;
-//	private String miniguiCFGNewName = null;
-	private String miniguiCFGNewPath = null;
-	private String mgncsCFGNewPath = null;
+
+	private String miniguiCfgNewPath = null;
+	private String mgncsCfgNewPath = null;
 	private final static String DEPLOY_INI_NAME = "deploy.ini";
 	
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
@@ -183,23 +174,19 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean copyMiniguiCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
-		miniguiCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + MINIGUI_CFG_FILE_NAME;
-		
-		return copyFile(cfgOldName, miniguiCFGNewPath);
+		miniguiCfgNewPath = Platform.getInstanceLocation().getURL().getPath() + MINIGUI_CFG_FILE_NAME;		
+		return copyFile(cfgOldName, miniguiCfgNewPath);
 	}
 	
 	private boolean copyMgncsCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
-		mgncsCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
-		return copyFile(cfgOldName, mgncsCFGNewPath);
-
-//		mgncsCfgNewPath = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
-//		return copyFile(cfgOldName, mgncsCfgNewPath);		
+		mgncsCfgNewPath = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
+		return copyFile(cfgOldName, mgncsCfgNewPath);	
 	}
 	
 	private boolean modifyMiniguiCFG() {
 		
-		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCFGNewPath);
+		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
 		if (null == cfgFile)
 			return false;		
 
@@ -262,17 +249,9 @@ public class MStudioDeployWizard extends Wizard{
 	private boolean setCfgsSection() {
 
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, miniguiCFGNewPath, null);
-		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, mgncsCFGNewPath, null);
+		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, miniguiCfgNewPath, null);
+		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, mgncsCfgNewPath, null);
 		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
-//=======
-//		iniFile.addSection(DEPLOY_CFG_SECTION, null);		
-//		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
-//				miniguiCfgNewPath == null ? "" : miniguiCfgNewPath, null);
-//		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, 
-//				mgncsCfgNewPath == null ? "" : mgncsCfgNewPath, null);
-//		String temp=MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
-//>>>>>>> .r2811
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);	
 		return true;
