@@ -68,6 +68,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
 	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
 	private static final String SHOW_SELECT_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.14");
+	private static final String SHOW_CANCEL_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.15");
 	private static final String AFFECTED = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.affected");
 	private static final String DEPEND = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.depend");
 	private static final String EMPTY_STR = "";
@@ -337,7 +338,15 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		for (int i = 0; i < count; i++) {
 			messageInfo = messageInfo.concat(MSW_SPACE + listPkgs.get(i));
 		}
-		messageInfo = messageInfo.concat(SHOW_SELECT_ALL);
+
+		String showSCAll = null;
+
+		if (title.equals(DEPEND))
+			showSCAll = SHOW_SELECT_ALL;
+		else
+			showSCAll = SHOW_CANCEL_ALL;
+
+		messageInfo = messageInfo.concat(showSCAll);
 		MessageDialog.openInformation(getShell(), title, messageInfo);
 
 		return true;

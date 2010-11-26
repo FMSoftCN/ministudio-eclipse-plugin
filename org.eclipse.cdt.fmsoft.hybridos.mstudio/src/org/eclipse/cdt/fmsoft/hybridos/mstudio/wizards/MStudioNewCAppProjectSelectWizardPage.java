@@ -93,9 +93,10 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 						MStudioNewCAppProjectSelectWizardPage.this, getWizard());
 		switchTo(handler, getDescriptor(tree));
 
-		setPageComplete(validatePage());
 		setErrorMessage(null);
 		setMessage(null);
+
+		setPageComplete(validatePage());
 	}
 
 	private void createDynamicGroup(Composite parent) {
@@ -143,8 +144,10 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 	protected boolean validatePage() {
 		setMessage(null);
-		if (!super.validatePage())
+		if (!super.validatePage()) {
+			setErrorMessage(MStudioMessages.getString("MGMainWizardPage.13"));
 			return false;
+		}
 
 		if (getProjectName().indexOf('#') >= 0) {
 			setErrorMessage(MStudioMessages.getString("MGMainWizardPage.11")); //$NON-NLS-1$
