@@ -70,7 +70,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));		
 		
-		tipText = new Label (topPanel,SWT.NONE);
+		//tipText = new Label (topPanel,SWT.NONE);
 		//init the Graphic
 		//bottomPanel1		
 		Composite bottomPanel1 = new Composite(topPanel,SWT.NONE);
@@ -138,7 +138,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		initGALAndIAL();
 		
 		setControl(topPanel);
-		setPageComplete(false);
+		setPageComplete(true);
 	}
 	public boolean locationChanged() {
 		  String l = locationPath.getStringValue();
@@ -153,8 +153,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	protected void updateTipMessage (String tip) {
 		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
-		tipText.setForeground(c);
-		tipText.setText(tip);
+		//tipText.setForeground(c);
+		//tipText.setText(tip);
 	}
 	private void initGALAndIAL(){
 		String[] galP = MStudioEnvInfo.getInstance().getGalEngines();
@@ -162,12 +162,14 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			for(int i=0; i<galP.length; i++){
 				gal.add(galP[i].toString());
 			}
+			gal.select(0);
 		}
 		String[] ialP = MStudioEnvInfo.getInstance().getIalEngines();
 		if(ialP != null){
 			for(int i=0; i<ialP.length; i++){
 				ial.add(ialP[i].toString());
 			}
+			ial.select(0);
 		}
 	}
 	private void initSizeAndColor(){
@@ -232,16 +234,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if(ctv.getCheckedElements().length <= 0 || !locationChanged()
 				|| sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim() == null 
 				|| colorCombo.getItem(colorCombo.getSelectionIndex()).trim() == null){
-			setPageComplete(false);
+			//setPageComplete(false);
 			return false;
 		}
 		if(!MStudioDeployWizard.deployTypeIsHost){
 			if(0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()){	
-				setPageComplete(false);
+				//setPageComplete(false);
 				return false;			
 			}
 		}	
-		setPageComplete(true);
+		//setPageComplete(true);
 		return true;
 	}
 	

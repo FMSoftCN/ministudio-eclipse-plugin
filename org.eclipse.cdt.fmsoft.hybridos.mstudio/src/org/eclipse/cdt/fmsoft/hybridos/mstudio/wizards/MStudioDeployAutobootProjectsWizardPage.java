@@ -129,19 +129,19 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 					for(int i=0; i<items.length; i++){
 						items[i].setChecked(true);
 					}
-					setPageComplete(true);
+					//setPageComplete(true);
 				}
 				else{	
 					for(int i=0; i<items.length; i++){
 						items[i].setChecked(false);
 					}
-					setPageComplete(false);					
+					//setPageComplete(false);					
 				}
 			}});
 		
 		initAutoStartProgrames();		
 		setControl(topPanel);
-		setPageComplete(false);
+		setPageComplete(true);
 	}
 	public void update(){
 		table.setItemCount(0);
@@ -167,7 +167,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		}
 		else{
 			if(projects.length <=0 || projects == null || table.getSelectionCount()<=0){
-				setPageComplete(false);
+				//setPageComplete(false);
 				upButton.setEnabled(false);
 				downButton.setEnabled(false);
 				return;
@@ -233,17 +233,16 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 				else{
 					selectAll.setSelection(false);
 				}
+				/*
 				if(projectOfChecked.size() <=0 || projectOfChecked == null){
 					setPageComplete(false);					
 				}
 				else{
 					setPageComplete(true);
 				}
-				updateButtons();
+				*/
 			}
-			else{
-				updateButtons();
-			}			
+			updateButtons();						
 		}		
 	}
 }

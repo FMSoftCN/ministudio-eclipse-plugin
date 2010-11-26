@@ -65,10 +65,12 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
+				/*
 				if(ctv.getCheckedElements().length<=0)
 					setPageComplete(false);
 				else
 					setPageComplete(true);
+					*/
 			}
 		});
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
@@ -77,7 +79,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		});
 		initServiceTable();		
 		setControl(topPanel);
-		setPageComplete(false);
+		setPageComplete(true);
 	}
 	
 	public void update(){
@@ -100,10 +102,12 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 			}
 		}
 		//init button next
+		/*
 		if(ctv.getCheckedElements().length > 0)
 			setPageComplete(true);
 		else
 			setPageComplete(false);
+			*/
 	}	
 	
 	private void storeService(){
