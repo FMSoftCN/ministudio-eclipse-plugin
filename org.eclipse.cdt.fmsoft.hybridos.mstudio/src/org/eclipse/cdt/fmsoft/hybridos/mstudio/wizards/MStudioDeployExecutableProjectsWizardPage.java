@@ -231,7 +231,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*\\s*[\\*\\x\\＊\\X\\x]\\s*[1-9]+[0-9]*";		
+		String regexString = "[1-9]+[0-9]*[x][1-9]+[0-9]*";		
 		return Pattern.matches(regexString, resolution);		
 	}
 	
