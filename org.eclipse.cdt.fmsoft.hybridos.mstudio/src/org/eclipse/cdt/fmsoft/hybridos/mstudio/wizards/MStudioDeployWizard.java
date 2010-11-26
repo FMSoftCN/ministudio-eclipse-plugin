@@ -325,13 +325,13 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString(), null);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
-					projects[i].getLocationURI()+projects[i].getName()+APP_CFG_PATH, null);
+					projects[i].getLocationURI() + APP_CFG_PATH, null);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY, 
 					APP_DEPLOY_PATH, null);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
-					projects[i].getLocationURI() + projects[i].getName()+".res", null);
+					projects[i].getLocationURI() + ".res", null);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY, 
-					"/usr/share/"+projects[i].getName()+"/res", null);
+					"/usr/share/" + projects[i].getName() + "/res", null);
 			String temp = getDepLibs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY, 
 					temp == null? "" : temp, null);
