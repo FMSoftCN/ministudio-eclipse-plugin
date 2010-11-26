@@ -117,12 +117,6 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-
-		// firstly, two cfg files should copied to the new path,
-		// then change the minigui cfg file's content,
-		// the deploy.ini file should be saved at last
-//		if(copyMiniguiCFG() && copyMgncsCFG() && modifyMiniguiCFG() && 
-//				saveDeployInfo(exeProjectPage.getDeployLocation() + "/" + DEPLOY_INI_NAME)){
 		if(saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
 			MessageDialog.openWarning(getShell(), MStudioMessages.getString("MStudioDeployProject.error.title"),
 					MStudioMessages.getString("MStudioDeployProject.save.successContent"));
