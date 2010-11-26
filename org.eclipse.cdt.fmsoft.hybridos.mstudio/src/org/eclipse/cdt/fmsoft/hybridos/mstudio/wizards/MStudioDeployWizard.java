@@ -6,6 +6,10 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import org.eclipse.core.runtime.Platform;
 
 public class MStudioDeployWizard extends Wizard{
 	
@@ -52,6 +56,15 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private final static String APPS_NUMBER_PROPERTY = "apps_number";
 	private final static String APPS_NAME_PROPERTY = "name";
+	
+	private final static String MINIGUI_CFG_FILE_NAME = "MiniGUI.cfg";
+	private final static String MGNCS_CFG_FILE_NAME = "mgncs.cfg";
+	private final static String SYSTEM_SECTION = "system";
+	private final static String GAL_PROPERTY = "gal_engine";
+	private final static String IAL_PROPERTY = "ial_engine";
+	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
+	
+	private String miniguiCFGNewFile = null;
 
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
@@ -92,11 +105,15 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		if(!saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
+
+		if (copyMiniguiCFG() && copyMgncsCFG() && modifyMiniguiCFG() 
+				&& saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
+			return true;
+		}
+		else {
 			MessageDialog.openWarning(getShell(), "", "");
 			return false;
 		}
-		return true;
 	}
 
 	public boolean performCancel(){
@@ -119,6 +136,52 @@ public class MStudioDeployWizard extends Wizard{
 		return false;
 	}
 	
+	private boolean copyMiniguiCFG() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
+		miniguiCFGNewFile = Platform.getInstanceLocation().getURL().getPath() + MINIGUI_CFG_FILE_NAME;//TODO
+		
+		copyFile(cfgOldName, miniguiCFGNewFile);
+		return true;
+	}
+	
+	private boolean copyMgncsCFG() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
+		String cfgNewName = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
+		copyFile(cfgOldName, cfgNewName);
+		return true;
+	}
+	
+	private boolean modifyMiniguiCFG() {
+		
+		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCFGNewFile);
+		if (null == cfgFile)
+			return false;
+		
+		String tempGal = null;
+		String tempIal = null;
+		if (!deployTypeIsHost) {
+			tempGal = exeProjectPage.getGALEngine();
+			tempIal = exeProjectPage.getIALEngine();
+		}
+		else {
+			tempGal = "";
+			tempIal = "";
+		}
+		cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY, 
+				tempGal, null);	
+		cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY, 
+				tempIal, null);
+		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
+								exeProjectPage.getResolution(), null);//TODO
+//		"200x600-16bpp", null);
+		
+		if(cfgFile.save()){
+			return true;
+		}
+		else
+			return false;
+	}
+
 	public boolean isHost() {
 		return deployTypeIsHost;
 	}
@@ -194,10 +257,10 @@ public class MStudioDeployWizard extends Wizard{
 	private boolean setDlcustomSection() {		
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
 		IProject project = getDeployDLCustom();
-		if (null == project)
-			return false;		
+//		if (null == project)
+//			return false;		
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY, 
-				project.getName(), null);
+				project == null ? "" : project.getName(), null);
 		return true;
 	}
 	
@@ -262,4 +325,30 @@ public class MStudioDeployWizard extends Wizard{
 		}
 		return true;
 	}
+	
+    protected boolean copyFile(String oldPath, String newPath)  {
+    	try {
+    		int bytesum = 0;
+    		int byteread = 0;
+    		File oldfile = new File(oldPath); 
+    		if (oldfile.exists()) {
+    			FileInputStream inStream = new FileInputStream(oldPath);
+    			FileOutputStream fs = new FileOutputStream(newPath);
+    			byte[] buffer = new byte[1024];
+    			while ((byteread = inStream.read(buffer)) != -1) {
+    				bytesum += byteread; 
+    				fs.write(buffer, 0, byteread); 
+    			}
+    			inStream.close();
+    			return true;
+    		}
+    		else {
+	    		return false;
+    		}
+    	}
+    	catch (Exception e) {
+    		e.printStackTrace();
+    		return false;
+    	} 
+    }     	
 }
