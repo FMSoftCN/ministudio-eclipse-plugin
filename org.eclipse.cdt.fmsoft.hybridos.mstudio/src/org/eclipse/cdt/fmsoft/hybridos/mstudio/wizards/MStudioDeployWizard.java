@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -16,6 +17,9 @@ import org.eclipse.jface.wizard.Wizard;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.Platform;
 
 public class MStudioDeployWizard extends Wizard{
@@ -73,7 +77,13 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String IAL_PROPERTY = "ial_engine";
 	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
 	
-	private String miniguiCFGNewFile = null;
+	private final static String MODULES_DEPLOY_PATH="/usr/local/lib";
+	private final static String APP_DEPLOY_PATH="/usr/bin";
+	private final static String APP_CFG_PATH="_res.cfg";
+	private final static String DEPLIBS_PROGRAM_DEPLOY="/usr/local/lib";
+	
+	private String miniguiCfgNewPath = null;
+	private String mgncsCfgNewPath = null;
 
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
@@ -114,8 +124,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	@Override
 	public boolean performFinish() {
-		if(copyMiniguiCFG() && copyMgncsCFG() && modifyMiniguiCFG() && 
-				saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
+		if(saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
 			MessageDialog.openWarning(getShell(), MStudioMessages.getString("MStudioDeployProject.error.title"),
 					MStudioMessages.getString("MStudioDeployProject.save.successContent"));
 			return true;
@@ -144,7 +153,9 @@ public class MStudioDeployWizard extends Wizard{
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
 			return false;
-		if(setCfgsSection() && setServicesSection() && setAutobootSection() && setAppsSection()){
+		if(copyMiniguiCFG() && copyMgncsCFG() && modifyMiniguiCFG() && 
+				setCfgsSection() && setServicesSection() &&
+				setAutobootSection() && setAppsSection()){
 			setDlcustomSection();
 			setModulesSection();
 			if(iniFile.save()){
@@ -158,18 +169,18 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean copyMiniguiCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
-		miniguiCFGNewFile = Platform.getInstanceLocation().getURL().getPath() + MINIGUI_CFG_FILE_NAME;		
-		return copyFile(cfgOldName, miniguiCFGNewFile);		
+		miniguiCfgNewPath = Platform.getInstanceLocation().getURL().getPath() + MINIGUI_CFG_FILE_NAME;		
+		return copyFile(cfgOldName, miniguiCfgNewPath);		
 	}
 	
 	private boolean copyMgncsCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
-		String cfgNewName = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
-		return copyFile(cfgOldName, cfgNewName);		
+		mgncsCfgNewPath = Platform.getInstanceLocation().getURL().getPath() + MGNCS_CFG_FILE_NAME;
+		return copyFile(cfgOldName, mgncsCfgNewPath);		
 	}
 	
 	private boolean modifyMiniguiCFG() {		
-		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCFGNewFile);
+		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
 		if (null == cfgFile)
 			return false;		
 		String tempGal = "";
@@ -183,7 +194,8 @@ public class MStudioDeployWizard extends Wizard{
 		cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY, 
 				tempIal, null);
 		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
-								exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth()+"bpp", null);		
+								exeProjectPage.getResolution() + "-" + 
+								exeProjectPage.getColorDepth()+"bpp", null);		
 		return cfgFile.save();
 	}
 
@@ -231,14 +243,12 @@ public class MStudioDeployWizard extends Wizard{
 	}
 	
 	private boolean setCfgsSection(){		
-		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-		String temp = Platform.getInstanceLocation().getURL().getPath();
+		iniFile.addSection(DEPLOY_CFG_SECTION, null);		
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY, 
-				temp == null ? "" : temp, null);
-		temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMginitBinPath();
+				miniguiCfgNewPath == null ? "" : miniguiCfgNewPath, null);
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY, 
-				temp == null ? "" : temp, null);
-		temp=MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
+				mgncsCfgNewPath == null ? "" : mgncsCfgNewPath, null);
+		String temp=MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);	
 		return true;
@@ -260,9 +270,9 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean setDlcustomSection() {		
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
-		IProject project = getDeployDLCustom();
+		IProject project = getDeployDLCustom();		
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY, 
-				project == null ? "" : project.getFullPath().toOSString(), null);
+				project == null ? "" : project.getLocation().toOSString(), null);
 		return true;
 	}
 	
@@ -278,14 +288,14 @@ public class MStudioDeployWizard extends Wizard{
 					projects[i].getName(), null);			
 			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY, 
-					projects[i].getFullPath().toOSString(), null);
+					projects[i].getLocation().toOSString(), null);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
-					projects[i].getFullPath().toOSString()+projects[i].getName(), null);
+					MODULES_DEPLOY_PATH, null);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY, "", null);
 		}
 		return true;
 	}
-
+	
 	private boolean setAutobootSection() {	
 		iniFile.addSection(DEPLOY_AUTOBOOT_SECTION, null);
 		IProject[] projects = getDeployAutobootProject();
@@ -313,17 +323,40 @@ public class MStudioDeployWizard extends Wizard{
 			
 			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					projects[i].getFullPath().toOSString(), null);
-			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
-					projects[i].getFullPath().toOSString()+projects[i].getName(), null);
-			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY, 
-					projects[i].getFullPath().toOSString(), null);
-			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, "", null);
-			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY, "", null);
-			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY, "", null);
-			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY, "", null);
+					projects[i].getLocation().toOSString(), null);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
+					projects[i].getLocationURI()+projects[i].getName()+APP_CFG_PATH, null);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY, 
+					APP_DEPLOY_PATH, null);
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
+					projects[i].getLocationURI() + projects[i].getName()+".res", null);
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY, 
+					"/usr/share/"+projects[i].getName()+"/res", null);
+			String temp = getDepLibs(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY, 
+					temp == null? "" : temp, null);
+			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
+					DEPLIBS_PROGRAM_DEPLOY, null);
 		}
 		return true;
+	}
+
+	private String getDepLibs(IProject project){
+		if(project == null)
+			return null;
+		MStudioProject mprj = new MStudioProject(project);
+		//List<String> depLibList = new ArrayList<String> ();
+		String[] pkgs = mprj.getDepPkgs();
+		String depLibStr="";
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		for (int idx = 0; idx < pkgs.length; idx++) {
+			String[] libs = einfo.getPackageLibs(pkgs[idx]);
+			for (int c = 0; c < libs.length; c++){
+				//depLibList.add(libs[c]);
+				depLibStr += depLibStr+" ";
+			}
+		}
+		return depLibStr;
 	}
 	
     private boolean copyFile(String oldPath, String newPath)  {
