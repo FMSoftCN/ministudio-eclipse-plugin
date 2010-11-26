@@ -191,9 +191,7 @@ public class MStudioDeployWizard extends Wizard{
 					exeProjectPage.getIALEngine(), null);
 		}
 		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
-				exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);		
-		cfgFile.setStringProperty(exeProjectPage.getGALEngine(), DEFAULT_MODE_PROPERTY, 
-				exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);		
+				exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);	
 		return cfgFile.save();
 	}
 
