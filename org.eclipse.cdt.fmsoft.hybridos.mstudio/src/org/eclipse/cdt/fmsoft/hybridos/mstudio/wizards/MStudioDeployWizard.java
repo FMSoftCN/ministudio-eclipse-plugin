@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.PlatformUI;
 
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
@@ -23,9 +24,10 @@ public class MStudioDeployWizard extends Wizard {
 
 	public static boolean deployTypeIsHost = false;
 	private MStudioParserIniFile iniFile = null;
-	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath();
-	private String miniguiCfgNewPath = null;
-	private String mgncsCfgNewPath = null;
+	//private final static String DEPLOY_INI_PATH = MStudioPlugin.getDefault().getStateLocation().toOSString();
+	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath()+".metadata/";
+	private String miniguiCfgNewPath = DEPLOY_INI_PATH	+ MINIGUI_CFG_FILE_NAME;
+	private String mgncsCfgNewPath = DEPLOY_INI_PATH + MGNCS_CFG_FILE_NAME;
 	private final static String DEPLOY_INI_NAME = "deploy.ini";
 
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
@@ -120,7 +122,6 @@ public class MStudioDeployWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-
 		if (saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)) {
 			MessageDialog.openWarning(getShell(),
 					MStudioMessages.getString("MStudioDeployProject.error.title"),
@@ -171,15 +172,11 @@ public class MStudioDeployWizard extends Wizard {
 
 	private boolean copyMiniguiCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
-		miniguiCfgNewPath = Platform.getInstanceLocation().getURL().getPath()
-				+ MINIGUI_CFG_FILE_NAME;
 		return copyFile(cfgOldName, miniguiCfgNewPath);
 	}
 
 	private boolean copyMgncsCFG() {
 		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
-		mgncsCfgNewPath = Platform.getInstanceLocation().getURL().getPath()
-				+ MGNCS_CFG_FILE_NAME;
 		return copyFile(cfgOldName, mgncsCfgNewPath);
 	}
 
@@ -349,16 +346,15 @@ public class MStudioDeployWizard extends Wizard {
 			
 			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					projects[i].getLocation().toOSString(), null);
+					projects[i].getLocation().toOSString().trim(), null);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
-					projects[i].getLocation() + APP_CFG_PATH, null);
-			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY, 
+					projects[i].getLocation().toOSString().trim() + APP_CFG_PATH, null);
+			iniFile.setStringProperty(projects[i].getName().trim(), PROGRAM_DEPLOY_PROPERTY, 
 					APP_DEPLOY_PATH, null);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
-					projects[i].getLocation() + ".res", null);
-			iniFile.setStringProperty(projects[i].getName(),
-					RESPACK_DEPLOY_PROPERTY, "/usr/share/"
-					+ projects[i].getName() + "/res", null);
+					projects[i].getLocation().toOSString().trim() + ".res", null);
+			iniFile.setStringProperty(projects[i].getName(),RESPACK_DEPLOY_PROPERTY,
+					"/usr/share/" + projects[i].getName().trim() + "/res", null);
 			String temp = getDepLibs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY,
 					temp == null ? "" : temp, null);
