@@ -153,21 +153,20 @@ public class MStudioDeployWizard extends Wizard {
 
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
-			return false;
-
-		// create the sections and set their contents
-		if (copyMiniguiCFG() && copyMgncsCFG() && modifyMiniguiCFG()
-				&& setCfgsSection() && setServicesSection()
-				&& setAutobootSection() && setAppsSection()) {
-
-			setDlcustomSection();
-			setModulesSection();
-			if (iniFile.save()) {
-				return true;
-			} else
-				return false;
-		}
-		return false;
+			return false;		
+		copyMiniguiCFG();
+		copyMgncsCFG();
+		modifyMiniguiCFG();
+		setCfgsSection();
+		setDlcustomSection();
+		setModulesSection();
+		setServicesSection();
+		setAutobootSection();
+		setAppsSection();
+		if (iniFile.save()) 
+			return true;
+		else
+			return false;		
 	}
 
 	private boolean copyMiniguiCFG() {
@@ -200,15 +199,13 @@ public class MStudioDeployWizard extends Wizard {
 					DEFAULT_MODE_PROPERTY, exeProjectPage.getResolution() + "-"
 					+ exeProjectPage.getColorDepth() + "bpp", null);
 		} else {
-			cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY,
-					exeProjectPage.getResolution() + "-"
-					+ exeProjectPage.getColorDepth() + "bpp", null);
 			String value = cfgFile.getStringProperty(SYSTEM_SECTION, GAL_PROPERTY);
 			if (value != null) {
 				cfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY,
-						exeProjectPage.getResolution() + "-"
-						+ exeProjectPage.getColorDepth() + "bpp", null);
+						exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
 			}
+			cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
+					exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
 		}
 		return cfgFile.save();
 	}
@@ -262,7 +259,7 @@ public class MStudioDeployWizard extends Wizard {
 		return autobootProjectPage.getDeployAutobootProjects();
 	}
 
-	private boolean setCfgsSection() {
+	private void setCfgsSection() {
 
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY,
@@ -270,89 +267,95 @@ public class MStudioDeployWizard extends Wizard {
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
 				mgncsCfgNewPath, null);
 		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
-		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY,
+		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);
-		return true;
 	}
 
-	private boolean setServicesSection() {
+	private void setServicesSection() {
 		iniFile.addSection(DEPLOY_SERVICES_SECTION, null);
 		String[] serv = getDeployService();
-		if (null == serv)
-			return false;
-		iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION,
-				SERVICES_NUMBER_PROPERTY, serv.length, null);
-		for (int i = 0; i < serv.length; i++) {
-			iniFile.setStringProperty(DEPLOY_SERVICES_SECTION,
-					(SERVICE_NAME_PROPERTY + i), serv[i], null);
+		if (null == serv){ 
+			iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION, SERVICES_NUMBER_PROPERTY, 
+					0, null);
+			return;		
 		}
-		return true;
+		iniFile.setIntegerProperty(DEPLOY_SERVICES_SECTION, SERVICES_NUMBER_PROPERTY, 
+				serv.length, null);		
+		for (int i=0; i<serv.length; i++) {
+			iniFile.setStringProperty(DEPLOY_SERVICES_SECTION, (SERVICE_NAME_PROPERTY + i), 
+				serv[i], null);
+		}
 	}
 
-	private boolean setDlcustomSection() {
+	private void setDlcustomSection() {
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
 		IProject project = getDeployDLCustom();
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION,
 				DLCUSTOM_PROGRAM_PROPERTY, project == null ? "" : project.getLocation().toOSString(), null);
-		return true;
 	}
 
-	private boolean setModulesSection() {
+	private void setModulesSection() {
 		iniFile.addSection(DEPLOY_MODULES_SECTION, null);
 		IProject[] projects = getDeployModules();
-		if (null == projects)
-			return false;
-		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION,
-				MODULES_NUMBERS_PROPERTY, projects.length, null);
-		for (int i = 0; i < projects.length; i++) {
-			iniFile.setStringProperty(DEPLOY_MODULES_SECTION,
-					(MODULES_NAME_PROPERTY + i), projects[i].getName(), null);
-			iniFile.addSection(projects[i].getName(), null);
-			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
+		if (null == projects){
+			iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY,
+					0, null);		
+			return;		
+		}
+		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY,
+				projects.length, null);		
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_MODULES_SECTION, (MODULES_NAME_PROPERTY + i),
+					projects[i].getName(), null);			
+			iniFile.addSection(projects[i].getName(), null);			
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY, 
 					projects[i].getLocation().toOSString(), null);
 			iniFile.setStringProperty(projects[i].getName(),
 					PROGRAM_DEPLOY_PROPERTY, MODULES_DEPLOY_PATH, null);
 			iniFile.setStringProperty(projects[i].getName(),
 					PROGRAM_CFG_PROPERTY, "", null);
 		}
-		return true;
 	}
 
-	private boolean setAutobootSection() {
+	private void setAutobootSection() {
 		iniFile.addSection(DEPLOY_AUTOBOOT_SECTION, null);
 		IProject[] projects = getDeployAutobootProject();
-		if (null == projects)
-			return false;
-		iniFile.setIntegerProperty(DEPLOY_AUTOBOOT_SECTION,
-				AUTOBOOT_NUMBERS_PROPERTY, projects.length, null);
-		for (int i = 0; i < projects.length; i++) {
-			iniFile.setStringProperty(DEPLOY_AUTOBOOT_SECTION,
-					(AUTOBOOT_NAME_PROPERTY + i), projects[i].getName(), null);
+		if (null == projects){
+			iniFile.setIntegerProperty(DEPLOY_AUTOBOOT_SECTION, AUTOBOOT_NUMBERS_PROPERTY,
+					0, null);	
+			return;		
 		}
-		return true;
+		iniFile.setIntegerProperty(DEPLOY_AUTOBOOT_SECTION, AUTOBOOT_NUMBERS_PROPERTY,
+				projects.length, null);		
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_AUTOBOOT_SECTION, (AUTOBOOT_NAME_PROPERTY + i),
+					projects[i].getName(), null);
+		}	
 	}
 
-	private boolean setAppsSection() {
+	private void setAppsSection() {
 		iniFile.addSection(DEPLOY_APPS_SECTION, null);
 		IProject[] projects = getDeployExeProjects();
-		if (null == projects)
-			return false;
-		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY,
-				projects.length, null);
-		for (int i = 0; i < projects.length; i++) {
-			iniFile.setStringProperty(DEPLOY_APPS_SECTION,
-					(APPS_NAME_PROPERTY + i), projects[i].getName(), null);
-
-			iniFile.addSection(projects[i].getName(), null);
+		if (null == projects){
+			iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
+					0, null);
+			return;	
+		}
+		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
+				projects.length, null);				
+		for (int i=0; i<projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i),
+					projects[i].getName(), null);
+			
+			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString(), null);
-			iniFile.setStringProperty(projects[i].getName(),
-					PROGRAM_CFG_PROPERTY, projects[i].getLocationURI()
-					+ APP_CFG_PATH, null);
-			iniFile.setStringProperty(projects[i].getName(),
-					PROGRAM_DEPLOY_PROPERTY, APP_DEPLOY_PATH, null);
-			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY,
-					projects[i].getLocationURI() + ".res", null);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
+					projects[i].getLocation() + APP_CFG_PATH, null);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY, 
+					APP_DEPLOY_PATH, null);
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
+					projects[i].getLocation() + ".res", null);
 			iniFile.setStringProperty(projects[i].getName(),
 					RESPACK_DEPLOY_PROPERTY, "/usr/share/"
 					+ projects[i].getName() + "/res", null);
@@ -362,7 +365,6 @@ public class MStudioDeployWizard extends Wizard {
 			iniFile.setStringProperty(projects[i].getName(),
 					DEPLIBS_DEPLOY_PROPERTY, DEPLIBS_PROGRAM_DEPLOY, null);
 		}
-		return true;
 	}
 
 	private String getDepLibs(IProject project) {
