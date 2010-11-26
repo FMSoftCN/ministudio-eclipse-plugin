@@ -183,15 +183,27 @@ public class MStudioDeployWizard extends Wizard{
 		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
 		if (null == cfgFile)
 			return false;		
-
+		//select target
 		if (!deployTypeIsHost) {
 			cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY, 
-					exeProjectPage.getGALEngine(), null);	
+					exeProjectPage.getGALEngine(), null);
+			cfgFile.setStringProperty(exeProjectPage.getGALEngine(), DEFAULT_MODE_PROPERTY, 
+					exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
 			cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY, 
 					exeProjectPage.getIALEngine(), null);
 		}
-		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
-				exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);	
+		else{
+			String value = cfgFile.getStringProperty(SYSTEM_SECTION, GAL_PROPERTY);
+			if(value != null){
+				cfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY,
+						exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
+			}
+			value = cfgFile.getStringProperty(SYSTEM_SECTION, IAL_PROPERTY);
+			if(value != null){
+				cfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY, 
+					exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
+			}
+		}
 		return cfgFile.save();
 	}
 
