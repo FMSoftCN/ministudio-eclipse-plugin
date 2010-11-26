@@ -185,7 +185,6 @@ public class MStudioDeployWizard extends Wizard {
 		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
 		if (null == cfgFile)
 			return false;
-
 		// select target
 		if (!deployTypeIsHost) {
 			cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY,
