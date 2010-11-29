@@ -1,6 +1,7 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.MiniGUIRunMode;
@@ -218,9 +219,18 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}
 	
 	public IProject[] getDeployAutobootProjects() {
-		if(projects == null || projects.length <=0)
+		
+		if (projects == null || projects.length <= 0)
 			return null;
-		return projects;
+		// return projects;
+		TableItem[] exeItems = table.getItems();
+		List<IProject> list = new ArrayList<IProject>();
+		for (int i = 0; i < exeItems.length; i++) {
+			if (projects[i] != null && table.isSelected(i)) {
+				list.add(projects[i]);
+			}
+		}
+		return (IProject[]) (list.toArray(new IProject[list.size()]));
 	}
 
 	public class TableListener implements Listener{
