@@ -66,11 +66,11 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceCons
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		IExecutableExtension, IWizardWithMemory {
 
-	private final static String _METADATA = ".metadata/";
 	private final static String MINIGUI_CFG = "MiniGUI.cfg";
 	private final static String MGNCS_CFG = "mgncs.cfg";
 	private final static String MINIGUI_CFG_TARGET = "MiniGUI.cfg.target";
 	private final static String MGNCS_CFG_TARGET = "mgncs.cfg.target";
+	private final static String _METADATA_PATH = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 	private final static String PREFIX = "CProjectWizard";
 	private final static String title = MStudioMessages.getString("MGProjectWizard.op_error.title");
 	private final static String message = MStudioMessages.getString("MGProjectWizard.op_error.message");
@@ -385,29 +385,29 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	private boolean copyMiniguiCFG() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getPCMgCfgFileName();
-		String miniguiCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MINIGUI_CFG;
+		String cfgOldName = msEnvInfo.getPCMgCfgFileName();
+		String miniguiCFGNewPath = _METADATA_PATH + MINIGUI_CFG;
 
 		return copyFile(cfgOldName, miniguiCFGNewPath);
 	}
 
 	private boolean copyMgncsCFG() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getPCMgNcsCfgFileName();
-		String mgncsCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MGNCS_CFG;
+		String cfgOldName = msEnvInfo.getPCMgNcsCfgFileName();
+		String mgncsCFGNewPath = _METADATA_PATH + MGNCS_CFG;
 
 		return copyFile(cfgOldName, mgncsCFGNewPath);
 	}
 
 	private boolean copyMiniguiCFGTarget() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
-		String miniguiCFGTarget = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MINIGUI_CFG_TARGET;
+		String cfgOldName = msEnvInfo.getCrossMgCfgFileName();
+		String miniguiCFGTarget = _METADATA_PATH + MINIGUI_CFG_TARGET;
 
 		return copyFile(cfgOldName, miniguiCFGTarget);
 	}
 
 	private boolean copyMgncsCFGTarget() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
-		String mgncsCFGTarget = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MGNCS_CFG_TARGET;
+		String cfgOldName = msEnvInfo.getCrossMgNcsCfgFileName();
+		String mgncsCFGTarget = _METADATA_PATH + MGNCS_CFG_TARGET;
 
 		return copyFile(cfgOldName, mgncsCFGTarget);
 	}
