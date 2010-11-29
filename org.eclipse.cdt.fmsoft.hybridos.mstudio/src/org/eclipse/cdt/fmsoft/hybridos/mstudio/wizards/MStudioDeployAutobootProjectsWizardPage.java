@@ -222,15 +222,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		
 		if (projects == null || projects.length <= 0)
 			return null;
-		// return projects;
-		TableItem[] exeItems = table.getItems();
-		List<IProject> list = new ArrayList<IProject>();
-		for (int i = 0; i < exeItems.length; i++) {
-			if (projects[i] != null && table.isSelected(i)) {
-				list.add(projects[i]);
-			}
-		}
-		return (IProject[]) (list.toArray(new IProject[list.size()]));
+		return projects;
 	}
 
 	public class TableListener implements Listener{
