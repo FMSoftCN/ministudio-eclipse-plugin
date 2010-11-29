@@ -258,10 +258,18 @@ public class MStudioDeployWizard extends Wizard {
 	private void setCfgsSection() {
 
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY,
-				miniguiCfgNewPath, null);
-		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
-				mgncsCfgNewPath, null);
+		if(isHost()){
+			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY,
+					miniguiCfgNewPath, null);
+			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
+					mgncsCfgNewPath, null);
+		}
+		else{
+			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY,
+					miniguiTargetCfgNewPath, null);
+			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
+					mgncsTargetCfgNewPath, null);
+		}
 		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);
