@@ -233,12 +233,23 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	public class TableListener implements Listener{
 		public void handleEvent(Event event) {
 			if(event.detail == SWT.CHECK){
-				keepCheckedItem();
-				if(projectOfChecked.size() == projects.length && projects != null){
-					selectAll.setSelection(true);
+				if(MStudioEnvInfo.getInstance().getMgRunMode() == MiniGUIRunMode.thread.name()){
+					//thread mode
+					TableItem[] items = table.getItems();
+					for(int i=0;i<items.length;i++){
+						if(!items[i].equals(event.item))
+							items[i].setChecked(false);
+					}
+					//after update of the table to jump to the keepcheckedItem function
+					keepCheckedItem();
 				}
 				else{
-					selectAll.setSelection(false);
+					//before update the buttons to jump to the keepCheckedItem function
+					keepCheckedItem();
+					if(projectOfChecked.size() == projects.length && projects != null)
+						selectAll.setSelection(true);
+					else
+						selectAll.setSelection(false);
 				}
 			}
 			updateButtons();						
