@@ -166,9 +166,9 @@ public class MStudioDeployWizard extends Wizard {
 		if(!updateCfgFiles())
 			return false;
 		setCfgsSection();
+		setServicesSection();
 		setDlcustomSection();
 		setModulesSection();
-		setServicesSection();
 		setAutobootSection();
 		setAppsSection();
 		if (iniFile.save()) 
@@ -347,7 +347,7 @@ public class MStudioDeployWizard extends Wizard {
 		}
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
 				projects.length, null);				
-		for (int i=0; i<projects.length; i++) {
+		for (int i = 0; i < projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i),
 					projects[i].getName(), null);
 			
