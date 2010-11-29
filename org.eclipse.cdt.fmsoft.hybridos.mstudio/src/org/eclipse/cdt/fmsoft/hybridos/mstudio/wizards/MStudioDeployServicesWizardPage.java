@@ -89,7 +89,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	
 	private void initServiceTable(){
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();		
-		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
 			return;		
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
 		String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
