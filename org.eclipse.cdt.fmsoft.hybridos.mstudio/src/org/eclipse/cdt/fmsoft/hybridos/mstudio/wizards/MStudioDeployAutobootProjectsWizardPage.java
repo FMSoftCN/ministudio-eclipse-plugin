@@ -219,24 +219,15 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}
 	
 	public IProject[] getDeployAutobootProjects() {
-
-		ArrayList<String> sList = new ArrayList<String>();
 		if (projects == null || projects.length <= 0)
 			return null;
-
-		TableItem[] exeItems = table.getItems();
-		for (int i = 0; i < exeItems.length; i++) {
-			sList.add(exeItems[i].getText(1));
-		}
 		List<IProject> list = new ArrayList<IProject>();
-		for (int i = 0; i < exeItems.length; i++) {
-			if (projects[i] != null && table.isSelected(i)
-					&& sList.contains(projects[i].getName())) {
+		for (int i = 0; i < projects.length; i++) {
+			if(projectOfChecked.contains(projects[i].getName())){
 				list.add(projects[i]);
 			}
 		}
 		return (IProject[]) (list.toArray(new IProject[list.size()]));
-
 	}
 
 	public class TableListener implements Listener{
@@ -249,14 +240,6 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 				else{
 					selectAll.setSelection(false);
 				}
-				/*
-				if(projectOfChecked.size() <=0 || projectOfChecked == null){
-					setPageComplete(false);					
-				}
-				else{
-					setPageComplete(true);
-				}
-				*/
 			}
 			updateButtons();						
 		}		
