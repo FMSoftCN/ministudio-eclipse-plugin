@@ -92,8 +92,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		if(null != s){
 			String[] serv = (String[])s.toArray(new String[s.size()]);
 			if(serv.length > 0){
-				ctv.add(serv);
-				
+				ctv.add(serv);				
 				IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();		
 				if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
 					return;		
@@ -102,13 +101,6 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 				ctv.setCheckedElements(defaultSelServ);
 			}
 		}
-		//init button next
-		/*
-		if(ctv.getCheckedElements().length > 0)
-			setPageComplete(true);
-		else
-			setPageComplete(false);
-			*/
 	}	
 	
 	private void storeService(){
