@@ -177,16 +177,6 @@ public class MStudioDeployWizard extends Wizard {
 			return false;		
 	}
 
-	private boolean copyMiniguiCFG() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
-		return copyFile(cfgOldName, miniguiCfgNewPath);
-	}
-
-	private boolean copyMgncsCFG() {
-		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
-		return copyFile(cfgOldName, mgncsCfgNewPath);
-	}
-
 	private boolean updateCfgFiles() {		
 		// select target
 		if (!deployTypeIsHost) {
@@ -390,30 +380,4 @@ public class MStudioDeployWizard extends Wizard {
 		return depLibStr;
 	}
 
-	private boolean copyFile(String oldPath, String newPath) {
-		try {
-			int bytesum = 0;
-			int byteread = 0;
-			File oldFile = new File(oldPath);
-			if (oldFile.exists()) {
-				File newFile = new File(newPath);
-				if (newFile.exists())
-					newFile.delete();
-				FileInputStream inStream = new FileInputStream(oldPath);
-				FileOutputStream fs = new FileOutputStream(newPath);
-				byte[] buffer = new byte[1024];
-				while ((byteread = inStream.read(buffer)) != -1) {
-					bytesum += byteread;
-					fs.write(buffer, 0, byteread);
-				}
-				inStream.close();
-				return true;
-			} else {
-				return false;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 }
