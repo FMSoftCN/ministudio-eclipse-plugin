@@ -15,6 +15,10 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+
 import java.net.URI;
 import java.lang.reflect.InvocationTargetException;
 
@@ -33,9 +37,12 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
@@ -48,7 +55,6 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
-
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
@@ -59,31 +65,35 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceCons
 
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		IExecutableExtension, IWizardWithMemory {
-	
-	private static final String PREFIX = "CProjectWizard";  
-	private static final String title = MStudioMessages.getString("MGProjectWizard.op_error.title");
-	private static final String message = MStudioMessages.getString("MGProjectWizard.op_error.message");
-	private static final String[] EMPTY_ARR = new String[0];
+
+	private final static String _METADATA = ".metadata/";
+	private final static String MINIGUI_CFG = "MiniGUI.cfg";
+	private final static String MGNCS_CFG = "mgncs.cfg";
+	private final static String MINIGUI_CFG_TARGET = "MiniGUI.cfg.target";
+	private final static String MGNCS_CFG_TARGET = "mgncs.cfg.target";
+	private final static String PREFIX = "CProjectWizard";
+	private final static String title = MStudioMessages.getString("MGProjectWizard.op_error.title");
+	private final static String message = MStudioMessages.getString("MGProjectWizard.op_error.message");
+	private final static String[] EMPTY_ARR = new String[0];
 
 	protected IConfigurationElement fConfigElement = null;
 	protected MStudioNewCAppProjectSelectWizardPage fMainPage = null;
-	private MStudioEnvInfo msEnvInfo = null;
-
 	protected IProject newProject = null;
+
+	private CWizardHandler savedHandler = null;
+	private MStudioEnvInfo msEnvInfo = null;
+	private URI lastProjectLocation = null;
 	private String wz_title = null;
 	private String wz_desc = null;
-
-	private boolean existingPath = false;
 	private String lastProjectName = null;
-	private URI lastProjectLocation = null;
 	private String[] prjDepLibs = null;
-	private CWizardHandler savedHandler = null;
+	private boolean existingPath = false;
 
 	public MStudioNewCAppWizard() {
 		this(MStudioMessages.getString("NewModelCProjectWizard.0"),
-				MStudioMessages.getString("NewModelCProjectWizard.1")); 
+				MStudioMessages.getString("NewModelCProjectWizard.1"));
 	}
-	
+
 	public MStudioNewCAppWizard(String title, String desc) {
 		super();
 		setDialogSettings(CUIPlugin.getDefault().getDialogSettings());
@@ -141,9 +151,9 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 				}
 				IFileInfo f = fs.fetchInfo();
 				if (f.exists() && f.isDirectory()) {
-					if (fs.getChild(".project").fetchInfo().exists()) { 
-						if (!MessageDialog.openConfirm(getShell(), 
-								MStudioMessages.getString("MStudioProjectWizard.0"), 
+					if (fs.getChild(".project").fetchInfo().exists()) {
+						if (!MessageDialog.openConfirm(getShell(),
+								MStudioMessages.getString("MStudioProjectWizard.0"),
 								MStudioMessages.getString("MStudioProjectWizard.1")))
 							return null;
 					}
@@ -158,7 +168,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			lastProjectLocation = fMainPage.getProjectLocation();
 
 			prjDepLibs = ((MStudioWizardHandler)savedHandler).getCreateDevPackage();
-			
+
 			invokeRunnable(getRunnable(defaults, onFinish));
 		}
 
@@ -216,6 +226,11 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 		BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 		selectAndReveal(newProject);
+
+		copyMiniguiCFG();
+		copyMgncsCFG();
+		copyMiniguiCFGTarget();
+		copyMgncsCFGTarget();
 
 		return true;
 	}
@@ -307,7 +322,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 		return continueCreation(newProject);
 	}
-	
+
 	public String[] getNatures() {
 		return new String[] {CProjectNature.C_NATURE_ID, MStudioProjectNature.MSTUDIO_NATURE_ID};
 	}
@@ -367,6 +382,67 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 	public String[] getExtensions() {
 		return EMPTY_ARR;
+	}
+
+	private boolean copyMiniguiCFG() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getPCMgCfgFileName();
+		String miniguiCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MINIGUI_CFG;
+
+		return copyFile(cfgOldName, miniguiCFGNewPath);
+	}
+
+	private boolean copyMgncsCFG() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getPCMgNcsCfgFileName();
+		String mgncsCFGNewPath = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MGNCS_CFG;
+
+		return copyFile(cfgOldName, mgncsCFGNewPath);
+	}
+
+	private boolean copyMiniguiCFGTarget() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgCfgFileName();
+		String miniguiCFGTarget = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MINIGUI_CFG_TARGET;
+
+		return copyFile(cfgOldName, miniguiCFGTarget);
+	}
+
+	private boolean copyMgncsCFGTarget() {
+		String cfgOldName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCrossMgNcsCfgFileName();
+		String mgncsCFGTarget = Platform.getInstanceLocation().getURL().getPath() + _METADATA + MGNCS_CFG_TARGET;
+
+		return copyFile(cfgOldName, mgncsCFGTarget);
+	}
+
+	private boolean copyFile(String oldPath, String newPath) {
+
+		try {
+			int bytesum = 0;
+			int byteread = 0;
+			File oldFile = new File(oldPath);
+
+			if (oldFile.exists()) {
+
+				File newFile=new File(newPath);
+				if(newFile.exists())
+					newFile.delete();
+
+				FileInputStream inStream = new FileInputStream(oldPath);
+				FileOutputStream fs = new FileOutputStream(newPath);
+				byte[] buffer = new byte[1024];
+
+				while ((byteread = inStream.read(buffer)) != -1) {
+					bytesum += byteread;
+					fs.write(buffer, 0, byteread);
+				}
+				inStream.close();
+
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 }
 
