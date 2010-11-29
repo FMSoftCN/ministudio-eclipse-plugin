@@ -292,8 +292,10 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	}
 
 	public IProject createIProject(final String name, final URI location) throws CoreException {
+
 		if (newProject != null)
 			return newProject;
+
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IWorkspaceRoot root = workspace.getRoot();
 		final IProject newProjectHandle = root.getProject(name);
@@ -420,14 +422,13 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			File oldFile = new File(oldPath);
 
 			if (oldFile.exists()) {
-
-				File newFile=new File(newPath);
-				if(newFile.exists())
+				File newFile = new File(newPath);
+				if (newFile.exists())
 					newFile.delete();
 
 				FileInputStream inStream = new FileInputStream(oldPath);
 				FileOutputStream fs = new FileOutputStream(newPath);
-				byte[] buffer = new byte[1024];
+				byte[] buffer = new byte[4096];
 
 				while ((byteread = inStream.read(buffer)) != -1) {
 					bytesum += byteread;
