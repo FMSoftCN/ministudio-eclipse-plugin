@@ -163,7 +163,8 @@ public class MStudioDeployWizard extends Wizard {
 		//copyMiniguiCFG();
 		//copyMgncsCFG();
 		//update the host and target config files ,some section would be changed when slect the deploy target
-		updateCfgFiles();
+		if(!updateCfgFiles())
+			return false;
 		setCfgsSection();
 		setDlcustomSection();
 		setModulesSection();
