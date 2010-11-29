@@ -165,10 +165,10 @@ public class MStudioDeployWizard extends Wizard {
 		//update the host and target config files ,some section would be changed when slect the deploy target
 		if(!updateCfgFiles())
 			return false;
-		setCfgsSection();
-		setServicesSection();
+		setCfgsSection();		
 		setDlcustomSection();
 		setModulesSection();
+		setServicesSection();
 		setAutobootSection();
 		setAppsSection();
 		if (iniFile.save()) 
