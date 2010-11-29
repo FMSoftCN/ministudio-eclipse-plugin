@@ -295,25 +295,42 @@ public class MStudioDeployWizard extends Wizard {
 	}
 
 	private void setModulesSection() {
+		
 		iniFile.addSection(DEPLOY_MODULES_SECTION, null);
 		IProject[] projects = getDeployModules();
-		if (null == projects){
-			iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY,
-					0, null);		
-			return;		
+		if (null == projects) {
+			iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION,
+					MODULES_NUMBERS_PROPERTY, 0, null);
+			return;
 		}
-		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION, MODULES_NUMBERS_PROPERTY,
-				projects.length, null);		
-		for (int i=0; i<projects.length; i++) {
-			iniFile.setStringProperty(DEPLOY_MODULES_SECTION, (MODULES_NAME_PROPERTY + i),
-					projects[i].getName(), null);			
-			iniFile.addSection(projects[i].getName(), null);			
-			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY, 
+		
+		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION,
+				MODULES_NUMBERS_PROPERTY, projects.length, null);
+		for (int i = 0; i < projects.length; i++) {
+			iniFile.setStringProperty(DEPLOY_MODULES_SECTION,
+					(MODULES_NAME_PROPERTY + i), projects[i].getName(), null);
+			
+			iniFile.addSection(projects[i].getName(), null);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString(), null);
-			iniFile.setStringProperty(projects[i].getName(),
-					PROGRAM_DEPLOY_PROPERTY, MODULES_DEPLOY_PATH, null);
-			iniFile.setStringProperty(projects[i].getName(),
-					PROGRAM_CFG_PROPERTY, "", null);
+			String temp = getModuleDeploy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getProgramCfg(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getResPack(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getResPackDepoloy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getDepLibs(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getDeplibsDeploy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
 		}
 	}
 
@@ -334,13 +351,15 @@ public class MStudioDeployWizard extends Wizard {
 	}
 
 	private void setAppsSection() {
+		
 		iniFile.addSection(DEPLOY_APPS_SECTION, null);
 		IProject[] projects = getDeployExeProjects();
-		if (null == projects){
-			iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
-					0, null);
-			return;	
+		if (null == projects) {
+			iniFile.setIntegerProperty(DEPLOY_APPS_SECTION,
+					APPS_NUMBER_PROPERTY, 0, null);
+			return;
 		}
+		
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
 				projects.length, null);				
 		for (int i = 0; i < projects.length; i++) {
@@ -350,20 +369,45 @@ public class MStudioDeployWizard extends Wizard {
 			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString().trim(), null);
+			String temp = getProgramCfg(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
-					projects[i].getLocation().toOSString().trim() + APP_CFG_PATH, null);
+					temp == null ? "" : temp, null);
+			temp = getAppDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName().trim(), PROGRAM_DEPLOY_PROPERTY, 
-					APP_DEPLOY_PATH, null);
+					temp == null ? "" : temp, null);
+			temp = getResPack(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
-					projects[i].getLocation().toOSString().trim() + ".res", null);
+					temp == null ? "" : temp, null);
+			temp = getResPackDepoloy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(),RESPACK_DEPLOY_PROPERTY,
-					"/usr/share/" + projects[i].getName().trim() + "/res", null);
-			String temp = getDepLibs(projects[i]);
+					temp == null ? "" : temp, null);
+		    temp = getDepLibs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY,
 					temp == null ? "" : temp, null);
-			iniFile.setStringProperty(projects[i].getName(),
-					DEPLIBS_DEPLOY_PROPERTY, DEPLIBS_PROGRAM_DEPLOY, null);
+			temp = getDeplibsDeploy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
 		}
+	}
+	
+	private String getProgramCfg(IProject project) {
+		return project.getLocation().toOSString().trim() + APP_CFG_PATH;
+	}
+	
+	private String getAppDeploy(IProject project) {
+		return APP_DEPLOY_PATH;
+	}
+	
+	private String getModuleDeploy(IProject project) {
+		return MODULES_DEPLOY_PATH;
+	}
+	
+	private String getResPack(IProject project) {
+		return project.getLocation().toOSString().trim() + ".res";
+	}
+
+	private String getResPackDepoloy(IProject project) {
+		return "/usr/share/" + project.getName().trim() + "/res";
 	}
 
 	private String getDepLibs(IProject project) {
@@ -378,10 +422,14 @@ public class MStudioDeployWizard extends Wizard {
 			String[] libs = einfo.getPackageLibs(pkgs[idx]);
 			for (int c = 0; c < libs.length; c++) {
 				// depLibList.add(libs[c]);
-				depLibStr += depLibStr + " ";
+				depLibStr += libs[c] + " ";
 			}
 		}
 		return depLibStr;
 	}
-
+	
+	private String getDeplibsDeploy(IProject project) {
+		return DEPLIBS_PROGRAM_DEPLOY;
+	}
 }
+
