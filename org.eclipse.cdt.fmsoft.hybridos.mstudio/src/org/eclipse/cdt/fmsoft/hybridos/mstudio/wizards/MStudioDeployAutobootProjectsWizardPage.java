@@ -1,7 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
-import java.util.List;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.MiniGUIRunMode;
