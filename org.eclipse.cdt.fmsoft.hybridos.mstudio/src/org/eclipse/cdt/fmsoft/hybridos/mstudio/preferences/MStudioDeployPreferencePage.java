@@ -270,5 +270,25 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		saveToStoreData();
 		return true;
 	}
+	
+	public static String[] systemServices(){
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES)){
+			String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
+			return storeServ.split(MSDPP_SPLIT);
+		}
+		return new String[0];
+	}
+	
+	public static String deployLocation(){
+	    IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+	    if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+	    {
+		    return store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);	    
+	    }		
+		return "";
+	}
+
+
 }
 

@@ -32,6 +32,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 
@@ -285,15 +286,7 @@ public class MStudioEnvInfo {
 
 	//retry to get SoC name from preference
 	public void updateSoCName() {
-
-		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		String nullString = new String("null");
-
-		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME)) {
-			SoCName = null;
-			iniFile = null;
-			return;
-		}
+		String nullString = "null";
 
 		if (null == affectedPkgs)
 			affectedPkgs = new HashMap<String, List<String>>();
@@ -310,9 +303,9 @@ public class MStudioEnvInfo {
 		else
 			allSoftPkgs.clear();
 
-		SoCName = store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
+		SoCName = MStudioSoCPreferencePage.getCurrentSoC();
 //		System.out.println("in MStudioEnfInfo updateSoCName : SoCName -- " + SoCName);
-		if (SoCName.equals(nullString)) {
+		if (SoCName == null || SoCName.equals(nullString)) {
 			SoCName = null;
 			iniFile = null;
 			return;

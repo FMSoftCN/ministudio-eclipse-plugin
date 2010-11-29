@@ -32,7 +32,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,6 +57,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
@@ -131,8 +131,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			combo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					socName = combo.getText();
-					IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-					store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, socName);
+					MStudioSoCPreferencePage.setCurrentSoC(socName);
 					msEnvInfo.updateSoCName();
 					setCheckboxTableViewerData();
 					setPageComplete(isCustomPageComplete());

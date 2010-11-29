@@ -15,6 +15,8 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -63,5 +65,18 @@ public class MStudioSoCPreferencePage extends PreferencePage
 
 		return composite;
 	}
+	
+	public static void setCurrentSoC(String name){
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, name);
+	}
+
+	public static String getCurrentSoC(){
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();		
+		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
+			return null;
+		return store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
+	}
+	
 }
 

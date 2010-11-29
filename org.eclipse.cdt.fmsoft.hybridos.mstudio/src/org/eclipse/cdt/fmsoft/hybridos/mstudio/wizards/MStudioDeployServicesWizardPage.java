@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -26,8 +28,6 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 
 	private Table serviceTable=null;
 	private CheckboxTableViewer ctv=null;
-	
-	private final String STORE_SERV_SPLIT = "\t";
 	
 	public MStudioDeployServicesWizardPage(String pageName) {
 		super(pageName);
@@ -92,31 +92,17 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		if(null != s){
 			String[] serv = (String[])s.toArray(new String[s.size()]);
 			if(serv.length > 0){
-				ctv.add(serv);				
-				IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();		
-				if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
-					return;		
-				String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);		
-				String[] defaultSelServ = storeServ.split(STORE_SERV_SPLIT);
-				ctv.setCheckedElements(defaultSelServ);
+				ctv.add(serv);						
+				if (null == MStudioSoCPreferencePage.getCurrentSoC())
+					return;
+				String[] defaultSelServ = MStudioDeployPreferencePage.systemServices();
+				if (defaultSelServ.length > 0){
+					ctv.setCheckedElements(defaultSelServ);
+				}
 			}
 		}
-	}	
-	
-	private void storeService(){
-		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();			
-		String servToStore = new String(); 
-		Object[] serv = ctv.getCheckedElements();
-		if(serv.length >= 1){
-			servToStore = serv[0].toString();
-			for(int i=1; i<serv.length; i++){
-				servToStore += STORE_SERV_SPLIT + serv[i].toString();
-			}			
-		}	
-		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES, servToStore);		
 	}
-	
-	
+		
 	public String[] getDeployServices() {
 		Object[] obj=ctv.getCheckedElements();
 		if(obj == null)

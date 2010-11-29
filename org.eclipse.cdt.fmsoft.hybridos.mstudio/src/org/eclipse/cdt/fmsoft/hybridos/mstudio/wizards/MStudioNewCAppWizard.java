@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -60,7 +59,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 
 
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
@@ -256,11 +255,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		if (MStudioNewCAppSoCConfigWizardPage.isOnlyOneSoC())
 			return true;
 
-		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-
-		if (store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME)) {
-			store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, "null");
-		}
+		MStudioSoCPreferencePage.setCurrentSoC("null");
 
 		return true;
 	}
