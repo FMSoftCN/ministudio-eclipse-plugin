@@ -111,12 +111,12 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	}
 
 	//change the state with the last wizard page select state
-	public void update(){
+	//public void update(){
 		//ctvLabraries.setItemCount(0);
 		//ctvIAL.setItemCount(0);
 		//initDeploySharedLibTable();		
 		//initIALTable();
-	}
+	//}
 	
 	private void initDeploySharedLibTable(){
 		IProject[] libProjects = MStudioDeployWizard.getModuleProjects();
@@ -175,7 +175,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard == null)
 			return null;	
-		wizard.getDeployServiceWizardPage().update();
+		//wizard.getDeployServiceWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 }

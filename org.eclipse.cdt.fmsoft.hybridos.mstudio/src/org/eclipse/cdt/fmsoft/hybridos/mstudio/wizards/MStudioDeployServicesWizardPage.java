@@ -94,12 +94,12 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		setControl(topPanel);
 		setPageComplete(true);
 	}
-	
+	/*
 	public void update(){
 		//ctv.setItemCount(0);
 		//initServiceTable();
 	}
-	
+	*/
 	private void initServiceTable(){
 		List<String> s = MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
 		if(null != s){

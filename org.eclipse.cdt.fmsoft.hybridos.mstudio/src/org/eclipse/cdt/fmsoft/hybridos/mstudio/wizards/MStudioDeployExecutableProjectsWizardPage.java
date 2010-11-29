@@ -290,7 +290,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 		if(wizard == null)
 			return null;
-		wizard.getDeploySharedLibWizardPage().update();
+		//wizard.getDeploySharedLibWizardPage().update();
 		return wizard.getNextPage(this);
 	}
 	
