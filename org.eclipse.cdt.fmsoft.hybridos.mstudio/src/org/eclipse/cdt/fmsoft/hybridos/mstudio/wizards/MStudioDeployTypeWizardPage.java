@@ -8,11 +8,14 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 public class MStudioDeployTypeWizardPage extends WizardPage {
@@ -59,8 +62,6 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
-		Label typeTitle = new Label(topPanel,SWT.NONE);
-		
 		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", MStudioMessages.getString("MStudioDeployWizardPage.selectType.pageName"), 1,
 			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
 							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
@@ -108,9 +109,14 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 				}	
 			}			
 		});
+		
+		new Label(topPanel,SWT.NONE);
+		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_DARK_GRAY);
 		Label releaseDes = new Label(topPanel,SWT.NONE);
+		releaseDes.setForeground(c);
 		releaseDes.setText(MStudioMessages.getString("MStudioDeployWizardPage.release.desc"));
-		Label debugDes=new Label(topPanel,SWT.WRAP);
+		Label debugDes=new Label(topPanel,SWT.NONE);
+		debugDes.setForeground(c);
 		debugDes.setText(MStudioMessages.getString("MStudioDeployWizardPage.debug.desc"));
 		setControl(topPanel);
 		setPageComplete(true);
