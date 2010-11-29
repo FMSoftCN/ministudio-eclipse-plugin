@@ -7,13 +7,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
-import org.eclipse.jface.preference.FileFieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -25,24 +21,18 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
 public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
-	private Label tipText;
 	private Table chooseTable;
 	private CheckboxTableViewer ctv;
-	private IProject[] ialProject = null;
-	private IProject[] galProject = null;
 	private IProject[] projects = null;
-	private FileFieldEditor filePath = null;
 	private Combo sizeCombo = null;
 	private Combo colorCombo = null;
 	private Combo gal = null;
@@ -140,19 +130,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	public boolean locationChanged() {
 		  String l = locationPath.getStringValue();
 		  File file = new File(l);
-		  if (!file.exists()) {
-			  updateTipMessage(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.filePathError"));	
+		  if (!file.exists()) 			  
 			  return false;
-		  } else {
-			  updateTipMessage("");
+		  else 
 			  return true;
-		  }
 	}
-	protected void updateTipMessage (String tip) {
-		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
-		//tipText.setForeground(c);
-		//tipText.setText(tip);
-	}
+	
 	private void initGALAndIAL(){
 		String[] galP = MStudioEnvInfo.getInstance().getGalEngines();
 		if(galP != null){

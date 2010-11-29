@@ -9,10 +9,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.PlatformUI;
-
-import java.io.FileOutputStream;
-import java.io.FileInputStream;
 
 public class MStudioDeployWizard extends Wizard {
 
@@ -165,10 +161,10 @@ public class MStudioDeployWizard extends Wizard {
 		//update the host and target config files ,some section would be changed when slect the deploy target
 		if(!updateCfgFiles())
 			return false;
-		setCfgsSection();		
-		setDlcustomSection();
-		setModulesSection();
+		setCfgsSection();	
 		setServicesSection();
+		setDlcustomSection();
+		setModulesSection();		
 		setAutobootSection();
 		setAppsSection();
 		if (iniFile.save()) 
