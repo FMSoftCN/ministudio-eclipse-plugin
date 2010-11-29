@@ -138,7 +138,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		initGALAndIAL();
 		
 		setControl(topPanel);
-		setPageComplete(true);
+		setPageComplete(false);
 	}
 	public boolean locationChanged() {
 		  String l = locationPath.getStringValue();
@@ -162,14 +162,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			for(int i=0; i<galP.length; i++){
 				gal.add(galP[i].toString());
 			}
-			gal.select(0);
 		}
 		String[] ialP = MStudioEnvInfo.getInstance().getIalEngines();
 		if(ialP != null){
 			for(int i=0; i<ialP.length; i++){
 				ial.add(ialP[i].toString());
 			}
-			ial.select(0);
 		}
 	}
 	private void initSizeAndColor(){
@@ -230,20 +228,24 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return Pattern.matches(regexString, resolution);		
 	}
 	
-	protected boolean validatePage() {
-		if(ctv.getCheckedElements().length <= 0 || !locationChanged()
-				|| sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim() == null 
-				|| colorCombo.getItem(colorCombo.getSelectionIndex()).trim() == null){
-			//setPageComplete(false);
-			return false;
+	protected boolean validatePage() {	
+		if(sizeCombo ==null || colorCombo==null){			
+			setPageComplete(false);
+			return false;			
 		}
-		if(!MStudioDeployWizard.deployTypeIsHost){
-			if(0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()){	
-				//setPageComplete(false);
-				return false;			
-			}
+		if(!locationChanged() || sizeCombo.getSelectionIndex() < 0 
+				|| colorCombo.getSelectionIndex() < 0){
+			setPageComplete(false);
+			return false;
 		}	
-		//setPageComplete(true);
+		//select target		
+		if(!MStudioDeployWizard.deployTypeIsHost){
+			if(0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex() || gal==null || ial==null){	
+				setPageComplete(false);
+				return false;			
+			}			
+		}			
+		setPageComplete(true);
 		return true;
 	}
 	
