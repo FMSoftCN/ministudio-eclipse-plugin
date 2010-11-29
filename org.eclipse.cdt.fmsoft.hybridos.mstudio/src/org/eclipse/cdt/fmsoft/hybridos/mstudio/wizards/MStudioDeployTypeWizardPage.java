@@ -108,7 +108,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 				}	
 			}			
 		});
-		
+		Label releaseDes = new Label(topPanel,SWT.NONE);
+		releaseDes.setText(MStudioMessages.getString("MStudioDeployWizardPage.release.desc"));
+		Label debugDes=new Label(topPanel,SWT.WRAP);
+		debugDes.setText(MStudioMessages.getString("MStudioDeployWizardPage.debug.desc"));
 		setControl(topPanel);
 		setPageComplete(true);
 	}
