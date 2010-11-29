@@ -28,6 +28,8 @@ public class MStudioDeployWizard extends Wizard {
 	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath()+".metadata/";
 	private String miniguiCfgNewPath = DEPLOY_INI_PATH	+ MINIGUI_CFG_FILE_NAME;
 	private String mgncsCfgNewPath = DEPLOY_INI_PATH + MGNCS_CFG_FILE_NAME;
+	private String miniguiTargetCfgNewPath = DEPLOY_INI_PATH + MINIGUI_TARGET_CFG_FILE_NAME;
+	private String mgncsTargetCfgNewPath = DEPLOY_INI_PATH + MGNCS_TARGET_CFG_FILE_NAME;
 	private final static String DEPLOY_INI_NAME = "deploy.ini";
 
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
@@ -64,7 +66,9 @@ public class MStudioDeployWizard extends Wizard {
 	private final static String APPS_NAME_PROPERTY = "name";
 
 	private final static String MINIGUI_CFG_FILE_NAME = "MiniGUI.cfg";
+	private final static String MINIGUI_TARGET_CFG_FILE_NAME = "MiniGUI.cfg.target";
 	private final static String MGNCS_CFG_FILE_NAME = "mgncs.cfg";
+	private final static String MGNCS_TARGET_CFG_FILE_NAME = "mgncs.cfg.target";
 	private final static String SYSTEM_SECTION = "system";
 	private final static String GAL_PROPERTY = "gal_engine";
 	private final static String IAL_PROPERTY = "ial_engine";
@@ -154,10 +158,12 @@ public class MStudioDeployWizard extends Wizard {
 
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
-			return false;		
-		copyMiniguiCFG();
-		copyMgncsCFG();
-		modifyMiniguiCFG();
+			return false;	
+		//copy config files when soc selected 
+		//copyMiniguiCFG();
+		//copyMgncsCFG();
+		//update the host and target config files ,some section would be changed when slect the deploy target
+		updateCfgFiles();
 		setCfgsSection();
 		setDlcustomSection();
 		setModulesSection();
@@ -180,30 +186,33 @@ public class MStudioDeployWizard extends Wizard {
 		return copyFile(cfgOldName, mgncsCfgNewPath);
 	}
 
-	private boolean modifyMiniguiCFG() {
-
-		MStudioParserIniFile cfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
-		if (null == cfgFile)
-			return false;
+	private boolean updateCfgFiles() {		
 		// select target
 		if (!deployTypeIsHost) {
-			cfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY,
+			MStudioParserIniFile targetCfgFile = new MStudioParserIniFile(miniguiTargetCfgNewPath);
+			if (null == targetCfgFile)
+				return false;
+			targetCfgFile.setStringProperty(SYSTEM_SECTION, GAL_PROPERTY,
 					exeProjectPage.getGALEngine(), null);
-			cfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY,
+			targetCfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY,
 					exeProjectPage.getIALEngine(), null);
-			cfgFile.setStringProperty(exeProjectPage.getGALEngine(),
+			targetCfgFile.setStringProperty(exeProjectPage.getGALEngine(),
 					DEFAULT_MODE_PROPERTY, exeProjectPage.getResolution() + "-"
 					+ exeProjectPage.getColorDepth() + "bpp", null);
+			return targetCfgFile.save();
 		} else {
-			String value = cfgFile.getStringProperty(SYSTEM_SECTION, GAL_PROPERTY);
+			MStudioParserIniFile hostCfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
+			if (null == hostCfgFile)
+				return false;
+			String value = hostCfgFile.getStringProperty(SYSTEM_SECTION, GAL_PROPERTY);
 			if (value != null) {
-				cfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY,
+				hostCfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY,
 						exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
 			}
-			cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
+			hostCfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
 					exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
-		}
-		return cfgFile.save();
+			return hostCfgFile.save();
+		}		
 	}
 
 	public boolean isHost() {
