@@ -533,93 +533,70 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	private void createTargetConfiguration(IProject project) {
 
-		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
-		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		MStudioProject mprj = new MStudioProject(project);
 		String crossToolPrefix = einfo.getToolChainPrefix(); 
 		String socName = einfo.getCurSoCName();
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
-		String hostName = "Host";
+		final String hostName = "Host";
+		final String locateInclude = "../include/";
+		
 		List<String> depLibList = new ArrayList<String> ();
-		String[] pkgs = mprj.getDepPkgs();
-
+		String[] pkgs = new MStudioProject(project).getDepPkgs();
 		for (int idx = 0; idx < pkgs.length; idx++) {
 			String[] libs = einfo.getPackageLibs(pkgs[idx]);
 			for (int c = 0; c < libs.length; c++){
 				depLibList.add(libs[c]);
 			}
 		}
-
 		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
-		String[] pcIncludePath    = { einfo.getPCIncludePath() };
-		String[] pcLibPath        = { einfo.getPCLibraryPath() };
+		String[] pcIncludePath    = { einfo.getPCIncludePath(), locateInclude };
+		String[] pcLibPath        = { einfo.getPCLibraryPath(), locateInclude };
 		String[] crossIncludePath = { einfo.getCrossIncludePath() };
 		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
-
+		
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		for (int i = 0; i < cur_cfgs.length; i++) {
-			String id = CDataUtil.genId(cur_cfgs[0].getId());
-
-			//FOR old Configures ...
-			ITool[] tls = cur_cfgs[i].getTools();
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
-
-			for (int j = 0; j < tls.length; j++) {
-				ITool subTool = tls[j];
-				IOption[] subOpts = subTool.getOptions();
-
-				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
-					IOption option = subOpts[optIdx];
-
+			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
 					try {
-						/*if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
-							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, expectedSymbols);
-						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcIncludePath);
-						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, pcLibPath);
-						} else if (option.getValueType() == IOption.LIBRARIES) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, depLibs);
-						} 
+						if ( t.getId().contains("c.compiler") ) {
+							IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
+							cur_cfgs[i].setOption(t, o, pcIncludePath);
+						}
+						if (t.getId().contains("c.link")){
+							IOption o = t.getOptionById("gnu.c.link.option.paths");
+							cur_cfgs[i].setOption(t, o, pcLibPath);
+							o = t.getOptionById("gnu.c.link.option.libs");
+							cur_cfgs[i].setOption(t, o, depLibs);
+						}
 					} catch (BuildException e) {
-						System.out.println(" createTargetConfiguration BuildException");
+						e.printStackTrace();
 					}
-				}
 			}
-
-			// FOR new Configures ....
-			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[0], id);
+			String id = CDataUtil.genId(cur_cfgs[i].getId());
+			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
 			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
 			newconfig.setDescription(newconfig.getName());
-			ITool[] tools = newconfig.getTools();
-
-			for (int j = 0; j < tools.length; j++) {
-				ITool subTool = tools[j];
-				subTool.setToolCommand(crossToolPrefix + subTool.getToolCommand());
-				IOption[] subOpts = subTool.getOptions();
-
-				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
-					IOption option = subOpts[optIdx];
-
-					try {
-						/*if (option.getValueType() == IOption.PREPROCESSOR_SYMBOLS) {
-							String[] expectedSymbols = { "_MGNCS_INCORE_RES", "_DEBUG" };
-							ManagedBuildManager.setOption(newconfig, subTool, option, expectedSymbols);
-						} else */if (option.getValueType() == IOption.INCLUDE_PATH) {
-							ManagedBuildManager.setOption(newconfig, subTool, option, crossIncludePath);
-						} else if (option.getValueType() == IOption.LIBRARY_PATHS) {
-							ManagedBuildManager.setOption(newconfig, subTool, option, crossLibPath);
-						} else if (option.getValueType() == IOption.LIBRARIES) {
-							ManagedBuildManager.setOption(newconfig, subTool, option, depLibs);
-						} 
-					} catch (BuildException e) {
-						System.out.println(" createTargetConfiguration BuildException");
+			for (ITool t : newconfig.getToolChain().getTools() ) {
+				t.setToolCommand(crossToolPrefix + t.getToolCommand());
+				try {
+					if ( t.getId().contains("c.compiler") ) {
+						IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
+						newconfig.setOption(t, o, crossIncludePath);
 					}
+					if (t.getId().contains("c.link")){
+						IOption o = t.getOptionById("gnu.c.link.option.paths");
+						newconfig.setOption(t, o, crossLibPath);
+						o = t.getOptionById("gnu.c.link.option.libs");
+						newconfig.setOption(t, o, depLibs);
+					}
+				} catch (BuildException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-
+		
 		if (cur_cfgs.length > 0)
 			ManagedBuildManager.saveBuildInfo(project, false);
 	}

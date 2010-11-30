@@ -321,21 +321,14 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		String[] depLibs = depLibList.toArray(new String[depLibList.size()]);
 		
 		for (int i = 0; i < cur_cfgs.length; i++) {
-			ITool[] tls = cur_cfgs[i].getTools();
-			for (int j = 0; j < tls.length; j++) {
-				ITool subTool = tls[j];
-				
-				IOption[] subOpts = subTool.getOptions();
-
-				for (int optIdx = 0; optIdx < subOpts.length; optIdx++) {
-					IOption option = subOpts[optIdx];
-					try {
-						if (option.getValueType() == IOption.LIBRARIES) {
-							ManagedBuildManager.setOption(cur_cfgs[i], subTool, option, depLibs);
-						} 
-					} catch (BuildException e) {
-						System.out.println(" resetProjectConfigurations BuildException");
+			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
+				try {
+					if (t.getId().contains("c.link")){
+						IOption o = t.getOptionById("gnu.c.link.option.libs");
+						cur_cfgs[i].setOption(t, o, depLibs);
 					}
+				} catch (BuildException e) {
+					e.printStackTrace();
 				}
 			}
 		}
