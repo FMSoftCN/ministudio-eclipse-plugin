@@ -376,6 +376,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 			if (h != null)
 				h.initialize(ed);
 		} catch (CoreException e) {
+			CUIPlugin.log(e);
 			h = null;
 		}
 
@@ -383,13 +384,15 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 			h_selected.handleUnSelection();
 
 		h_selected = h;
-		h_selected.handleSelection();
+		if (h != null)
+			h_selected.handleSelection();
 	}
 
 	public static EntryDescriptor getDescriptor(Tree _tree) {
 		TreeItem[] sel = _tree.getSelection();
 		if (sel == null || sel.length == 0)
 			return null;
+
 		return (EntryDescriptor) sel[0].getData(DESC);
 	}
 
@@ -405,8 +408,10 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 	private static Image calcImage(EntryDescriptor ed) {
 		if (ed.getImage() != null)
 			return ed.getImage();
+
 		if (ed.isCategory())
 			return IMG_CATEGORY;
+
 		return IMG_ITEM;
 	}
 
