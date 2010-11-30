@@ -213,8 +213,12 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 		boolean needsPost = (newProject != null && !isChanged());
 		// create project if it is not created yet
-		if (getProject(fMainPage.isCurrent(), true) == null)
+		if (getProject(fMainPage.isCurrent(), true) == null) {
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioProjectWizard.op_error.title"),
+					MStudioMessages.getString("MStudioProjectWizard.op_error.message"));
 			return false;
+		}
 
 		fMainPage.h_selected.postProcess(newProject, needsPost);
 		try {
