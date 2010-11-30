@@ -291,6 +291,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if(wizard == null)
 			return null;
 		//wizard.getDeploySharedLibWizardPage().update();
+		if(MStudioDeployWizard.getModuleProjects().length <= 0 && MStudioDeployWizard.getIALProjects().length <= 0){
+			return wizard.getNextPage(this).getNextPage();
+		}
 		return wizard.getNextPage(this);
 	}
 	

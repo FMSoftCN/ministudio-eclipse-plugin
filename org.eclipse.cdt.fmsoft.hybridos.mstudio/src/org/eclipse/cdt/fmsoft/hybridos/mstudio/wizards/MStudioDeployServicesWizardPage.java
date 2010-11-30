@@ -131,6 +131,9 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard == null)
 			return null;
+		if(wizard.getDeployExeProjects().length <= 0){
+			return wizard.getNextPage(this).getNextPage();			
+		}
 		wizard.getDeployAutobootWizardPage().update();
 		return wizard.getNextPage(this);
 	}
