@@ -394,7 +394,7 @@ public class MStudioDeployWizard extends Wizard {
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
 					temp == null ? "" : temp, null);
 			temp = getResPackDepoloy(projects[i]);
-			iniFile.setStringProperty(projects[i].getName(),RESPACK_DEPLOY_PROPERTY,
+			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 		    temp = getDepLibs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY,
@@ -406,7 +406,8 @@ public class MStudioDeployWizard extends Wizard {
 	}
 	
 	private String getProgramCfg(IProject project) {
-		return project.getLocation().toOSString().trim() + APP_CFG_PATH;
+		return project.getLocation().removeLastSegments(1).toOSString()
+				+ "/." + project.getName().trim() + APP_CFG_PATH;
 	}
 	
 	private String getAppDeploy(IProject project) {
