@@ -85,11 +85,11 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioPro
 
 public class MStudioWizardHandler extends CWizardHandler {
 
-	public static final String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
-	public static final String EMPTY_STR = "";
+	public final static String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
+	public final static String EMPTY_STR = "";
 
-	private static final String PROPERTY = "org.eclipse.cdt.build.core.buildType";
-	private static final String PROP_VAL = PROPERTY + ".debug";
+	private final static String PROPERTY = "org.eclipse.cdt.build.core.buildType";
+	private final static String PROP_VAL = PROPERTY + ".debug";
 
 	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
 	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
@@ -188,9 +188,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 					IWizardPage page = templatePages[i];
 					if (page instanceof UIWizardPage)
 						valueStore.putAll(((UIWizardPage) page).getPageData());
+
 					if (page instanceof IWizardDataPage)
-						valueStore.putAll(((IWizardDataPage) page)
-								.getPageData());
+						valueStore.putAll(((IWizardDataPage) page).getPageData());
 				}
 				if (map != null) {
 					valueStore.putAll(map);
@@ -237,7 +237,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		}
 
 		protected Set<String> tc_filter() {
-
 			Set<String> full = tcs.keySet();
 
 			if (entryDescriptor == null)
@@ -850,11 +849,13 @@ public class MStudioWizardHandler extends CWizardHandler {
 			}
 		}
 
-		if (modified)
+		if (modified) {
 			try {
 				CoreModel.getDefault().setProjectDescription(newProject, prjd);
 			} catch (CoreException e) {
+				System.out.println("CoreModel.getDefault().setProjectDescription(newProject, prjd);");
 			}
+		}
 	}
 
 	public boolean isApplicable(EntryDescriptor data) {

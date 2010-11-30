@@ -66,14 +66,14 @@ import org.eclipse.cdt.internal.ui.CPluginImages;
 public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreationPage
 		implements IWizardItemsListListener {
 
-	public static final String PAGE_ID = "org.eclipse.cdt.managedbuilder.ui.wizard.NewModelProjectWizardPage";
+	public final static String PAGE_ID = "org.eclipse.cdt.managedbuilder.ui.wizard.NewModelProjectWizardPage";
+	public final static String DESC = "EntryDescriptor";
 
-	private static final Image IMG_CATEGORY = CPluginImages.get(CPluginImages.IMG_OBJS_SEARCHFOLDER);
-	private static final Image IMG_ITEM = CPluginImages.get(CPluginImages.IMG_OBJS_VARIABLE);
-	private static final String EXTENSION_POINT_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioWizard";
-	private static final String ELEMENT_NAME = "wizard";
-	private static final String CLASS_NAME = "class";
-	public  static final String DESC = "EntryDescriptor";
+	private final static Image  IMG_CATEGORY = CPluginImages.get(CPluginImages.IMG_OBJS_SEARCHFOLDER);
+	private final static Image  IMG_ITEM = CPluginImages.get(CPluginImages.IMG_OBJS_VARIABLE);
+	private final static String EXTENSION_POINT_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioWizard";
+	private final static String ELEMENT_NAME = "wizard";
+	private final static String CLASS_NAME = "class";
 
 	public MStudioWizardHandler h_selected = null;
 

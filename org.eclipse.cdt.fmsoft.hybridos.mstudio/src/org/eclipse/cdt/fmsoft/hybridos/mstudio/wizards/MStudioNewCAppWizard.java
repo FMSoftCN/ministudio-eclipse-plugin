@@ -71,8 +71,8 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	private final static String MGNCS_CFG_TARGET = "mgncs.cfg.target";
 	private final static String _METADATA_PATH = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 	private final static String PREFIX = "CProjectWizard";
-	private final static String title = MStudioMessages.getString("MGProjectWizard.op_error.title");
-	private final static String message = MStudioMessages.getString("MGProjectWizard.op_error.message");
+	private final static String DIALOG_TITLE = MStudioMessages.getString("MGProjectWizard.op_error.title");
+	private final static String DIALOG_MESSAGE = MStudioMessages.getString("MGProjectWizard.op_error.message");
 	private final static String[] EMPTY_ARR = new String[0];
 
 	protected IConfigurationElement fConfigElement = null;
@@ -182,6 +182,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			ResourcesPlugin.getWorkspace().getRoot()
 					.getProject(lastProjectName).delete(!existingPath, true, null);
 		} catch (CoreException ignore) {
+			CUIPlugin.log(ignore.getStatus());
 		}
 
 		newProject = null;
@@ -197,7 +198,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		try {
 			getContainer().run(true, true, opRunnable);
 		} catch (InvocationTargetException e) {
-			CUIPlugin.errorDialog(getShell(), title, message, e.getTargetException(), false);
+			CUIPlugin.errorDialog(getShell(), DIALOG_TITLE, DIALOG_MESSAGE, e.getTargetException(), false);
 			clearProject();
 			return false;
 		} catch (InterruptedException e) {
@@ -330,6 +331,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			mprj.setDepPkgs(prjDepLibs);
 			mprj.addMStudioNature(new NullProgressMonitor());
 		} catch (CoreException e) {
+			CUIPlugin.log(e.getStatus());
 		}
 
 		return prj;

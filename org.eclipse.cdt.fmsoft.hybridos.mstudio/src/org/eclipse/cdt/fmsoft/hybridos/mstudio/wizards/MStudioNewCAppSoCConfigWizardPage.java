@@ -61,17 +61,22 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferenceP
 
 public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
-	public static final String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage";
+	public final static String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage";
 
-	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
-	private static final String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
-	private static final String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
-	private static final String SHOW_SELECT_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.14");
-	private static final String SHOW_CANCEL_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.15");
-	private static final String AFFECTED = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.affected");
-	private static final String DEPEND = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.depend");
-	private static final String EMPTY_STR = "";
-	private static final String MSW_SPACE = " ";
+	private final static Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	private final static String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
+	private final static String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
+	private final static String SHOW_SELECT_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.14");
+	private final static String SHOW_CANCEL_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.15");
+	private final static String AFFECTED = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.affected");
+	private final static String DEPEND = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.depend");
+	private final static String EMPTY_STR = "";
+	private final static String MSW_SPACE = " ";
+
+	public boolean isVisible = false;
+	public boolean pagesLoaded = false;
+
+	IWizardPage[] customPages = null;
 
 	private MStudioWizardHandler handler = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
@@ -88,11 +93,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private String socName = msEnvInfo.getCurSoCName();
 
 	private static boolean isOnlyOne = false;
-
-	public boolean isVisible = false;
-	public boolean pagesLoaded = false;
-
-	IWizardPage[] customPages = null;
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
