@@ -45,7 +45,7 @@ public class MStudioNewWizardTemplate extends AbstractCWizard {
 		"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib"};
 
 	public static final String OTHERS_LABEL = MStudioMessages.getString("MStudioNewWizard.0");  
-	public static final String EMPTY_PROJECT = "Empty mStudio Project";
+	public static final String EMPTY_PROJECT = "Empty hybridStudio Project";
 	public static final String MSNWT_GNU_EXE_DEBUG = "cdt.managedbuild.toolchain.gnu.exe.debug";
 	public static final String MSNWT_GNU_SO_DEBUG = "cdt.managedbuild.toolchain.gnu.so.debug";
 

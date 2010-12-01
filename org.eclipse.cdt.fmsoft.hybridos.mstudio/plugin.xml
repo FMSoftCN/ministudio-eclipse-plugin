@@ -154,7 +154,7 @@
       <content-type
             file-extensions="project"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.mrctype"
-            name="%MStudio.contentType.res"
+            name="%hybridStudio.contentType.res"
             priority="high">
       </content-type>
    </extension>

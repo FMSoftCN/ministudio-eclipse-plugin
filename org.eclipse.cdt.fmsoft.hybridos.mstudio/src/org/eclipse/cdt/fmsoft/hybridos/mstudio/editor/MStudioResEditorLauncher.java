@@ -42,8 +42,8 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioSocketServerThread;
 public class MStudioResEditorLauncher implements IEditorLauncher {
 
 	private final static String MSEL_GUIBUILDER_PATH = "GUIBUILDER_PATH";
-	private final static String MSEL_TASK_COLLECTING = "mStudio Runner - Collecting Data";
-	private final static String MSEL_TASK_STARTING   = "mStudio Runner - Starting GUIBuilder: ";
+	private final static String MSEL_TASK_COLLECTING = "hybridStudio Runner - Collecting Data";
+	private final static String MSEL_TASK_STARTING   = "hybridStudio Runner - Starting GUIBuilder: ";
 	private final static String MSEL_EMPTY_STR = "";
 
 	public MStudioResEditorLauncher() {

@@ -136,7 +136,7 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 		if (!getVersion()) {
 			MessageDialog.openInformation(
 					window.getShell(),
-					"mStudio Plug-in",
+					"hybridStudio Plug-in",
 					MStudioMessages.getString("MStudioUpdateError.desc"));
 			return null;
 		}
