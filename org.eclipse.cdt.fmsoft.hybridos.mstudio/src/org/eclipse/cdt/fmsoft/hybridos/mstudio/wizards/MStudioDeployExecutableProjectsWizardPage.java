@@ -294,6 +294,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if(MStudioDeployWizard.getModuleProjects().length <= 0 && MStudioDeployWizard.getIALProjects().length <= 0){
 			return wizard.getNextPage(this).getNextPage();
 		}
+		
+		if (getDeployExeProjects().length <= 0 && null != wizard.getDeployAutobootWizardPage().projectOfChecked) {
+			wizard.getDeployAutobootWizardPage().projectOfChecked.clear();
+		}
 		return wizard.getNextPage(this);
 	}
 	

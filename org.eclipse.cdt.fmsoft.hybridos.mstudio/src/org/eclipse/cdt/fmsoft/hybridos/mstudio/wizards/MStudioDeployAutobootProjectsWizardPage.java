@@ -43,7 +43,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	private Button selectAll=null;
 	private Button upButton,downButton;
 	private IProject[] projects;
-	private ArrayList<String> projectOfChecked;
+	public ArrayList<String> projectOfChecked;
 	
 	public MStudioDeployAutobootProjectsWizardPage(String pageName) {
 		super(pageName);
