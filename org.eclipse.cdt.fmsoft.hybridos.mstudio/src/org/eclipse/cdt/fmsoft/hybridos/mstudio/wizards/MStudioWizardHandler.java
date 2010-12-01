@@ -617,17 +617,22 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String tempName = template.getTemplateId();
 		boolean isMgProject = false;
 		MStudioProjectTemplateType MgType = MStudioProjectTemplateType.exe;
-
+		String[] pkgs = mprj.getDepPkgs();
+		
+		for (int i = 0; i < pkgs.length; i++){
+			if (pkgs[i].equals("minigui")){
+				isMgProject = true;
+				break;
+			}
+		}
+		
 		if (TEMPLATE_TYPE_EXE.equals(tempName)){
-			isMgProject = true;
 			MgType = MStudioProjectTemplateType.exe;
 		} else if (TEMPLATE_TYPE_LIB.equals(tempName)){
 			MgType =  MStudioProjectTemplateType.normallib;
 		} else if (TEMPLATE_TYPE_MGINIT.equals(tempName)){
-			isMgProject = true;
 			MgType =  MStudioProjectTemplateType.mginitmodule;
 		} else if (TEMPLATE_TYPE_IAL.equals(tempName)){
-			isMgProject = true;
 			MgType =  MStudioProjectTemplateType.dlcustom;
 		} 
 
