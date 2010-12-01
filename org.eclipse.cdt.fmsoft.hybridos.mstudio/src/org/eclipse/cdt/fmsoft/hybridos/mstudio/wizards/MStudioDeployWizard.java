@@ -32,7 +32,7 @@ public class MStudioDeployWizard extends Wizard {
 	private MStudioDeploySharedLibProjectsWizardPage sharedLibPage;
 	private MStudioDeployServicesWizardPage deployServicesPage;
 	private MStudioDeployAutobootProjectsWizardPage autobootProjectPage;
-
+	
 	public static boolean deployTypeIsHost = false;
 	private MStudioParserIniFile iniFile = null;
 	//private final static String DEPLOY_INI_PATH = MStudioPlugin.getDefault().getStateLocation().toOSString();
@@ -170,9 +170,6 @@ public class MStudioDeployWizard extends Wizard {
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
 			return false;	
-		//copy config files when soc selected 
-		//copyMiniguiCFG();
-		//copyMgncsCFG();
 		//update the host and target config files ,some section would be changed when slect the deploy target
 		if(!updateCfgFiles())
 			return false;
@@ -223,8 +220,7 @@ public class MStudioDeployWizard extends Wizard {
 
 	// get executable projects in workspace
 	public static IProject[] getExeProjects() {
-		return MStudioPlugin.getDefault().getMStudioEnvInfo()
-				.getExecutableProjects();
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getExecutableProjects();
 	}
 
 	// get shared library projects in workspace, not include dlcustom ial
@@ -305,8 +301,8 @@ public class MStudioDeployWizard extends Wizard {
 	private void setDlcustomSection() {
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
 		IProject project = getDeployDLCustom();
-		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION,
-				DLCUSTOM_PROGRAM_PROPERTY, project == null ? "" : project.getLocation().toOSString(), null);
+		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION,DLCUSTOM_PROGRAM_PROPERTY,
+				project == null ? "" : project.getLocation().toOSString(), null);
 	}
 
 	private void setModulesSection() {
