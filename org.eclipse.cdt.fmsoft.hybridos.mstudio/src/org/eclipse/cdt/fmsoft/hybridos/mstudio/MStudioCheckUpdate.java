@@ -56,7 +56,7 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 	private static String builderVersion = null;
 	private static String pluginVersion = null;
 	private static StringBuffer builderCmd = new StringBuffer(MSCU_GUIBUILDER);
-    private static String exeSuffix = ".exe";
+	private static String exeSuffix = ".exe";
 	
 	private void parseVersionLine(String line) {
 		StringBuffer buf = new StringBuffer();
@@ -71,11 +71,11 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 		String binPath = MStudioToolsPreferencePage.getMStudioBinPath(defVersion);
 		Path cmd = null;
 
-        if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0 
-                && builderCmd.lastIndexOf(exeSuffix) == -1) {
-            //append correct exe suffix
-            builderCmd.append(exeSuffix);
-        }
+		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0
+				&& builderCmd.lastIndexOf(exeSuffix) == -1) {
+			//append correct exe suffix
+			builderCmd.append(exeSuffix);
+		}
 
 		if (binPath == null || binPath.equals(MSCU_EMPTY)) {
 			binPath = System.getenv("GUIBUILDER_PATH");
@@ -100,10 +100,10 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 					return true;
 				}
 				try {
-				  p.waitFor();  // wait for process to complete
+					p.waitFor();	// wait for process to complete
 				} catch (InterruptedException e) {
-				  System.err.println(e);
-				  return false;
+					System.err.println(e);
+					return false;
 				}
 			}
 		} catch (IOException e) {
@@ -134,10 +134,9 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 		if (!getVersion()) {
-			MessageDialog.openInformation(
-					window.getShell(),
-					"hybridStudio Plug-in",
-					MStudioMessages.getString("MStudioUpdateError.desc"));
+			MessageDialog.openInformation(window.getShell(),
+					MStudioMessages.getString("MStudioUpdateError.title"),
+					MStudioMessages.getString("MStudioUpdateError.messages"));
 			return null;
 		}
 

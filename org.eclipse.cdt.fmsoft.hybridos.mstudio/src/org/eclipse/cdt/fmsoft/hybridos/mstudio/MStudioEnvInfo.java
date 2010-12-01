@@ -28,10 +28,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
