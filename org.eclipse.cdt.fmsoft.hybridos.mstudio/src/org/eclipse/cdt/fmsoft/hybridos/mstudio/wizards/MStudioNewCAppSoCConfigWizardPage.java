@@ -196,7 +196,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				if (!event.getChecked()) {
 					setAffectedPkgsChecked(itm.getName());
 				} else {
-					setDepPkgsChecked(itm.getName());
+					setDependPkgsChecked(itm.getName());
 				}
 
 				setPageComplete(isCustomPageComplete());
@@ -267,17 +267,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		return out.toArray(new CfgHolder[out.size()]);
 	}
 
-	public static boolean isOnlyOneSoC() {
+	static public boolean isOnlyOneSoC() {
 		return isOnlyOne;
-	}
-
-
-	private boolean isVisited() {
-		if (table == null || handler == null)
-			return false;
-
-		// return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
-		return true;
 	}
 
 	public boolean isCustomPageComplete() {
@@ -323,7 +314,60 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		}
 	}
 
+	public String getName() {
+		return TITLE;
+	}
+
+	public Control getControl() {
+		return msSocParent;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public String getTitle() {
+		return TITLE;
+	}
+
+	public IWizardPage getNextPage() {
+		pagesLoaded = true;
+		//return MBSCustomPageManager.getNextPage(PAGE_ID);
+		return null;
+	}
+	
+	public String[] getSelectedPackages() {
+
+		String[] ret = new String[selectedPackages.size()];
+		Iterator<String> i = selectedPackages.iterator();
+		int c = 0;
+
+		while (i.hasNext()){
+			  ret[c++] = i.next();
+		}
+
+		return ret;
+	}
+
+	protected void update() {
+		getWizard().getContainer().updateButtons();
+		getWizard().getContainer().updateMessage();
+		getWizard().getContainer().updateTitleBar();
+	}
+
 	// ------------------------
+	private boolean isVisited() {
+		if (table == null || handler == null)
+			return false;
+
+		// return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
+		return true;
+	}
+
 	private boolean dailogPkgsChecked(String title, String pkgName, List<String> listPkgs) {
 
 		int count = listPkgs.size();
@@ -354,29 +398,48 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
 			if (affectedPkgs.equals(info.getKey())) {
-				List<String> affected = info.getValue();
+				List<String> affected = new ArrayList<String>(info.getValue());
+				getAffectedPkgsChecked(affectedPkgs, affected);
 
 				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
 					return;
 
 				for (int i = 0; i < affected.size(); i++) {
-					String depString = affected.get(i);
-					PackageItem pItem = getPackedItem(depString);
+					String affString = affected.get(i);
+					PackageItem pItem = getPackedItem(affString);
 					if (null == pItem)
 						break;
 					ctv.setChecked(pItem, false);
-					selectedPackages.remove(depString);
+					selectedPackages.remove(affString);
 				}
 			}
 		}
 		selectedPackages.remove(affectedPkgs);
 	}
 
-	private void setDepPkgsChecked(String depPkgs) {
+	private void getAffectedPkgsChecked(String affName, List<String> affected) {
+
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
+			if (affName.equals(info.getKey())) {
+				List<String> affectedList = info.getValue();
+
+				for (int i = 0; i < affectedList.size(); i++) {
+					String affString = affectedList.get(i);
+					getAffectedPkgsChecked(affString, affected);
+					if (isListSameItem(affString, affected))
+						continue;
+					affected.add(affString);
+				}
+			}
+		}
+	}
+
+	private void setDependPkgsChecked(String depPkgs) {
 
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
 			if (depPkgs.equals(info.getKey())) {
-				List<String> dep = info.getValue();
+				List<String> dep = new ArrayList<String>(info.getValue());
+				getDependPkgsChecked(depPkgs, dep);
 
 				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
 					return;
@@ -392,6 +455,34 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 		}
 		selectedPackages.add(depPkgs);
+	}
+
+	private void getDependPkgsChecked(String depName, List<String> depend) {
+
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
+			if (depName.equals(info.getKey())) {
+				List<String> dep = info.getValue();
+
+				for (int i = 0; i < dep.size(); i++) {
+					String depString = dep.get(i);
+					getDependPkgsChecked(depString, depend);
+					if (isListSameItem(depString, depend))
+						continue;
+					depend.add(depString);
+				}
+			}
+		}
+	}
+
+	private boolean isListSameItem(String sameString, List<String> listStr) {
+
+		for (int i = 0; i < listStr.size(); i++) {
+			String item = listStr.get(i);
+			if (sameString.equals(item))
+				return true;
+		}
+
+		return false;
 	}
 
 	private PackageItem getPackedItem(String findString) {
@@ -425,51 +516,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		label.setFont(cmpst.getFont());
 
 		return label;
-	}
-
-	public String getName() {
-		return TITLE;
-	}
-
-	public Control getControl() {
-		return msSocParent;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public String getTitle() {
-		return TITLE;
-	}
-
-	protected void update() {
-		getWizard().getContainer().updateButtons();
-		getWizard().getContainer().updateMessage();
-		getWizard().getContainer().updateTitleBar();
-	}
-
-	public IWizardPage getNextPage() {
-		pagesLoaded = true;
-		//return MBSCustomPageManager.getNextPage(PAGE_ID);
-		return null;
-	}
-	
-	public String[] getSelectedPackages() {
-
-		String[] ret = new String[selectedPackages.size()];
-		Iterator<String> i = selectedPackages.iterator();
-		int c = 0;
-
-		while (i.hasNext()){
-			  ret[c++] = i.next();
-		}
-
-		return ret;
 	}
 }
 
