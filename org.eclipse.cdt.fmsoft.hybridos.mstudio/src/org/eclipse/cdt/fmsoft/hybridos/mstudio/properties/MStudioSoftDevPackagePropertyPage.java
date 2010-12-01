@@ -69,6 +69,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	private static final String TITLE = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.titleLable");
 	private static final String SHOW_SELECT =
 										MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showSelect");
+	private final static String SHOW_DESELECT =
+										MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showDeselect");
 	private static final String AFFECTED = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.affected");
 	private static final String DEPEND = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.depend");
 	private static final String MSP_SPACE = " ";
@@ -248,10 +250,18 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		String messageInfo = new String(pkgName);
 		messageInfo = messageInfo.concat(MSP_SPACE + title);
 
+		String showSCAll = null;
+
 		for (int i = 0; i < count; i++) {
 			messageInfo = messageInfo.concat(MSP_SPACE + listPkgs.get(i));
 		}
-		messageInfo = messageInfo.concat(SHOW_SELECT);
+
+		if (title.equals(DEPEND))
+			showSCAll = SHOW_SELECT;
+		else
+			showSCAll = SHOW_DESELECT;
+
+		messageInfo = messageInfo.concat(showSCAll);
 		MessageDialog.openInformation(this.getShell(), title, messageInfo);
 
 		return true;
