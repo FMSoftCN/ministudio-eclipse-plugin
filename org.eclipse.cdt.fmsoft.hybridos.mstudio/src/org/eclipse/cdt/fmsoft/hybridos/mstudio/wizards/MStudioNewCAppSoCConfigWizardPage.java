@@ -339,7 +339,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		//return MBSCustomPageManager.getNextPage(PAGE_ID);
 		return null;
 	}
-	
+
 	public String[] getSelectedPackages() {
 
 		String[] ret = new String[selectedPackages.size()];

@@ -185,7 +185,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	}
 
 	public boolean performOk() {
-		if (savePersistentSettings()){
+		if (savePersistentSettings()) {
 			resetProjectConfigurations((IProject) getElement());
 			return true;
 		}
@@ -203,7 +203,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
 		String[] s = mStudioProject.getDepPkgs();
 		Object[] elements = msEnvInfo.getAllSoftPkgs().keySet().toArray();
-		
+
 		ctv.remove(elements);
 		ctv.add(elements);
 		ctv.setCheckedElements(s);
@@ -261,7 +261,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
 			if (affectedPkgs.equals(info.getKey())) {
-				List<String> affected = info.getValue();
+				List<String> affected = new ArrayList<String>(info.getValue());
+				getAffectedPkgsChecked(affectedPkgs, affected);
 
 				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
 					return;
@@ -277,11 +278,29 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		}
 	}
 
+	private void getAffectedPkgsChecked(String affName, List<String> affected) {
+
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getAffectedPkgs().entrySet()) {
+			if (affName.equals(info.getKey())) {
+				List<String> affectedList = info.getValue();
+
+				for (int i = 0; i < affectedList.size(); i++) {
+					String affString = affectedList.get(i);
+					getAffectedPkgsChecked(affString, affected);
+					if (isListSameItem(affString, affected))
+						continue;
+					affected.add(affString);
+				}
+			}
+		}
+	}
+
 	private void setDepPkgsChecked(String depPkgs) {
 
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
 			if (depPkgs.equals(info.getKey())) {
-				List<String> dep = info.getValue();
+				List<String> dep = new ArrayList<String>(info.getValue());
+				getDependPkgsChecked(depPkgs, dep);
 
 				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
 					return;
@@ -297,33 +316,62 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		}
 	}
 
+	private void getDependPkgsChecked(String depName, List<String> depend) {
+
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
+			if (depName.equals(info.getKey())) {
+				List<String> dep = info.getValue();
+
+				for (int i = 0; i < dep.size(); i++) {
+					String depString = dep.get(i);
+					getDependPkgsChecked(depString, depend);
+					if (isListSameItem(depString, depend))
+						continue;
+					depend.add(depString);
+				}
+			}
+		}
+	}
+
+	private boolean isListSameItem(String sameString, List<String> listStr) {
+
+		for (int i = 0; i < listStr.size(); i++) {
+			String item = listStr.get(i);
+			if (sameString.equals(item))
+				return true;
+		}
+
+		return false;
+	}
+
 	private void getCheckboxTableViewerData() {
 
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
 			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
 		}
 	}
-	
-	private void resetProjectConfigurations(IProject project)
-	{
+
+	private void resetProjectConfigurations(IProject project) {
+
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		
-		List<String> depLibList = new ArrayList<String> ();
+		List<String> depLibList = new ArrayList<String>();
 		Object[] obj = ctv.getCheckedElements();
+
 		for (int idx = 0; idx < obj.length; idx++) {
 			String[] libs = einfo.getPackageLibs(obj[idx].toString());
-			for (int c = 0; c < libs.length; c++){
+			for (int c = 0; c < libs.length; c++) {
 				depLibList.add(libs[c]);
 			}
 		}
+
 		String[] depLibs = depLibList.toArray(new String[depLibList.size()]);
-		
+
 		for (int i = 0; i < cur_cfgs.length; i++) {
-			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
+			for (ITool t : cur_cfgs[i].getToolChain().getTools()) {
 				try {
-					if (t.getId().contains("c.link")){
+					if (t.getId().contains("c.link")) {
 						IOption o = t.getOptionById("gnu.c.link.option.libs");
 						cur_cfgs[i].setOption(t, o, depLibs);
 					}
@@ -332,9 +380,9 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 				}
 			}
 		}
-		
+
 		if (cur_cfgs.length > 0)
-			ManagedBuildManager.saveBuildInfo(project, false);		
+			ManagedBuildManager.saveBuildInfo(project, false);
 	}
 }
 
