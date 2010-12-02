@@ -215,7 +215,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 			}
 		}
 	}
-	//TODO
+	
 	private void updateTable(){
 		table.setItemCount(0);
 		if(projects != null){			
@@ -248,8 +248,12 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 				}
 				//autobutooPage have exePage not have,delete autobutooPage Project
 				for(int i=0; i<projects.length; i++){
-					if(!exeList.contains(projects[i]))
+					if(!exeList.contains(projects[i])){
 						storeList.remove(projects[i]);
+						if(projectOfChecked != null && projectOfChecked.contains(projects[i].getName())){
+							projectOfChecked.remove(projects[i].getName());
+						}
+					}
 				}
 				//autobutooPage not have exePage have ,add to autobutooPage
 				for(int i=0; i<exeProjects.length; i++){
