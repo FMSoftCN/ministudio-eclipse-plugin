@@ -122,12 +122,12 @@ public class MStudioProject {
 		String tmp = depPkgs[0];
 
 		for (int i = 1; i < depPkgs.length; i++){
-			tmp += DPKGS_SPLIT_CHAR + depPkgs[i];
+			if (null != depPkgs[i] && ! depPkgs[i].isEmpty()){
+				tmp += DPKGS_SPLIT_CHAR + depPkgs[i];
+			}
 		}
 
-		setPersistentSettings(MSTUDIO_DEPPKGS, tmp);
-
-		return true;
+		return setPersistentSettings(MSTUDIO_DEPPKGS, tmp);
 	}
 
 	public String[] getDepPkgs() {
@@ -188,7 +188,8 @@ public class MStudioProject {
 		String oldBinPath = getMStudioBinPath();
 		boolean result = setPersistentSettings(MSTUDIO_VERSION, version);
 
-		updateMStudioDir(oldBinPath);
+		if (result)
+			updateMStudioDir(oldBinPath);
 
 		return result;
 	}
@@ -231,8 +232,10 @@ public class MStudioProject {
 
 						public IStatus runInWorkspace(IProgressMonitor monitor) {
 							try {
-								project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD,monitor);
+								project.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
 							} catch (CoreException e) {
+								System.out.println(" project build Error.");
+								return Status.CANCEL_STATUS;
 							}
 							return Status.OK_STATUS;
 						}
@@ -242,6 +245,8 @@ public class MStudioProject {
 					buildJob.setUser(true);
 					buildJob.schedule();
 				} catch (CoreException e) {
+					System.out.println(" project build Error.");
+					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
 			}
