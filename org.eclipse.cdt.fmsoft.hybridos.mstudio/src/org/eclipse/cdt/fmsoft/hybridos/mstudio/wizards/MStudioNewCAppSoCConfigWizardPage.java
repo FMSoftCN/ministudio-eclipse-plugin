@@ -219,10 +219,13 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		buttonCheck.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttonCheck.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (buttonCheck.getSelection())
+				if (buttonCheck.getSelection()) {
 					ctv.setAllChecked(true);
-				else
+					addAllselectedPackages();
+				} else {
 					ctv.setAllChecked(false);
+					selectedPackages.clear();
+				}
 				setPageComplete(isCustomPageComplete());
 				update();
 			}
@@ -503,6 +506,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		}
 
 		ctv.setInput(pkgs.toArray());
+	}
+
+	private void addAllselectedPackages() {
+		for (int i = 0; i < pkgs.size(); i++) {
+		 	selectedPackages.add(pkgs.get(i).getName());
+		}
 	}
 
 	private Label setupLabel(Composite composite, String name, int mode) {
