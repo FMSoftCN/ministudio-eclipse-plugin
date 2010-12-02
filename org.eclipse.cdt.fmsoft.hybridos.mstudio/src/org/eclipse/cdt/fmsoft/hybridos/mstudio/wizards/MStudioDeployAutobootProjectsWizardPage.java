@@ -42,8 +42,8 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	private Table table=null;
 	private Button selectAll=null;
 	private Button upButton,downButton;
-	private IProject[] projects;
-	public ArrayList<String> projectOfChecked;
+	private IProject[] projects;	
+	private ArrayList<String> projectOfChecked;
 	
 	public MStudioDeployAutobootProjectsWizardPage(String pageName) {
 		super(pageName);
@@ -141,16 +141,19 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 			}
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] items = table.getItems();
-				if(selectAll.getSelection()){					
+				if(selectAll.getSelection()){	
+					projectOfChecked.clear();
 					for(int i=0; i<items.length; i++){
-						items[i].setChecked(true);
-					}
+						items[i].setChecked(true);	
+						projectOfChecked.add(items[i].getText(1));
+					}					
 					//setPageComplete(true);
 				}
 				else{	
 					for(int i=0; i<items.length; i++){
-						items[i].setChecked(false);
+						items[i].setChecked(false);						
 					}
+					projectOfChecked.clear();
 					//setPageComplete(false);					
 				}
 			}});
@@ -212,9 +215,10 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 			}
 		}
 	}
+	//TODO
 	private void updateTable(){
 		table.setItemCount(0);
-		if(projects != null){
+		if(projects != null){			
 			for(int i=0; i<projects.length; i++){
 				TableItem item = new TableItem(table,SWT.CHECK);
 				item.setText(1,projects[i].getName());
@@ -228,20 +232,59 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard == null)
 			return;
-		projects = wizard.getDeployExeProjects();		
+		if(projects != null && projects.length > 0){
+			IProject[] exeProjects = wizard.getDeployExeProjects();
+			if(exeProjects == null)
+				projects = null;
+			else{
+				//
+				List<IProject> exeList =  new ArrayList<IProject>();
+				List<IProject> storeList = new ArrayList<IProject>();
+				for(int i=0; i<exeProjects.length; i++){
+					exeList.add(exeProjects[i]);
+				}				
+				for(int i=0; i<projects.length; i++){
+					storeList.add(projects[i]);
+				}
+				//autobutooPage have exePage not have,delete autobutooPage Project
+				for(int i=0; i<projects.length; i++){
+					if(!exeList.contains(projects[i]))
+						storeList.remove(projects[i]);
+				}
+				//autobutooPage not have exePage have ,add to autobutooPage
+				for(int i=0; i<exeProjects.length; i++){
+					//if back here the table not checked before
+					if(!storeList.contains(exeProjects[i])){
+						storeList.add(exeProjects[i]);
+					}
+				}
+				projects = (IProject[])storeList.toArray(new IProject[storeList.size()]);
+			}			
+		}
+		else
+			projects = wizard.getDeployExeProjects();		
 		updateTable();	
 		updateButtons();
 	}
 	
 	public IProject[] getDeployAutobootProjects() {
+		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
+		if(wizard == null)
+			return null;
 		if (projects == null || projects.length <= 0)
 			return null;
+		IProject[] exeProjects = wizard.getDeployExeProjects();
+		List<IProject> exeList=new ArrayList<IProject>();
 		List<IProject> list = new ArrayList<IProject>();
+		for(int i=0; i<exeProjects.length; i++){
+			exeList.add(exeProjects[i]);
+		}
 		for (int i = 0; i < projects.length; i++) {
-			if(projectOfChecked.contains(projects[i].getName())){
+			if(projectOfChecked.contains(projects[i].getName()) && exeList.contains(projects[i])){
 				list.add(projects[i]);
 			}
 		}
+	
 		return (IProject[]) (list.toArray(new IProject[list.size()]));
 	}
 
