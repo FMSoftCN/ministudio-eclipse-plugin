@@ -107,7 +107,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 	private void startMginit() {
 
-		if (mginitHasRunning()) {
+		if (!mginitHasRunning()) {
 			try {
 				CommandLauncher launcher = new CommandLauncher();
 				launcher.showCommand(true);
@@ -136,9 +136,11 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				//mginit server would be run with args,
 				//arg -c is direct to the mginit config file url
 
-				args.add("-c");
-				args.add(envInfo.getMginitCfgFile().toString());
-
+				String cfgFile = envInfo.getMginitCfgFile();
+				if (null != cfgFile) {
+					args.add("-c");
+					args.add(cfgFile);
+				}
 				IPath workingDir = new Path(binPath);
 				Properties envProps = EnvironmentReader.getEnvVars();
 

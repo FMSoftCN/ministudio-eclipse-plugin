@@ -131,8 +131,15 @@ public class MStudioEnvInfo {
 	public String getMginitCfgFile() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
-
-		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
+		
+		String path = SoCPathPrefix + SoCName + "/" 
+							+ iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
+		
+		File file = new File (path);
+		if (file.isDirectory() && !path.endsWith("mginit.cfg"))
+			path += "/mginit.cfg";
+		
+		return (new File(path).exists()) ? path : null;
 	}
 
 	public List<String> getServices() {
