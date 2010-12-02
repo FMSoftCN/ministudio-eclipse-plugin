@@ -89,6 +89,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
+				MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
+				if(wizard != null){
+					//ArrList<String> autobootProject=wizard.getDeployAutobootWizardPage();
+					
+				}
 				validatePage();
 			}});
 		initExeProjects();		
@@ -295,9 +300,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return wizard.getNextPage(this).getNextPage();
 		}
 		
-		if (getDeployExeProjects().length <= 0 && null != wizard.getDeployAutobootWizardPage().projectOfChecked) {
-			wizard.getDeployAutobootWizardPage().projectOfChecked.clear();
-		}
 		return wizard.getNextPage(this);
 	}
 	
