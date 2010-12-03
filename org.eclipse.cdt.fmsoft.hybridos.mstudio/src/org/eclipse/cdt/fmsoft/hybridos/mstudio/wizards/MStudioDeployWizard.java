@@ -402,7 +402,7 @@ public class MStudioDeployWizard extends Wizard {
 	}
 	
 	private String getProgramCfg(IProject project) {
-		return project.getLocation().removeLastSegments(1).toOSString()
+		return project.getLocation()/*.removeLastSegments(1)*/.toOSString()
 				+ "/." + project.getName().trim() + APP_CFG_PATH;
 	}
 	
@@ -415,7 +415,7 @@ public class MStudioDeployWizard extends Wizard {
 	}
 	
 	private String getResPack(IProject project) {
-		return project.getLocation().toOSString().trim() + ".res";
+		return project.getLocation().toOSString().trim() + "/res/" + project.getName().trim() + ".res";
 	}
 
 	private String getResPackDepoloy(IProject project) {
