@@ -270,6 +270,12 @@ public class MStudioEnvInfo {
 		return SoCPathPrefix + SoCName + "/cross/etc/mgncs.cfg";
 	}
 	
+	public String getSOCBinPath(){
+		if(null == SoCName)
+			return EMPTY_STR;
+		return SoCPathPrefix +SoCName +"/cross/bin/";
+	}
+	
 	public String getPCMgCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
