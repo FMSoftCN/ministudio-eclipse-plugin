@@ -16,16 +16,26 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+
+import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.SWT;
 
-public class MStudioDeployWizard extends Wizard {
+import org.eclipse.swt.widgets.Display;
+public class MStudioDeployWizard extends Wizard{
 
 	private MStudioDeployTypeWizardPage deployTypePage;
 	private MStudioDeployExecutableProjectsWizardPage exeProjectPage;
@@ -35,6 +45,9 @@ public class MStudioDeployWizard extends Wizard {
 	
 	public static boolean deployTypeIsHost = false;
 	private MStudioParserIniFile iniFile = null;
+	private MStudioDeployDialog dialog;
+	//this string is ths process of run make_rootfs script return string.this save the information of the process
+	//private String returnString = "";
 	//private final static String DEPLOY_INI_PATH = MStudioPlugin.getDefault().getStateLocation().toOSString();
 	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath()+".metadata/";
 	private String miniguiCfgNewPath = DEPLOY_INI_PATH	+ MINIGUI_CFG_FILE_NAME;
@@ -88,6 +101,8 @@ public class MStudioDeployWizard extends Wizard {
 	private final static String APP_DEPLOY_PATH = "/usr/bin";
 	private final static String APP_CFG_PATH = "_res.cfg";
 	private final static String DEPLIBS_PROGRAM_DEPLOY = "/usr/local/lib";
+	
+	private static final String MSMS_EMPTY_STR = "";
 
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
@@ -134,10 +149,63 @@ public class MStudioDeployWizard extends Wizard {
 	public MStudioDeployAutobootProjectsWizardPage getDeployAutobootWizardPage() {
 		return this.autobootProjectPage;
 	}
-
+	
+	
+	public void distory(){
+		this.getShell().close();
+	}
 	@Override
-	public boolean performFinish() {
+	public boolean performFinish() {	
+		dialog=new MStudioDeployDialog(this.getShell());		
+		this.getShell().getDisplay().asyncExec(new Runnable(){
+			public void run(){				
+				dialog.getShell().setText("deploy status");
+				dialog.open();	
+				boolean error = false;
+				try{		
+					do{						
+						//the string would be write into the property file ,there is a way to write here for testing code  
+						dialog.getDescription().setText("check the file deploy.ini exist");
+						if(saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)){
+							dialog.getProgressBar().setSelection(50);							
+						}
+						else{
+							dialog.getDescription().setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+							dialog.getDescription().setText("save file error");
+							error = true;
+							break;
+						}
+						dialog.getDescription().setText("save ok!");
+						dialog.getDescription().setText("now create a process to run the script  to rootfs");
+						if(runScript()){
+							dialog.getProgressBar().setSelection(100);
+							dialog.getDescription().setText("script ok");
+							//show the script process return string
+							//dialog.getDescription().setText(returnString);
+						}
+						else{
+							dialog.getDescription().setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_RED));
+							dialog.getDescription().setText("run script error");
+							error=true;
+							break;
+						}
+					}while(false);
+					if(!error){
+						dialog.close();
+						distory();
+					}
+				}catch(Exception ex){
+					ex.printStackTrace();
+				}
+				finally{
+					
+				}
+			}
+		});		
+		return false;
+/*
 		if (saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)) {
+			
 			MessageDialog.openWarning(getShell(),
 					MStudioMessages.getString("MStudioDeployProject.error.title"),
 					MStudioMessages.getString("MStudioDeployProject.save.successContent"));
@@ -148,15 +216,77 @@ public class MStudioDeployWizard extends Wizard {
 					MStudioMessages.getString("MStudioDeployProject.save.errorContent"));
 			return false;
 		}
+		*/
+		//return true;
 	}
+	public boolean runScript(){
+		CommandLauncher launcher = new CommandLauncher();
+		launcher.showCommand(true);
+		StringBuffer cmd = new StringBuffer("make_rootfs");
 
+		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		String binPath = envInfo.getSOCBinPath();
+		if (binPath == null)
+			return false;
+		Path editCommand = null;
+
+		if (binPath == null || binPath.equals(MSMS_EMPTY_STR)) {
+			editCommand = new Path (cmd.toString());
+		} else {
+        	editCommand = new Path (binPath + File.separatorChar +cmd.toString());
+        }
+        
+		List<String> args = new ArrayList<String>();
+		args.add(binPath);
+		args.add(this.getDeployExecuteableWizardPage().getDeployLocation());
+
+		IPath workingDir = new Path(binPath);
+		Properties envProps = EnvironmentReader.getEnvVars();
+
+		envProps.setProperty("CWD", workingDir.toOSString());
+		envProps.setProperty("PWD", workingDir.toOSString());	        
+
+		Process root = launcher.execute(editCommand, 
+				(String[])args.toArray(new String[args.size()]), 
+				createEnvStringList(envProps), workingDir);
+		//get the process output string,this would be catch the information
+		/*
+		InputStream is = root.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		String s;
+		try {
+			while((s = br.readLine())!=null){
+				returnString+=s;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+		return true;
+	}
+	
+	private static String[] createEnvStringList(Properties envProps) {
+
+        String[] env = null;
+        List<String> envList = new ArrayList<String>();
+        Enumeration<?> names = envProps.propertyNames();
+
+        if (names != null) {
+            while (names.hasMoreElements()) {
+                String key = (String) names.nextElement();
+                envList.add(key + "=" + envProps.getProperty(key));
+            }
+            env = (String[]) envList.toArray(new String[envList.size()]);
+        }
+
+        return env;
+    }
 	public boolean performCancel() {
 		this.dispose();
 		return true;
 	}
 
-	private boolean saveDeployInfo(String filename) {
-
+	
+	private boolean saveDeployInfo(String filename) {		
 		// create a new file
 		try {
 			File iniCfg = new File(filename);
@@ -166,7 +296,6 @@ public class MStudioDeployWizard extends Wizard {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
 			return false;	
@@ -443,5 +572,6 @@ public class MStudioDeployWizard extends Wizard {
 	private String getDeplibsDeploy(IProject project) {
 		return DEPLIBS_PROGRAM_DEPLOY;
 	}
+
 }
 
