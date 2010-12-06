@@ -50,8 +50,8 @@ class hpkgFilter implements FilenameFilter {
 
 public class MStudioEnvInfo {
 
-	private final static String SoCPathPrefix = "/opt/hybridos/";
-	private final static String SoCConfigFile = ".hybridos.cfg";
+	private final static String SOC_PATH_PREFIX = "/opt/hybridos/";
+	private final static String SOC_CONFIG_FILE = ".hybridos.cfg";
 
 	private final static String SOC_CFG_SECTION_MINIGUI = "minigui";
 	private final static String SOC_CFG_SECTION_RUNMODE = "runmode";
@@ -113,7 +113,7 @@ public class MStudioEnvInfo {
 		if (SoCName == null)
 			return null;
 
-		return SoCPathPrefix + SoCName + "/" + SoCConfigFile;
+		return SOC_PATH_PREFIX + SoCName + "/" + SOC_CONFIG_FILE;
 	}
 
 	//get current SoC
@@ -125,20 +125,20 @@ public class MStudioEnvInfo {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 
-		return SoCPathPrefix + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
+		return SOC_PATH_PREFIX + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
 	}
 
 	public String getMginitCfgFile() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
-		
-		String path = SoCPathPrefix + SoCName + "/" 
+
+		String path = SOC_PATH_PREFIX + SoCName + "/"
 							+ iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
-		
+
 		File file = new File (path);
 		if (file.isDirectory() && !path.endsWith("mginit.cfg"))
 			path += "/mginit.cfg";
-		
+
 		return (new File(path).exists()) ? path : null;
 	}
 
@@ -165,28 +165,34 @@ public class MStudioEnvInfo {
 
 		return iniFile.getStringProperty(SOC_CFG_SECTION_TOOLCHAIN, "prefix");
 	}
-	
-	public String[] getGalEngines() {
+
+	public String[] getGalOptions() {
 		if (iniFile == null)
 			return new String[0];
+
 		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_GAL, "num");
 		String[] ret = new String[num];
+
 		for (int i = 0; i < num; i++) {
 			String key = "gal" + i;
 			ret[i] = iniFile.getStringProperty(SOC_CFG_SECTION_GAL, key);
 		}
+
 		return ret;
 	}
-	
-	public String[] getIalEngines() {
+
+	public String[] getIalOptions() {
 		if (iniFile == null)
 			return new String[0];
+
 		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_IAL, "num");
 		String[] ret = new String[num];
+
 		for (int i = 0; i < num; i++) {
 			String key = "ial" + i;
 			ret[i] = iniFile.getStringProperty(SOC_CFG_SECTION_IAL, key);
 		}
+
 		return ret;
 	}
 
@@ -237,60 +243,60 @@ public class MStudioEnvInfo {
 	public String getPCIncludePath() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/pc_symmetry/include/";
+		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/include/";
 	}
 
 	public String getPCLibraryPath() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/pc_symmetry/lib/";
+		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/lib/";
 	}
 
 	public String getCrossIncludePath() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/cross/include/";
+		return SOC_PATH_PREFIX + SoCName + "/cross/include/";
 	}
 
 	public String getCrossLibraryPath() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/cross/lib/";
+		return SOC_PATH_PREFIX + SoCName + "/cross/lib/";
 	}
-	
+
 	public String getCrossMgCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/cross/etc/MiniGUI.cfg";
+		return SOC_PATH_PREFIX + SoCName + "/cross/etc/MiniGUI.cfg";
 	}
-	
+
 	public String getCrossMgNcsCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/cross/etc/mgncs.cfg";
+		return SOC_PATH_PREFIX + SoCName + "/cross/etc/mgncs.cfg";
 	}
-	
+
 	public String getSOCBinPath(){
 		if(null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix +SoCName +"/cross/bin/";
+		return SOC_PATH_PREFIX +SoCName +"/cross/bin/";
 	}
-	
+
 	public String getPCMgCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/pc_symmetry/etc/MiniGUI.cfg";
+		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/etc/MiniGUI.cfg";
 	}
-	
+
 	public String getPCMgNcsCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
-		return SoCPathPrefix + SoCName + "/pc_symmetry/etc/mgncs.cfg";
+		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/etc/mgncs.cfg";
 	}
 
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
-		File hybridosDir = new File(SoCPathPrefix);
+		File hybridosDir = new File(SOC_PATH_PREFIX);
 		return hybridosDir.list(new DirFilter());
 	}
 
@@ -329,7 +335,7 @@ public class MStudioEnvInfo {
 		mgRunMode = MiniGUIRunMode.valueOf((
 					iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE)));
 
-		File socDir = new File(SoCPathPrefix + SoCName);
+		File socDir = new File(SOC_PATH_PREFIX + SoCName);
 		if (!socDir.exists())
 			return;
 
