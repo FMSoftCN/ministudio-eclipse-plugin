@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -45,6 +46,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
+import org.eclipse.core.runtime.Platform;
 
 
 public class MStudioDeployPreferencePage extends PreferencePage
@@ -55,6 +58,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		MStudioMessages.getString("MStudioDeployPreferencePage.pathTip");
 	private final static String MSDPP_DPLY_LOCAL = 
 		MStudioMessages.getString("MStudioDeployPreferencePage.deployLocation");
+	private final static String MSDPP_GAL_ENGINE = 
+		MStudioMessages.getString("MStudioDeployPreferencePage.galEngine");
+	private final static String MSDPP_IAL_ENGINE = 
+		MStudioMessages.getString("MStudioDeployPreferencePage.ialEngine");
 	private final static String MSDPP_EMPTY_STR = "";
 
 	private Label tipText = null;
@@ -62,6 +69,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private List<Button> btnList = new ArrayList<Button>();
 	private List<String> allServList = new ArrayList<String>();
 	private List<String> selServList = new ArrayList<String>();
+	private Combo galCom = null;
+	private Combo ialCom = null;
+	private String selectedGalEngine;
+	private String selectedIalEngine;
 
 	public MStudioDeployPreferencePage() {
 	}
@@ -131,6 +142,33 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 			btn.setSelection(find);
 		}
+		
+		String metaDataPath = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
+		String tagetMgconfigureFile = metaDataPath + "MiniGUI.cfg.target";
+		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
+		if (file == null)
+			return; 
+		selectedGalEngine = file.getStringProperty("system", "gal_engine");
+		if (selectedGalEngine == null)
+			return;
+		String[] galItems = galCom.getItems();
+		for (int i = 0; i < galItems.length; i ++){
+			if (selectedGalEngine.equals(galItems[i])){
+				galCom.select(i);
+				break;
+			}
+		}
+		
+		selectedIalEngine = file.getStringProperty("system", "ial_engine");
+		if (selectedIalEngine == null)
+			return;
+		String[] ialItems = ialCom.getItems();
+		for (int i = 0; i < ialItems.length; i ++){
+			if (selectedIalEngine.equals(ialItems[i])){
+				ialCom.select(i);
+				break;
+			}
+		}
 	}
 
 	private void saveToStoreData() {
@@ -149,6 +187,21 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		}
 
 		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES, servToStore);
+		
+		String metaDataPath = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
+		String tagetMgconfigureFile = metaDataPath + "MiniGUI.cfg.target";
+		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
+		if (file == null)
+			return; 
+		
+		if (selectedGalEngine != null) {
+			file.setStringProperty("system", "gal_engine", selectedGalEngine, null);
+		}
+		if (selectedIalEngine != null) {
+			file.setStringProperty("system", "ial_engine", selectedIalEngine, null);
+		}
+		
+		file.save();
 	}
 
 	protected Control createContents(Composite parent) {
@@ -169,11 +222,14 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
 		gd1.horizontalSpan = 3;
 		tipText.setLayoutData(gd1);
-
+		
+		final Label seperator0 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		seperator0.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		createEnginesContent(composite);
+		
 		final Label seperator = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		seperator.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		new Label(composite, SWT.NULL);
 
 		final Label servCap = new Label(composite, SWT.NONE);
 		servCap.setText(MStudioMessages.getString("MStudioDeployPreferencePage.servCap"));
@@ -221,6 +277,40 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			}});
 
 		return locationPath;
+	}
+	
+	private void createEnginesContent (Composite parent){
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		
+		Composite engineC = new Composite(parent, SWT.NULL);
+	   GridLayout layout = new GridLayout();
+		layout.numColumns = 4;
+		layout.marginWidth = 0;
+		layout.marginHeight = 0;
+		layout.horizontalSpacing = 8;
+		engineC.setLayout(layout);
+		
+		Label galT = new Label(engineC, SWT.NULL);
+		galT.setText(MSDPP_GAL_ENGINE);
+		galCom =  new Combo(engineC, SWT.READ_ONLY);
+		galCom.setItems(einfo.getGalOptions());
+		galCom.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e){
+				selectedGalEngine = galCom.getItem(galCom.getSelectionIndex());
+				System.out.println("selected Gal Engine = " + selectedGalEngine);
+			}
+		});
+		
+		Label ialT = new Label(engineC, SWT.NULL);
+		ialT.setText(MSDPP_IAL_ENGINE);
+		ialCom =  new Combo(engineC, SWT.READ_ONLY);
+		ialCom.setItems(einfo.getIalOptions());
+		ialCom.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e){
+				selectedIalEngine = ialCom.getItem(ialCom.getSelectionIndex());
+				System.out.println("selected Ial Engine = " + selectedIalEngine);
+			}
+		});
 	}
 
 	private SelectionAdapter btnSelAdp = new SelectionAdapter() {
