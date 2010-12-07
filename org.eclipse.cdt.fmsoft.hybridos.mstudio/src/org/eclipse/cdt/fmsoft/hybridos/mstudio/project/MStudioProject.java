@@ -37,8 +37,12 @@ public class MStudioProject {
 	private final static String MSTUDIO_TMPLTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.tmpltype";
 	private final static String MSTUDIO_ENTRYTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.entrytype";
 	private final static String MSTUDIO_DEPLOYABLE = "org.eclipse.cdt.feynman.hybridos.mstudio.deployable";
+	private final static String MSTUDIO_DEPLOY_PATHINFO =
+		"org.eclipse.cdt.feynman.hybridos.mstudio.deploy.pathinfo";
+	private final static String MSTUDIO_DEPLOY_CUSTOMFILES =
+		"org.eclipse.cdt.feynman.hybridos.mstudio.deploy.customfiles";
 
-	private final static String DPKGS_SPLIT_CHAR = "|";  //FIXME , may be only space
+	private final static String SPLIT_SEMICOLON = ";";
 	private final static String EMPTY_STR = "";
 
 	public enum MStudioProjectTemplateType {
@@ -121,9 +125,9 @@ public class MStudioProject {
 
 		String tmp = depPkgs[0];
 
-		for (int i = 1; i < depPkgs.length; i++){
-			if (null != depPkgs[i] && ! depPkgs[i].isEmpty()){
-				tmp += DPKGS_SPLIT_CHAR + depPkgs[i];
+		for (int i = 1; i < depPkgs.length; i++) {
+			if (null != depPkgs[i] && ! depPkgs[i].isEmpty()) {
+				tmp += SPLIT_SEMICOLON + depPkgs[i];
 			}
 		}
 
@@ -131,10 +135,10 @@ public class MStudioProject {
 	}
 
 	public String[] getDepPkgs() {
-
 		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
+
 		if (pkgs != null)
-			return pkgs.split("\\" + DPKGS_SPLIT_CHAR);
+			return pkgs.split(SPLIT_SEMICOLON);
 
 		return new String[0];
 	}
@@ -268,6 +272,55 @@ public class MStudioProject {
 
 		description.setNatureIds(newNatures);
 		wrapped.setDescription(description, monitor);
+	}
+
+	public String[] getDeployPathInfo() {
+		String deployPath = getPersistentSettings(MSTUDIO_DEPLOY_PATHINFO);
+		if (deployPath == null)
+			return new String[0];
+
+		return deployPath.split(SPLIT_SEMICOLON);
+	}
+
+	public boolean setDeployPathInfo(String[] paths) {
+		if (paths == null)
+			return false;
+
+		String deployPath = semicolonMerger(paths);
+
+		return setPersistentSettings(MSTUDIO_DEPLOY_PATHINFO, deployPath);
+	}
+
+	public String[] getDeployCustomFiles() {
+		String deployFile = getPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES);
+
+		if (deployFile == null)
+			return new String[0];
+
+		return deployFile.split(SPLIT_SEMICOLON);
+	}
+
+	public boolean setDeployCustomFiles(String[] files) {
+		if (files == null)
+			return false;
+
+		String deployFile = semicolonMerger(files);
+
+		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES, deployFile);
+	}
+
+	private String semicolonMerger(String[] sm) {
+		if (sm.length <= 0)
+			return null;
+
+		String deploy = sm[0];
+
+		for (int i = 1; i < sm.length; i++) {
+			if (null != sm[i] && ! sm[i].isEmpty())
+				deploy += SPLIT_SEMICOLON + sm[i];
+		}
+
+		return deploy;
 	}
 }
 
