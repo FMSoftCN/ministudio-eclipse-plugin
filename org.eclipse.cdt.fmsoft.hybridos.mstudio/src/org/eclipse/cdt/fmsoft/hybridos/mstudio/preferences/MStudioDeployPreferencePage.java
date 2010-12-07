@@ -51,8 +51,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	implements IWorkbenchPreferencePage {
 
 	private final static String MSDPP_SPLIT = "\t";
-	private final static String MSDPP_PATH_INVALID = "Path is invalid !";
-	private final static String MSDPP_DPLY_LOCAL = "Deploy Location :";
+	private final static String MSDPP_PATH_INVALID =  
+		MStudioMessages.getString("MStudioDeployPreferencePage.pathTip");
+	private final static String MSDPP_DPLY_LOCAL = 
+		MStudioMessages.getString("MStudioDeployPreferencePage.deployLocation");
 	private final static String MSDPP_EMPTY_STR = "";
 
 	private Label tipText = null;
