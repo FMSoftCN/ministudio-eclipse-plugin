@@ -119,17 +119,10 @@ public class MStudioProject {
 	}
 
 	public boolean setDepPkgs(String[] depPkgs) {
-
 		if (depPkgs.length <= 0)
 			return false;
 
-		String tmp = depPkgs[0];
-
-		for (int i = 1; i < depPkgs.length; i++) {
-			if (null != depPkgs[i] && ! depPkgs[i].isEmpty()) {
-				tmp += SPLIT_SEMICOLON + depPkgs[i];
-			}
-		}
+		String tmp = semicolonMerger(depPkgs);
 
 		return setPersistentSettings(MSTUDIO_DEPPKGS, tmp);
 	}
@@ -283,7 +276,7 @@ public class MStudioProject {
 	}
 
 	public boolean setDeployPathInfo(String[] paths) {
-		if (paths == null)
+		if (paths.length <= 0)
 			return false;
 
 		String deployPath = semicolonMerger(paths);
@@ -301,7 +294,7 @@ public class MStudioProject {
 	}
 
 	public boolean setDeployCustomFiles(String[] files) {
-		if (files == null)
+		if (files.length <= 0)
 			return false;
 
 		String deployFile = semicolonMerger(files);
