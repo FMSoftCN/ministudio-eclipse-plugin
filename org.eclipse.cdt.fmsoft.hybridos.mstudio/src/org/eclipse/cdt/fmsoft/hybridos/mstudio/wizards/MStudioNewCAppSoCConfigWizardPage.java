@@ -76,8 +76,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	public boolean isVisible = false;
 	public boolean pagesLoaded = false;
 
-	IWizardPage[] customPages = null;
-
 	private MStudioWizardHandler handler = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
@@ -119,7 +117,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setupLabel(cmpstSocType, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
 				GridData.BEGINNING);
 
-		String[] socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
+		String[] socType = msEnvInfo.getSoCPaths();
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
 		if (null != socName) {
@@ -284,18 +282,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			message = errorMessage;
 			return false;
 		}
-		/*
-		if (table.getItemCount() == 0) {
-			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.10");
-			message = errorMessage;
-			return false;
-		}
-		if (ctv.getCheckedElements().length == 0) {
-			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.11");
-			message = errorMessage;
-			return false;
-		}
-		*/
+		
 		errorMessage = null;
 		message = MESSAGE;
 
