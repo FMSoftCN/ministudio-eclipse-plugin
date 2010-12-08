@@ -178,19 +178,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		else
 			return true;
 	}
-
-	private void initGALAndIAL() {
-
+	private void initGALAndIAL(){
 		String[] galP = MStudioEnvInfo.getInstance().getGalOptions();
-		if (galP != null) {
-			for (int i = 0; i < galP.length; i++) {
+		if(galP != null){
+			for(int i = 0; i < galP.length; i++){
 				gal.add(galP[i].toString());
 			}
 		}
-
 		String[] ialP = MStudioEnvInfo.getInstance().getIalOptions();
-		if (ialP != null) {
-			for (int i = 0; i < ialP.length; i++) {
+		if(ialP != null){
+			for(int i = 0; i < ialP.length; i++){
 				ial.add(ialP[i].toString());
 			}
 		}
