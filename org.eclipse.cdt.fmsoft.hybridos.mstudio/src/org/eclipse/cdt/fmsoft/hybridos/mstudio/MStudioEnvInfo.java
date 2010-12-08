@@ -264,6 +264,10 @@ public class MStudioEnvInfo {
 		return SOC_PATH_PREFIX + SoCName + "/cross/lib/";
 	}
 
+	public String getRootfsPath(){
+		return SOC_PATH_PREFIX + SoCName + "/rootfs";
+	}
+	
 	public String getCrossMgCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
