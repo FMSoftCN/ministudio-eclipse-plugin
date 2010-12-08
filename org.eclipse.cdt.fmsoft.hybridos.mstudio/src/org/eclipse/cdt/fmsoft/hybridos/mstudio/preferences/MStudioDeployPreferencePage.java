@@ -380,11 +380,11 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 	
 	public static String deployLocation(){
-	    IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-	    if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
-	    {
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+		{
 		    return store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);	    
-	    }		
+		}		
 		return "";
 	}
 	
