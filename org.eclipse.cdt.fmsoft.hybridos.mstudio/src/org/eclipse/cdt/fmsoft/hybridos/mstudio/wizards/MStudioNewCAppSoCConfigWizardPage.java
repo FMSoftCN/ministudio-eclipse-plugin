@@ -16,7 +16,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
@@ -75,22 +75,21 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public boolean isVisible = false;
 	public boolean pagesLoaded = false;
+	private static boolean isOnlyOne = false;
 
-	private MStudioWizardHandler handler = null;
-	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private List<String> selectedPackages = new ArrayList<String>();
 
 	private Label packageDesc = null;
 	private Button buttonCheck = null;
 	private Composite msSocParent = null;
-	private Table table = null;
 	private CheckboxTableViewer ctv = null;
 	private String errorMessage = null;
 	private String message = MESSAGE;
-	private String socName = msEnvInfo.getCurSoCName();
 
-	private static boolean isOnlyOne = false;
+	private MStudioWizardHandler handler = null;
+	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+	private String socName = msEnvInfo.getCurSoCName();
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
@@ -104,18 +103,17 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
-
 		msSocParent = new Composite(parent, SWT.NONE);
 		msSocParent.setFont(msSocParent.getFont());
 		msSocParent.setLayout(new GridLayout());
 		msSocParent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Composite cmpstSocType = new Composite(msSocParent, SWT.NONE);
-		cmpstSocType.setLayout(new GridLayout(2, true));
+		cmpstSocType.setLayout(new GridLayout(2, false));
 		cmpstSocType.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		setupLabel(cmpstSocType, MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"),
-				GridData.BEGINNING);
+		Label label = new Label(cmpstSocType, SWT.NULL);
+		label.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"));
 
 		String[] socType = msEnvInfo.getSoCPaths();
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
@@ -136,7 +134,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				}
 			});
 		}
-		setupLabel(cmpstSocType, EMPTY_STR, GridData.BEGINNING);
+		//setupLabel(cmpstSocType, EMPTY_STR, GridData.BEGINNING);
 
 		Composite cLabel = new Composite(msSocParent, SWT.NONE);
 		cLabel.setLayout(new GridLayout());
@@ -144,36 +142,30 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setupLabel(cLabel,
 				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.5"),
 				GridData.BEGINNING);
-		setupLabel(cLabel,
-				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
-				GridData.BEGINNING);
+//		setupLabel(cLabel,
+//				MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.6"),
+//				GridData.BEGINNING);
 
 		Composite cmpstPkgDesc = new Composite(msSocParent, SWT.NONE);
-		GridLayout gl = new GridLayout(2, true);
-		cmpstPkgDesc.setLayout(gl);
+		cmpstPkgDesc.setLayout(new GridLayout(2, true));
 		cmpstPkgDesc.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		table = new Table(cmpstPkgDesc, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
-		GridData gd = new GridData(GridData.FILL_BOTH);
-		table.setLayoutData(gd);
+		Table table = new Table(cmpstPkgDesc, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		table.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
-		packageDesc = new Label(cmpstPkgDesc, SWT.WRAP);
-		packageDesc.setText(EMPTY_STR);
-		GridData gdx = new GridData(GridData.FILL_BOTH);
-		gdx.verticalAlignment = SWT.TOP;
-		packageDesc.setLayoutData(gdx);
+		packageDesc = new Label(cmpstPkgDesc, SWT.WRAP | SWT.BORDER);
+		packageDesc.setText("No Select Package.");
+		packageDesc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		packageDesc.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		ctv = new CheckboxTableViewer(table);
 		ctv.setContentProvider(new IStructuredContentProvider() {
 			public Object[] getElements(Object inputElement) {
-				return (Object[]) inputElement;
+				return (Object[])inputElement;
 			}
-
-			public void dispose() {
-			}
-
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			}
+			public void dispose(){}
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
 		});
 		ctv.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
@@ -232,11 +224,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		setControl(msSocParent);
 	}
 
-	/**
-	 *
-	 * @param handler
-	 * @return
-	 */
 	static public CfgHolder[] getDefaultCfgs(MStudioWizardHandler handler) {
 
 		String id = handler.getPropertyId();
@@ -273,10 +260,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public boolean isCustomPageComplete() {
-
-		if (!isVisited())
-			return true;
-
 		if (socName == null) {
 			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.8");
 			message = errorMessage;
@@ -285,7 +268,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		
 		errorMessage = null;
 		message = MESSAGE;
-
 		return true;
 	}
 
@@ -294,7 +276,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		msSocParent.setVisible(visible);
 		isVisible = visible;
 
-		if (visible && handler != null && !isVisited()) {
+		if (visible && handler != null) {
 			setPageComplete(isCustomPageComplete());
 		}
 
@@ -326,36 +308,17 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public IWizardPage getNextPage() {
 		pagesLoaded = true;
-		//return MBSCustomPageManager.getNextPage(PAGE_ID);
 		return null;
 	}
 
-	public String[] getSelectedPackages() {
-
-		String[] ret = new String[selectedPackages.size()];
-		Iterator<String> i = selectedPackages.iterator();
-		int c = 0;
-
-		while (i.hasNext()){
-			  ret[c++] = i.next();
-		}
-
-		return ret;
+	public String[] getSelectedPackages() {	
+		return selectedPackages.toArray(new String[selectedPackages.size()]);
 	}
 
 	protected void update() {
 		getWizard().getContainer().updateButtons();
 		getWizard().getContainer().updateMessage();
 		getWizard().getContainer().updateTitleBar();
-	}
-
-	// ------------------------
-	private boolean isVisited() {
-		if (table == null || handler == null)
-			return false;
-
-		// return Arrays.equals(handler.getSelectedToolChains(), visitedTCs);
-		return true;
 	}
 
 	private boolean dailogPkgsChecked(String title, String pkgName, List<String> listPkgs) {
@@ -502,7 +465,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private Label setupLabel(Composite composite, String name, int mode) {
-
 		Label label = new Label(composite, SWT.WRAP);
 		label.setText(name);
 		GridData gd = new GridData(mode);
