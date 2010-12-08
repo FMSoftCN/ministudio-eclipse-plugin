@@ -24,6 +24,12 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.Viewer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -31,6 +37,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -39,6 +46,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
 
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -71,6 +79,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private List<String> selServList = new ArrayList<String>();
 	private Combo galCom = null;
 	private Combo ialCom = null;
+	private CheckboxTableViewer ctv = null;
 	private String selectedGalEngine;
 	private String selectedIalEngine;
 
@@ -128,21 +137,11 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		String[] defaultSelServ = storeServ.split(MSDPP_SPLIT);
 
 		selServList.clear();
-
-		for (Iterator<Button> it = btnList.iterator(); it.hasNext(); ) {
-			boolean find = false;
-			Button btn = it.next();
-
-			for (int i = 0; i < defaultSelServ.length; i++) {
-				if (defaultSelServ[i].equals(btn.getText())) {
-					selServList.add(defaultSelServ[i]);
-					find = true;
-				}
-			}
-
-			btn.setSelection(find);
+		for (int i = 0; i < defaultSelServ.length; i++) {
+			selServList.add(defaultSelServ[i]);
 		}
-		
+		ctv.setCheckedElements(defaultSelServ);
+
 		String metaDataPath = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 		String tagetMgconfigureFile = metaDataPath + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
@@ -313,39 +312,47 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		});
 	}
 
-	private SelectionAdapter btnSelAdp = new SelectionAdapter() {
-
-		public void widgetSelected(SelectionEvent e) {
-			selServList.clear();
-
-			for (Iterator<Button> it = btnList.iterator(); it.hasNext(); ) {
-				Button btn = it.next();
-				if (btn.getSelection()) {
-					selServList.add(btn.getText());
-				}
-			}
-		}
-	};
-
 	private Control createServicesContent(Composite parent) {
 
-		Composite com = new Composite(parent, SWT.BORDER);
+		Composite com = new Composite(parent, SWT.NULL);
 		com.setLayout(new GridLayout());
 		com.setLayoutData(new GridData(GridData.FILL_BOTH));
 		Color c = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
 		com.setBackground(c);
 
-		if (allServList != null) {
-			btnList.clear();
-
-			for (Iterator<String> it = allServList.iterator(); it.hasNext(); ) {
-				String serv = it.next();
-				Button btn = new Button(com, SWT.CHECK);
-				btn.setText(serv);
-				btn.setBackground(c);
-				btn.addSelectionListener(btnSelAdp);
-				btnList.add(btn);
+		Table table = new Table(com, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
+		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		table.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		
+		ctv = new CheckboxTableViewer(table);
+		ctv.setContentProvider(new IStructuredContentProvider() {
+			public Object[] getElements(Object inputElement) {
+				return (Object[])inputElement;
 			}
+			public void dispose(){}
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+		});
+		ctv.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				return element == null ? "" : (String)element;
+			}
+
+			public Image getImage(Object element) {
+				return null;
+			}
+		});
+		ctv.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (event.getChecked()) {
+					selServList.add((String)event.getElement());
+				} else {
+					selServList.remove((String)event.getElement());
+				}
+			}
+		});
+		
+		if (allServList != null) {
+			ctv.setInput(allServList.toArray());
 		}
 
 		com.layout(true);
@@ -380,7 +387,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	    }		
 		return "";
 	}
-
-
+	
 }
 
