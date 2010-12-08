@@ -84,6 +84,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private Button buttonCheck = null;
 	private Composite msSocParent = null;
 	private CheckboxTableViewer ctv = null;
+	private boolean ctvHasInitialized = false;
 	private String errorMessage = null;
 	private String message = MESSAGE;
 
@@ -202,7 +203,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 		});
 
-		setCheckboxTableViewerData();
+//		setCheckboxTableViewerData();
 
 		buttonCheck = new Button(cmpstPkgDesc, SWT.CHECK);
 		buttonCheck.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
@@ -282,6 +283,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		if (visible) {
 			msSocParent.getParent().layout(true, true);
+			setCheckboxTableViewerData();
 			update();
 		}
 	}
@@ -450,12 +452,14 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void setCheckboxTableViewerData() {
-
-		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
-			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
+		
+		if (!ctvHasInitialized){
+			for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
+				pkgs.add(new PackageItem(info.getKey(), info.getValue()));
+			}
+			ctv.setInput(pkgs.toArray());
+			ctvHasInitialized = true;
 		}
-
-		ctv.setInput(pkgs.toArray());
 	}
 
 	private void addAllselectedPackages() {
