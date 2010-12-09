@@ -37,12 +37,13 @@ public class MStudioProject {
 	private final static String MSTUDIO_TMPLTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.tmpltype";
 	private final static String MSTUDIO_ENTRYTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.entrytype";
 	private final static String MSTUDIO_DEPLOYABLE = "org.eclipse.cdt.feynman.hybridos.mstudio.deployable";
-	private final static String MSTUDIO_DEPLOY_PATHINFO =
-		"org.eclipse.cdt.feynman.hybridos.mstudio.deploy.pathinfo";
-	private final static String MSTUDIO_DEPLOY_CUSTOMFILES =
-		"org.eclipse.cdt.feynman.hybridos.mstudio.deploy.customfiles";
+	//format: respath;binpath;libpath;custompath
+	private final static String MSTUDIO_DEPLOY_PATHINFO = "org.eclipse.cdt.feynman.hybridos.mstudio.deploy.pathinfo";
+	//format(file using relative project path): file1;file2;file3;...
+	private final static String MSTUDIO_DEPLOY_CUSTOMFILES = "org.eclipse.cdt.feynman.hybridos.mstudio.deploy.customfiles";
 
-	private final static String SPLIT_SEMICOLON = ";";
+//	private final static String SPLIT_SEMICOLON = ";";
+	private final static String DEPLOY_SPLIT_CHAR=":";
 	private final static String EMPTY_STR = "";
 
 	public enum MStudioProjectTemplateType {
@@ -131,7 +132,7 @@ public class MStudioProject {
 		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
 
 		if (pkgs != null)
-			return pkgs.split(SPLIT_SEMICOLON);
+			return pkgs.split(DEPLOY_SPLIT_CHAR);
 
 		return new String[0];
 	}
@@ -266,51 +267,46 @@ public class MStudioProject {
 		description.setNatureIds(newNatures);
 		wrapped.setDescription(description, monitor);
 	}
-
-	public String[] getDeployPathInfo() {
+	
+	public String[] getDeployPathInfo(){
 		String deployPath = getPersistentSettings(MSTUDIO_DEPLOY_PATHINFO);
-		if (deployPath == null)
-			return new String[0];
-
-		return deployPath.split(SPLIT_SEMICOLON);
+		if (deployPath != null)
+			return deployPath.split(DEPLOY_SPLIT_CHAR);
+		return new String[0];
 	}
-
-	public boolean setDeployPathInfo(String[] paths) {
-		if (paths.length <= 0)
+	
+	public boolean setDeployPathInfo(String[] paths){
+		if(paths.length != 4)
 			return false;
-
-		String deployPath = semicolonMerger(paths);
-
-		return setPersistentSettings(MSTUDIO_DEPLOY_PATHINFO, deployPath);
+		else{
+			String deployPath = semicolonMerger(paths);
+			return setPersistentSettings(MSTUDIO_DEPLOY_PATHINFO,deployPath);
+		}
 	}
-
-	public String[] getDeployCustomFiles() {
+	
+	public String[] getDeployCustomFiles(){
 		String deployFile = getPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES);
-
-		if (deployFile == null)
-			return new String[0];
-
-		return deployFile.split(SPLIT_SEMICOLON);
+		if (deployFile != null && deployFile != "")
+			return deployFile.split(DEPLOY_SPLIT_CHAR);
+		return new String[0];
 	}
 
-	public boolean setDeployCustomFiles(String[] files) {
-		if (files.length <= 0)
-			return false;
-
-		String deployFile = semicolonMerger(files);
-
-		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES, deployFile);
+	public boolean setDeployCustomFiles(String[] files){
+		String tempStr = "";
+		if(files != null){		
+			if(files.length > 0)
+				tempStr = semicolonMerger(files);
+		}
+		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES,tempStr);
 	}
-
+	
 	private String semicolonMerger(String[] sm) {
 		if (sm.length <= 0)
 			return null;
-
 		String deploy = sm[0];
-
 		for (int i = 1; i < sm.length; i++) {
 			if (null != sm[i] && ! sm[i].isEmpty())
-				deploy += SPLIT_SEMICOLON + sm[i];
+				deploy += DEPLOY_SPLIT_CHAR + sm[i];
 		}
 
 		return deploy;
