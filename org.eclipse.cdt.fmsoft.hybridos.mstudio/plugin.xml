@@ -1,301 +1,336 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
+
 <plugin>
-  	<extension-point id="MStudioWizard" name="MStudioWizard" schema="schema/MStudioWizard.exsd"/>
-   
-   <extension  
-          id="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"  
-          point="org.eclipse.core.resources.natures">  
-     <runtime>  
-         <run class="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>  
-     </runtime> 
-   </extension>
-       	
-   <extension
-         point="org.eclipse.ui.newWizards">
-      <category
+    
+    <extension-point id="MStudioWizard" name="MStudioWizard" schema="schema/MStudioWizard.exsd"/>
+
+    <extension  
+        id="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"  
+        point="org.eclipse.core.resources.natures">  
+        <runtime>  
+            <run class="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>  
+        </runtime> 
+    </extension>
+
+    <extension point="org.eclipse.ui.newWizards">
+        <category
             name="%MStudioNewWizardsCategory.name"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.mStudioNewWizards">
-      </category>
-      <wizard
+        </category>
+        <wizard
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.mStudioNewWizards"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioNewCAppWizard"
             finalPerspective="org.eclipse.cdt.ui.CPerspective"
-            icon="icons/mgproject.gif"
+            icon="icons/new_c_project.gif"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.mStudioNewCAppWizard"
             name="%MStudioCAppProject">
-         <description>%MStudioCAppProject.desc</description>
-      </wizard>
-   </extension>
+            <description>%MStudioCAppProject.desc</description>
+        </wizard>
+        <wizard
+            category="org.eclipse.cdt.fmsoft.hybridos.mstudio.mStudioNewWizards"
+            class="org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioNewCCAppWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/new_cc_project.gif"
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.mStudioNewCCAppWizard"
+            name="%MStudioCCAppProject">
+            <description>%MStudioCCAppProject.desc</description>
+        </wizard>
+    </extension>
 
-  	<extension
+    <extension
         id="MStudioTemplateEngineWizard"
         name="%MStudioTemplateEngineWizard.name"
         point="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioWizard">
-     	<wizard
+        <wizard
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.template.MStudioNewWizardTemplate"
             name="%MStudioNewWizardTemplate.name">
-     	</wizard>
-  	</extension>
-		
-   <extension
-         id="org.eclipse.cdt.fmsoft.hybridos.mstudio.project"
-         name="mStudio.buildProperties"
-         point="org.eclipse.cdt.managedbuilder.core.buildProperties">
-         
-     
-     <propertyType
-           id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib"
-           name="%MStudioArtefactType.sharedLib.name">
-     </propertyType>
-     <propertyType
-           id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.exe"
-           name="%MStudioArtefactType.exe.name">
-     </propertyType>
-     <propertyValue
-           id="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
-           name="%MStudioBuildProperty.sharedLib.name"
-           property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib">
-     </propertyValue>
-     <propertyValue
-           id="org.eclipse.cdt.build.core.buildArtefactType.exe"
-           name="%MStudioBuildProperty.exe.name"
-           property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.exe">
-     </propertyValue>	
-  	</extension> 
-  	
-  	<extension 
-         point="org.eclipse.cdt.core.templates">
+        </wizard>
+    </extension>
 
-      <template
+    <extension
+        id="org.eclipse.cdt.fmsoft.hybridos.mstudio.project"
+        name="mStudio.buildProperties"
+        point="org.eclipse.cdt.managedbuilder.core.buildProperties">
+
+        <propertyType
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib"
+            name="%MStudioArtefactType.c.sharedLib.name">
+        </propertyType>
+        <propertyValue
+            id="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+            name="%MStudioBuildProperty.c.sharedLib.name"
+            property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib">
+        </propertyValue>
+
+        <propertyType
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe"
+            name="%MStudioArtefactType.c.exe.name">
+        </propertyType>
+        <propertyValue
+            id="org.eclipse.cdt.build.core.buildArtefactType.exe"
+            name="%MStudioBuildProperty.c.exe.name"
+            property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe">
+        </propertyValue>	
+
+        <propertyType
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.sharedLib"
+            name="%MStudioArtefactType.cc.sharedLib.name">
+        </propertyType>
+        <propertyValue
+            id="org.eclipse.cdt.build.core.buildArtefactType.sharedLib"
+            name="%MStudioBuildProperty.cc.sharedLib.name"
+            property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.sharedLib">
+        </propertyValue>
+
+        <propertyType
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.exe"
+            name="%MStudioArtefactType.cc.exe.name">
+        </propertyType>
+        <propertyValue
+            id="org.eclipse.cdt.build.core.buildArtefactType.exe"
+            name="%MStudioBuildProperty.cc.exe.name"
+            property="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.exe">
+        </propertyValue>	
+
+    </extension> 
+
+    <extension point="org.eclipse.cdt.core.templates">
+        <template
             filterPattern=".*"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioExecutableCProject"
             location="templates/projecttemplates/MStudioExecutableCProject/template.xml"
-            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.exe">
-      </template>
-      <template
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe">
+        </template>
+        <template
             filterPattern=".*"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioSimpleSharedLibCProject"
             location="templates/projecttemplates/MStudioSimpleSharedLibCProject/template.xml"
-            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib">
-      </template>
-      <template
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib">
+        </template>
+        <template
             filterPattern=".*"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioMginitModuleCProject"
             location="templates/projecttemplates/MStudioMginitModuleCProject/template.xml"
-            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib">
-      </template>
-      <template
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib">
+        </template>
+        <template
             filterPattern=".*"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioCustomIALCProject"
             location="templates/projecttemplates/MStudioCustomIALCProject/template.xml"
-            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib">
-      </template>
-  	</extension>
-  	
-  	<extension
-         point="org.eclipse.ui.preferencePages">
-     	<page
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib">
+        </template>
+        <template
+            filterPattern=".*"
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioExecutableCCProject"
+            location="templates/projecttemplates/MStudioExecutableCCProject/template.xml"
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.exe">
+        </template>
+        <template
+            filterPattern=".*"
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioSimpleSharedLibCCProject"
+            location="templates/projecttemplates/MStudioSimpleSharedLibCCProject/template.xml"
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.sharedLib">
+        </template>
+    </extension>
+
+    <extension point="org.eclipse.ui.preferencePages">
+        <page
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.HybridOS"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioToolsPreferencePage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.mStudio"
             name="%MStudioPreferencePages.mstudio.name">
-      </page>
-      <page
+        </page>
+        <page
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioCommonPreferencePage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.HybridOS"
             name="%MStudioPreferencePages.hybridos.name">
-      </page>
-      <page
+        </page>
+        <page
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.HybridOS"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.Deploy"
             name="%MStudioPreferencePages.deploy.name">
-      </page>
-      <page
+        </page>
+        <page
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.HybridOS"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.SoC"
             name="%MStudioPreferencePages.soc.name">
-      </page>
-  	</extension>
-  	
-  	<extension
-         point="org.eclipse.ui.propertyPages">
-     <page
-           class="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPropertyPage"
-           id="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPage"
-           name="%MStudioPropertyPages.common.name">
-			  <filter name="nature" value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>
-	   </page>
-      <page
+        </page>
+    </extension>
+
+    <extension point="org.eclipse.ui.propertyPages">
+        <page
+            class="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPropertyPage"
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPage"
+            name="%MStudioPropertyPages.common.name">
+            <filter name="nature" 
+                value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>
+        </page>
+        <page
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPage"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioSoftDevPackagePropertyPage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioSoftDevPackagePage"
             name="%MStudioPropertyPages.soc.name">
-         <filter
-               name="nature"
-               value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature">
-         </filter>
-      </page>
-      <page
+            <filter name="nature"
+                value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>
+        </page>
+        <page
             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioCommonPage"
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioDeployPropertyPage"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.properties.MStudioDeployPage"
             name="%MStudioPropertyPages.deploy.name">
-         <filter
-               name="nature"
-               value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature">
-         </filter>
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.core.contenttype.contentTypes">
-      <content-type
+            <filter name="nature"
+                value="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>
+        </page>
+    </extension>
+
+    <extension point="org.eclipse.core.contenttype.contentTypes">
+        <content-type
             file-extensions="project"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.mrctype"
             name="%hybridStudio.contentType.res"
             priority="high">
-      </content-type>
-   </extension>
-   
-   
-   
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
+        </content-type>
+    </extension>
+
+
+
+    <extension point="org.eclipse.ui.editors">
+        <editor
             default="true"
             extensions="project"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.resEditorLauncher"
             launcher="org.eclipse.cdt.fmsoft.hybridos.mstudio.editor.MStudioResEditorLauncher"
             name="%MStudioResEditor.name">
-         <contentTypeBinding
-               contentTypeId="org.eclipse.cdt.fmsoft.hybridos.mstudio.mrctype">
-         </contentTypeBinding>
-      </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
+            <contentTypeBinding
+                contentTypeId="org.eclipse.cdt.fmsoft.hybridos.mstudio.mrctype">
+            </contentTypeBinding>
+        </editor>
+    </extension>
+
+    <extension point="org.eclipse.ui.menus">
+        <menuContribution
             locationURI="menu:org.eclipse.ui.main.menu?after=window">
-         <menu
-               id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu"
-               label="%MStudioMenu.hybridos.label">
-            <command
-                  commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.updatechecks"
-                  id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.updatechecks"
-                  label="%MStudioMenu.updateChecks.label"
-                  style="push"
-                  tooltip="%MStudioMenu.updateChecks.tooltip">
-            </command>
-            <separator
-                  name="org.eclipse.cdt.fmsoft.hybridos.mstudio.separator"
-                  visible="true">
-            </separator>
-            <command
-                  commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice"
-                  id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.mginitservice"
-                  label="%MStudioMenu.mginitService.label"
-                  style="push"
-                  tooltip="%MStudioMenu.mginitService.tooltip">
-            </command>
-            <command
-                  commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy"
-                  id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.deploy"
-                  label="%MStudioMenu.deploy.label"
-                  style="push"
-                  tooltip="%MStudioMenu.deploy.tooltip">
-            </command>
-         </menu>
-      </menuContribution>
-      <menuContribution
+            <menu id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu"
+                label="%MStudioMenu.hybridos.label">
+                <command
+                    commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.updatechecks"
+                    id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.updatechecks"
+                    label="%MStudioMenu.updateChecks.label"
+                    style="push"
+                    tooltip="%MStudioMenu.updateChecks.tooltip">
+                </command>
+                <separator
+                    name="org.eclipse.cdt.fmsoft.hybridos.mstudio.separator"
+                    visible="true">
+                </separator>
+                <command
+                    commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice"
+                    id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.mginitservice"
+                    label="%MStudioMenu.mginitService.label"
+                    style="push"
+                    tooltip="%MStudioMenu.mginitService.tooltip">
+                </command>
+                <command
+                    commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy"
+                    id="org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.deploy"
+                    label="%MStudioMenu.deploy.label"
+                    style="push"
+                    tooltip="%MStudioMenu.deploy.tooltip">
+                </command>
+            </menu>
+        </menuContribution>
+        <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar">
-            <command
-                  commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice"
-                  icon="icons/mginit.gif"
-                  id="org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar.mginit"
-                  label="%MStudioMenu.mginitService.label"
-                  style="push"
-                  tooltip="%MStudioMenu.mginitService.tooltip">
-            </command>
-         </toolbar>
-      </menuContribution>
-   </extension>
-   <extension
-         point="org.eclipse.ui.handlers">
-      <handler
+            <toolbar
+                id="org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar">
+                <command
+                    commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice"
+                    icon="icons/mginit.gif"
+                    id="org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar.mginit"
+                    label="%MStudioMenu.mginitService.label"
+                    style="push"
+                    tooltip="%MStudioMenu.mginitService.tooltip">
+                </command>
+            </toolbar>
+        </menuContribution>
+    </extension>
+
+    <extension point="org.eclipse.ui.handlers">
+        <handler
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioCheckUpdate"
             commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.updatechecks">
-      </handler>
-      <handler
+        </handler>
+        <handler
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.handlers.MStudioMginitService"
             commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice">
-      </handler>
-      <handler
+        </handler>
+        <handler
             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioDeployProjects"
             commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy">
-      </handler>
-   </extension>
-   <extension
-         point="org.eclipse.ui.commands">
-      <command
+        </handler>
+    </extension>
+
+    <extension point="org.eclipse.ui.commands">
+        <command
             categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.command.category"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.updatechecks"
             name="%MStudioCommand.update.name">
-      </command>
-      <command
+        </command>
+        <command
             categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.category"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice"
             name="%MStudioCommand.mginitService.name">
-      </command>
-      <command
+        </command>
+        <command
             categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.command.category"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy"
             name="%MStudioCommand.deploy.name">
-      </command>
-      <category
+        </command>
+        <category
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.category"
             name="%MStudioCommand.category">
-      </category>
-   </extension>
-   <extension
-         id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templateProcessTypes"
-         name="%MStudioTemplateProcessTypes.name"
-         point="org.eclipse.cdt.core.templateProcessTypes">
-      <processType
+        </category>
+    </extension>
+
+    <extension
+        id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templateProcessTypes"
+        name="%MStudioTemplateProcessTypes.name"
+        point="org.eclipse.cdt.core.templateProcessTypes">
+        <processType
             name="MStudioAddFiles"
             processRunner="org.eclipse.cdt.fmsoft.hybridos.mstudio.templateengine.process.processes.MStudioAddFiles">
-         <simple
-               name="projectName">
-         </simple>
-         <complexArray
-               name="files">
-            <baseType>
-               <simple
-                     name="source">
-               </simple>
-               <simple
-                     name="target">
-               </simple>
-               <simple
-                     name="replaceable">
-               </simple>
-            </baseType>
-         </complexArray>
-      </processType>
-      <processType
+            <simple
+                name="projectName">
+            </simple>
+            <complexArray
+                name="files">
+                <baseType>
+                    <simple
+                        name="source">
+                    </simple>
+                    <simple
+                        name="target">
+                    </simple>
+                    <simple
+                        name="replaceable">
+                    </simple>
+                </baseType>
+            </complexArray>
+        </processType>
+        <processType
             name="MStudioCreateSourceFolder"
             processRunner="org.eclipse.cdt.fmsoft.hybridos.mstudio.templateengine.process.processes.MStudioCreateSourceFolder">
-         <simple
-               name="projectName">
-         </simple>
-         <simple
-               name="path">
-         </simple>
-      </processType>
-   </extension>
+            <simple
+                name="projectName">
+            </simple>
+            <simple
+                name="path">
+            </simple>
+        </processType>
+    </extension>
 
- 
+
 </plugin>

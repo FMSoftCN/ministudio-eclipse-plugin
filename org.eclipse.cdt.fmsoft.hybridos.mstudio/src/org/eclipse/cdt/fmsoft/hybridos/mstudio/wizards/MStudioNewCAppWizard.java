@@ -59,7 +59,6 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 
 
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
@@ -256,13 +255,15 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 	public boolean performCancel() {
 		clearProject();
-
+		return fMainPage.h_selected.doCancel();
+/*
 		if (MStudioNewCAppSoCConfigWizardPage.isOnlyOneSoC())
 			return true;
 
 		MStudioSoCPreferencePage.setCurrentSoC("null");
 
 		return true;
+*/		
 	}
 
 	public void setInitializationData(IConfigurationElement config,

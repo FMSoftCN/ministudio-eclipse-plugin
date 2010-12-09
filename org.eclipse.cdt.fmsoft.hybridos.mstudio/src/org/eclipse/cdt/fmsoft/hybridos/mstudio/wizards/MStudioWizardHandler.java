@@ -906,5 +906,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 		else 
 			return new String[0];
 	}
+	
+	public boolean doCancel(){
+		if (null != fConfigPage){
+			return fConfigPage.doCancel();
+		}
+		return true;
+	}
 }
 

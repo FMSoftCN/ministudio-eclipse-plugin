@@ -75,7 +75,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public boolean isVisible = false;
 	public boolean pagesLoaded = false;
-	private static boolean isOnlyOne = false;
 
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private List<String> selectedPackages = new ArrayList<String>();
@@ -90,13 +89,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	private MStudioWizardHandler handler = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-	private String socName = msEnvInfo.getCurSoCName();
+	private String socName = null;
+	private String defaultSocName = null;
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
 		setPageComplete(false);
 		handler = wh;
 		setWizard(wh.getWizard());
+		socName = msEnvInfo.getCurSoCName();
+		defaultSocName = socName;
 	}
 
 	public CfgHolder[] getCfgItems(boolean getDefault) {
@@ -122,7 +124,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		if (null != socName) {
 			combo.setText(socName);
 			combo.setEnabled(false);
-			isOnlyOne = true;
 		} else {
 			combo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -256,10 +257,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		return out.toArray(new CfgHolder[out.size()]);
 	}
 
-	static public boolean isOnlyOneSoC() {
-		return isOnlyOne;
-	}
-
 	public boolean isCustomPageComplete() {
 		if (socName == null) {
 			errorMessage = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.8");
@@ -283,7 +280,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		if (visible) {
 			msSocParent.getParent().layout(true, true);
-			setCheckboxTableViewerData();
+			if (!ctvHasInitialized){
+				setCheckboxTableViewerData();
+				ctvHasInitialized = true;
+			}
 			update();
 		}
 	}
@@ -452,14 +452,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void setCheckboxTableViewerData() {
-		
-		if (!ctvHasInitialized){
-			for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
-				pkgs.add(new PackageItem(info.getKey(), info.getValue()));
-			}
-			ctv.setInput(pkgs.toArray());
-			ctvHasInitialized = true;
+		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
+			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
 		}
+		ctv.setInput(pkgs.toArray());
 	}
 
 	private void addAllselectedPackages() {
@@ -478,6 +474,17 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		label.setFont(cmpst.getFont());
 
 		return label;
+	}
+
+	public boolean doCancel() {
+		
+		if(null == defaultSocName && socName != null) {
+			MStudioSoCPreferencePage.setCurrentSoC("null");
+		} else if (socName != null && socName.equals(defaultSocName)) {
+			MStudioSoCPreferencePage.setCurrentSoC(defaultSocName);
+		}
+				
+		return true;
 	}
 }
 

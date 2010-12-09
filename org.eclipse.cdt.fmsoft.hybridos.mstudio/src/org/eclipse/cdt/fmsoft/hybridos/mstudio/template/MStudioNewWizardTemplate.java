@@ -35,14 +35,18 @@ import org.eclipse.cdt.ui.templateengine.TemplateEngineUI;
 import org.eclipse.cdt.core.templateengine.TemplateInfo;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioNewCCAppWizard;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioWizardHandler;
 
 
 public class MStudioNewWizardTemplate extends AbstractCWizard {
 
-	private static final String[] MSTUDIO_TYPE =
-		{"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.exe",
-		"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.sharedLib"};
+	private static final String[] MSTUDIO_C_TYPE =
+		{"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe",
+		"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.sharedLib"};
+	private static final String[] MSTUDIO_CC_TYPE =
+		{"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.exe",
+		"org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.cc.sharedLib"};
 
 	public static final String OTHERS_LABEL = MStudioMessages.getString("MStudioNewWizard.0");  
 	public static final String EMPTY_PROJECT = "Empty hybridStudio Project";
@@ -50,12 +54,22 @@ public class MStudioNewWizardTemplate extends AbstractCWizard {
 	public static final String MSNWT_GNU_SO_DEBUG = "cdt.managedbuild.toolchain.gnu.so.debug";
 
 	public EntryDescriptor[] createItems(boolean supportedOnly, IWizard wizard) {
+		String[] mtype = null;
+		
+		if (wizard instanceof MStudioNewCCAppWizard){
+			// FIXME, to do somthing for C++ project 
+			// it's templates is different to C project
+			System.out.println("C++ project ");
+			mtype = MSTUDIO_CC_TYPE;
+		} else {
+			mtype = MSTUDIO_C_TYPE;
+		}
 
 		ArrayList<EntryDescriptor> items = new ArrayList<EntryDescriptor>();
 		IBuildPropertyManager bpm = ManagedBuildManager.getBuildPropertyManager();
 
-		for (int size = 0; size < MSTUDIO_TYPE.length; size++) {
-			IBuildPropertyType bpt = bpm.getPropertyType(MSTUDIO_TYPE[size]);
+		for (int size = 0; size < mtype.length; size++) {
+			IBuildPropertyType bpt = bpm.getPropertyType(mtype[size]);
 			IBuildPropertyValue[] vs = bpt.getSupportedValues();
 
 			Arrays.sort(vs, BuildListComparator.getInstance());
@@ -88,9 +102,8 @@ public class MStudioNewWizardTemplate extends AbstractCWizard {
 					for (int tmplIdx = 0; tmplIdx < templates.length; tmplIdx++) {
 						TemplateInfo templateInfo = templates[tmplIdx].getTemplateInfo();
 
-						if (templateInfo.getProjectType().equals(MSTUDIO_TYPE[size])) {
+						if (templateInfo.getProjectType().equals(mtype[size])) {
 							items.add(new EntryDescriptor(templates[tmplIdx].getTemplateId(),
-								//null,
 								vs[bpvIdx].getId(),
 								templates[tmplIdx].getLabel(),templateInfo.isCategory(),h, null));
 						}
