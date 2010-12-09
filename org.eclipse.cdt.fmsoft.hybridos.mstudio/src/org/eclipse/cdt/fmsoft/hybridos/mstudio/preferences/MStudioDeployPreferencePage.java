@@ -317,8 +317,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		Composite com = new Composite(parent, SWT.NULL);
 		com.setLayout(new GridLayout());
 		com.setLayoutData(new GridData(GridData.FILL_BOTH));
-		Color c = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-		com.setBackground(c);
 
 		Table table = new Table(com, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
