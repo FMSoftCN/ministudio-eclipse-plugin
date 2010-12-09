@@ -301,7 +301,17 @@ public class MStudioEnvInfo {
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
 		File hybridosDir = new File(SOC_PATH_PREFIX);
-		return hybridosDir.list(new DirFilter());
+		String[] paths = hybridosDir.list(new DirFilter());
+
+		List<String> v = new ArrayList<String>();
+		for (int i = 0; i < paths.length; i++) {
+			File file = new File(SOC_PATH_PREFIX + paths[i] + "/"
+					+ SOC_CONFIG_FILE);
+			if (file.exists()) {
+				v.add(paths[i]);
+			}
+		}
+		return (String[]) (v.toArray(new String[v.size()]));
 	}
 
 	//retry to get SoC name from preference
