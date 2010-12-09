@@ -101,7 +101,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			public void selectionChanged(SelectionChangedEvent event) {
 				MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 				if (wizard != null) {
-					//ArrList<String> autobootProject=wizard.getDeployAutobootWizardPage();
+					// ArrList<String> autobootProject = wizard.getDeployAutobootWizardPage();
 				}
 				validatePage();
 			}});
@@ -271,7 +271,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	protected boolean validatePage() {
 
-		if (sizeCombo ==null || colorCombo==null) {
+		if (sizeCombo == null || colorCombo == null) {
 			setPageComplete(false);
 			return false;
 		}
