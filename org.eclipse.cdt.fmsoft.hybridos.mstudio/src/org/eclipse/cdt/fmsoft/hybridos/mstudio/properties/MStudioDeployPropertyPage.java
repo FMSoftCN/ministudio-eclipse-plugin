@@ -16,7 +16,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.properties;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
@@ -37,21 +36,17 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.DirectoryFieldEditor;
 
 
 public class MStudioDeployPropertyPage extends PropertyPage
 	implements IWorkbenchPropertyPage {
 
-//	private String selectProjectName=((IProject)getElement()).getName();
-//	private String selectProjectPath=((IProject)getElement()).getLocation().toOSString();
 	private final String RES_LOCATION = "/usr/local/share/";
 	private final String BIN_LOCATION = "/usr/local/bin";
 	private final String LIB_LOCATION = "/usr/local/lib";
@@ -75,6 +70,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 	private List srcList;
 	private List destList;
 	private ArrayList<String> filesName = new ArrayList<String>();
+	
 	public MStudioDeployPropertyPage() {
 	}
 
@@ -101,7 +97,6 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		com1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		resLabel = new Label(com1,SWT.NONE);
-		GridData gd = new GridData();
 		resLabel.setText(MStudioMessages.getString("MStudioDeployPropertyPage.resLabel"));
 		resText = new Text(com1,SWT.BORDER);
 		resText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -264,7 +259,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 				if(dirList.length <= 0)
 					return;
 				for(int i = 0; i < dirList.length; i++)
-					dirList[i] = dir + f.separator + dirList[i];
+					dirList[i] = dir + File.separator + dirList[i];
 				
 				for(int i = 0; i < dirList.length; i++)
 					listProjectFiles(dirList[i]);
