@@ -165,6 +165,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		});
 		removeButton = new Button(col2,SWT.NONE);
 		removeButton.setText(MStudioMessages.getString("MStudioDeployPropertyPage.removeButtonText"));
+		deployButton.setBounds(removeButton.getBounds());
 		removeButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
