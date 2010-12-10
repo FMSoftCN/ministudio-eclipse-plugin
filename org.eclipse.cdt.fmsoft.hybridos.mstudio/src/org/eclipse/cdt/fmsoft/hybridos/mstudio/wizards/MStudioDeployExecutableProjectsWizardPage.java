@@ -99,10 +99,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-				MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
-				if (wizard != null) {
+//				MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
+//				if (wizard != null) {
 					// ArrList<String> autobootProject = wizard.getDeployAutobootWizardPage();
-				}
+//				}
 				validatePage();
 			}});
 
