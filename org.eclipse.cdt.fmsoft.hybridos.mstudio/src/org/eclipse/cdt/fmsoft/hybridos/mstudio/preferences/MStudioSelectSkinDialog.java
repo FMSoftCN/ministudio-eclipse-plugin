@@ -41,13 +41,13 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TableItem;
 
 class SkinFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
-		return (file.isDirectory());
+		File skinFile = new File(file.getPath() + File.separator + fname);
+		return (skinFile.isFile());
 	}
 }
 
@@ -75,7 +75,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 	private void createContents() {
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		shell.setSize(500, 400);
+		shell.setSize(420, 320);
 		shell.setText(MStudioMessages
 				.getString("MStudioSelectSkinDialog.selectSkinTitle"));
 		shell.setLayout(new GridLayout());
@@ -83,15 +83,10 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		Composite tableCom = new Composite(shell, SWT.NONE);
 		GridLayout layout = new GridLayout(2, true);
-		layout.marginWidth = 10;
-		layout.horizontalSpacing = 50;
+//		layout.marginWidth = 5;
+		layout.horizontalSpacing = 20;
 		tableCom.setLayout(layout);
 		tableCom.setLayoutData(new GridData(GridData.FILL_BOTH));
-		
-//			List	skinTable2 = new List(tableCom, SWT.RADIO | SWT.V_SCROLL | SWT.SINGLE
-//				| SWT.H_SCROLL);
-//		GridData gd2 = new GridData(GridData.FILL_BOTH);
-//		skinTable2.setLayoutData(gd2);
 
 		// create skinTable
 		skinTable = new Table(tableCom, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL
@@ -118,7 +113,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		imgLabel.setLayoutData(imageGd);
 
 		Composite btnCom = new Composite(shell, SWT.NONE);
-		btnCom.setLayout(new GridLayout(2, false));
+		btnCom.setLayout(new GridLayout(2, true));
 		btnCom.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		
 		initSkinTable();
@@ -126,7 +121,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		// create ok button
 		okBtn = new Button(btnCom, SWT.NONE);
-		okBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		okBtn.setLayoutData(new GridData(90, 30));
 		okBtn.setText(MStudioMessages
 				.getString("MStudioSelectSkinDialog.okButtonLabel"));
 		okBtn.addSelectionListener(new SelectionListener() {
@@ -146,7 +141,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		// create cancel button
 		cancelBtn = new Button(btnCom, SWT.NONE);
-		cancelBtn.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		cancelBtn.setLayoutData(new GridData(90, 30));
 		cancelBtn.setText(MStudioMessages
 				.getString("MStudioSelectSkinDialog.cancelButtonLabel"));
 		cancelBtn.addSelectionListener(new SelectionListener() {

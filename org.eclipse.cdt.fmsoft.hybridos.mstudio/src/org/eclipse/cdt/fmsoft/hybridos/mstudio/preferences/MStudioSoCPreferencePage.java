@@ -15,7 +15,12 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import org.eclipse.cdt.core.settings.model.util.CDataUtil;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
@@ -43,6 +48,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSelectSkinDialog;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.managedbuilder.core.BuildException;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.IOption;
+import org.eclipse.cdt.managedbuilder.core.ITool;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.ui.IWorkbench;
@@ -114,15 +127,13 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		titleType.setText(MStudioMessages
 				.getString("MStudioSoCPreferencePage.socTypeLabel"));
 		GridData typeGd = new GridData();
-		// typeGd.horizontalAlignment = GridData.FILL;
 		typeGd.horizontalSpan = 2;
 		titleType.setLayoutData(typeGd);
 
 		// create socTable
 		socTable = new Table(typeCom, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL
 				| SWT.H_SCROLL | SWT.SINGLE);
-		GridData socGd = new GridData(200, 200);
-		// socGd.verticalSpan = 2;
+		GridData socGd = new GridData(170, 100);
 		socTable.setLayoutData(socGd);
 
 		socCtv = new CheckboxTableViewer(socTable);
@@ -140,8 +151,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		// create system info list
 		infoTable = new Table(typeCom, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData infoGd = new GridData(200, 200);
-		// systemGd.verticalSpan = 2;
+		GridData infoGd = new GridData(200, 100);
 		infoTable.setLayoutData(infoGd);
 		infoTv = new TableViewer(infoTable);
 
@@ -165,7 +175,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		// create resolution combo
 		resolutionCombo = new Combo(screenCom, SWT.NONE);
 		resolutionCombo.addSelectionListener(new SelectedChangeListener());
-		resolutionCombo.setLayoutData(new GridData(110, 20));
+		resolutionCombo.setLayoutData(new GridData(110, 25));
 
 		Label colorLabel = new Label(screenCom, SWT.NONE);
 		colorLabel.setText(MStudioMessages
@@ -174,7 +184,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		// create colordepth combo
 		colorCombo = new Combo(screenCom, SWT.NONE);
 		colorCombo.addSelectionListener(new SelectedChangeListener());
-		colorCombo.setLayoutData(new GridData(60, 20));
+		colorCombo.setLayoutData(new GridData(60, 25));
 
 		// create skin settings
 		Composite skinCom = new Composite(composite, SWT.NONE);
@@ -193,7 +203,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		skinNameLabel = new Label(skinCom, SWT.NONE);
 		GridData skinNameGd = new GridData();
 		skinGd.horizontalAlignment = GridData.FILL;
-		skinNameGd.widthHint = 300;
+		skinNameGd.widthHint = 330;
 		skinNameLabel.setLayoutData(skinNameGd);
 
 		// create select skin button
@@ -474,6 +484,104 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		}
 	}
+	
+	private boolean modifyProjectSetting(IProject project, String oldSocName, String newSocName) {
+
+		// change the include settings	
+		// change the libs settings
+		
+		if (null == project || null == oldSocName || null == newSocName) 
+			return false;
+		
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		String crossToolPrefix = einfo.getToolChainPrefix(); 
+//		String socName = einfo.getCurSoCName();
+//		String configSuffix = newSocName;
+		final String hostName = "Host";
+		final String locateInclude = "../include/";
+		
+//		List<String> depLibList = new ArrayList<String> ();
+//		String[] pkgs = new MStudioProject(project).getDepPkgs();
+//		for (int idx = 0; idx < pkgs.length; idx++) {
+//			String[] libs = einfo.getPackageLibs(pkgs[idx]);
+//			for (int c = 0; c < libs.length; c++){
+//				depLibList.add(libs[c]);
+//			}
+//		}
+		
+//		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
+		String[] pcIncludePath    = { einfo.getPCIncludePath(), locateInclude };
+		String[] pcLibPath        = { einfo.getPCLibraryPath(), locateInclude };
+		String[] crossIncludePath = { einfo.getCrossIncludePath() };
+		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
+		
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+		
+		for (int i = 0; i < cur_cfgs.length; i++) {
+//			if (cur_cfgs[i].getName()) {
+//				
+//			}
+			
+			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
+			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
+					try {
+						if ( t.getId().contains("c.compiler") ) {
+							IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
+							cur_cfgs[i].setOption(t, o, pcIncludePath);
+						}
+						if (t.getId().contains("c.link")){
+							IOption o = t.getOptionById("gnu.c.link.option.paths");
+							cur_cfgs[i].setOption(t, o, pcLibPath);
+//							o = t.getOptionById("gnu.c.link.option.libs");
+//							cur_cfgs[i].setOption(t, o, depLibs);
+						}
+					} catch (BuildException e) {
+						e.printStackTrace();
+					}
+			}
+			
+			String id = CDataUtil.genId(cur_cfgs[i].getId());
+			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
+			newconfig.setName(cur_cfgs[i].getName() + "4" + newSocName);
+			newconfig.setDescription(newconfig.getName());
+			for (ITool t : newconfig.getToolChain().getTools() ) {
+				t.setToolCommand(crossToolPrefix + t.getToolCommand());
+				try {
+					if ( t.getId().contains("c.compiler") ) {
+						IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
+						newconfig.setOption(t, o, crossIncludePath);
+					}
+					if (t.getId().contains("c.link")){
+						IOption o = t.getOptionById("gnu.c.link.option.paths");
+						newconfig.setOption(t, o, crossLibPath);
+//						o = t.getOptionById("gnu.c.link.option.libs");
+//						newconfig.setOption(t, o, depLibs);
+					}
+				} catch (BuildException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		if (cur_cfgs.length > 0)
+			ManagedBuildManager.saveBuildInfo(project, false);
+		
+		return true;
+	}
+	
+	private boolean modifyOldProjectsSetting(String oldSocName, String newSocName) {
+		
+		// search the whole projects 
+		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
+		for (int i=0; i<projects.length; i++) {
+			if(!modifyProjectSetting(projects[i], oldSocName, newSocName)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	private boolean saveWidgetValues() {
 
@@ -552,7 +660,22 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 									.getString("MStudioSoCPreferencePage.error.selectSocType"));
 			return false;
 		}
-		setCurrentSoC((String) selectedItems[0]);
+		
+		String oldSoc = getCurrentSoC();
+		String newSoc = (String) selectedItems[0];
+		/*if (!newSoc.equals(oldSoc))*/ {
+			setCurrentSoC(newSoc);
+//			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
+//				MessageDialog
+//						.openError(
+//								getShell(),
+//								MStudioMessages
+//										.getString("MStudioSoCPreferencePage.error.title"),
+//								MStudioMessages
+//										.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
+//				return false;
+//			}
+		}
 
 		// update MiniGUI.cfg and MiniGUI.cfg.target file
 		// set resolution and color depth
