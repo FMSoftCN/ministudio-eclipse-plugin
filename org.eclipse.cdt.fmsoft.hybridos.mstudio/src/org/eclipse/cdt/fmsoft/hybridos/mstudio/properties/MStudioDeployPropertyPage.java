@@ -303,27 +303,28 @@ public class MStudioDeployPropertyPage extends PropertyPage
 			return false;
 		}
 	}
-	public class FileFilter implements FilenameFilter{
-		@Override
-		public boolean accept(File dir, String name) {
-			File ff = new File(dir.getPath()+File.separator+name);
-			ArrayList<String> filterStr=new ArrayList<String>(5);
-			filterStr.add("renderer");
-			filterStr.add("text");
-			filterStr.add("image");
-			filterStr.add("ui");
-			filterStr.add("Debug4Host");
-			String[] fileFilter=new String[]{".c",".C",".h",".H",".o",".O",".cpp",".Cpp",".CPP",".exe"};
-//			filter the director
-			if(filterStr.contains(name) && ff.isDirectory())
+	
+}
+class FileFilter implements FilenameFilter{
+	@Override
+	public boolean accept(File dir, String name) {
+		File ff = new File(dir.getPath()+File.separator+name);
+		ArrayList<String> filterStr=new ArrayList<String>(5);
+		filterStr.add("renderer");
+		filterStr.add("text");
+		filterStr.add("image");
+		filterStr.add("ui");
+		filterStr.add("Debug4Host");
+		String[] fileFilter=new String[]{".c",".C",".h",".H",".o",".O",".cpp",".Cpp",".CPP",".exe"};
+//		filter the director
+		if(filterStr.contains(name) && ff.isDirectory())
+			return false;
+//		filter the file ,contains .c .0 .exe .cpp .h ...
+		for(int i = 0; i < fileFilter.length; i++){
+			if(name.endsWith(fileFilter[i]))
 				return false;
-//			filter the file ,contains .c .0 .exe .cpp .h ...
-			for(int i = 0; i < fileFilter.length; i++){
-				if(name.endsWith(fileFilter[i]))
-					return false;
-			}
-					
-			return true;
 		}
+				
+		return true;
 	}
 }
