@@ -37,13 +37,8 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 class DirFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
-		if (file.isDirectory()) {
-			File cfgfile = new File(MStudioEnvInfo.SOC_PATH_PREFIX + fname
-					+ "/" + MStudioEnvInfo.SOC_CONFIG_FILE);
-
-			return cfgfile.isFile();
-		}
-		return false;
+		File dir=new File(file.getPath()+File.separator+fname);
+		return dir.isDirectory();
 	}
 }
 
@@ -307,7 +302,14 @@ public class MStudioEnvInfo {
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
 		File hybridosDir = new File(SOC_PATH_PREFIX);
-		return hybridosDir.list(new DirFilter());
+		if(hybridosDir.exists()){
+			String[] socDirs = hybridosDir.list(new DirFilter());
+			// the path
+			for(int i = 0; i < socDirs.length; i++)
+				socDirs[i]=hybridosDir.getPath()+File.separator+socDirs[i];
+			return socDirs;
+		}
+		return new String[0];
 	}
 
 	//retry to get SoC name from preference
