@@ -310,14 +310,15 @@ public class MStudioEnvInfo {
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
 		File hybridosDir = new File(SOC_PATH_PREFIX);
-		if(hybridosDir.exists()){
-			String[] socDirs = hybridosDir.list(new DirFilter());
-			// the path
-			for(int i = 0; i < socDirs.length; i++)
-				socDirs[i]=hybridosDir.getPath()+File.separator+socDirs[i];
-			return socDirs;
-		}
-		return new String[0];
+		return hybridosDir.list(new DirFilter());
+//		if(hybridosDir.exists()){
+//			String[] socDirs = hybridosDir.list(new DirFilter());
+//			// the path
+//			for(int i = 0; i < socDirs.length; i++)
+//				socDirs[i]=hybridosDir.getPath()+File.separator+socDirs[i];
+//			return socDirs;
+//		}
+//		return new String[0];
 	}
 
 	//retry to get SoC name from preference
