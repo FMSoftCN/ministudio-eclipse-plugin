@@ -36,8 +36,14 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 
 class DirFilter implements FilenameFilter {
 
-	public boolean accept(File file,String fname) {
-		return (file.isDirectory());
+	public boolean accept(File file, String fname) {
+		if (file.isDirectory()) {
+			File cfgfile = new File(MStudioEnvInfo.SOC_PATH_PREFIX + fname
+					+ "/" + MStudioEnvInfo.SOC_CONFIG_FILE);
+
+			return cfgfile.isFile();
+		}
+		return false;
 	}
 }
 
@@ -50,8 +56,8 @@ class hpkgFilter implements FilenameFilter {
 
 public class MStudioEnvInfo {
 
-	private final static String SOC_PATH_PREFIX = "/opt/hybridos/";
-	private final static String SOC_CONFIG_FILE = ".hybridos.cfg";
+	public final static String SOC_PATH_PREFIX = "/opt/hybridos/";
+	public final static String SOC_CONFIG_FILE = ".hybridos.cfg";
 
 	private final static String SOC_CFG_SECTION_MINIGUI = "minigui";
 	private final static String SOC_CFG_SECTION_RUNMODE = "runmode";
@@ -301,17 +307,7 @@ public class MStudioEnvInfo {
 	//get all valid SoC paths
 	public String[] getSoCPaths() {
 		File hybridosDir = new File(SOC_PATH_PREFIX);
-		String[] paths = hybridosDir.list(new DirFilter());
-
-		List<String> v = new ArrayList<String>();
-		for (int i = 0; i < paths.length; i++) {
-			File file = new File(SOC_PATH_PREFIX + paths[i] + "/"
-					+ SOC_CONFIG_FILE);
-			if (file.exists()) {
-				v.add(paths[i]);
-			}
-		}
-		return (String[]) (v.toArray(new String[v.size()]));
+		return hybridosDir.list(new DirFilter());
 	}
 
 	//retry to get SoC name from preference
