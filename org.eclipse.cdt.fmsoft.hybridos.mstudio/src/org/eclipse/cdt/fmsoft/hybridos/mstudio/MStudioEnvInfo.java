@@ -37,8 +37,16 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 class DirFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
-		File dir=new File(file.getPath()+File.separator+fname);
-		return dir.isDirectory();
+		File dirFile = new File(file.getPath() + File.separator + fname);
+
+		if (dirFile.isDirectory()) {
+			// to search if the .hybirdos.cfg file is exist or not
+			File cfgfile = new File(MStudioEnvInfo.SOC_PATH_PREFIX + fname
+					+ File.separator + MStudioEnvInfo.SOC_CONFIG_FILE);
+
+			return cfgfile.isFile();
+		}
+		return false;
 	}
 }
 
@@ -51,8 +59,8 @@ class hpkgFilter implements FilenameFilter {
 
 public class MStudioEnvInfo {
 
-	public final static String SOC_PATH_PREFIX = "/opt/hybridos/";
-	public final static String SOC_CONFIG_FILE = ".hybridos.cfg";
+	protected final static String SOC_PATH_PREFIX = "/opt/hybridos/";
+	protected final static String SOC_CONFIG_FILE = ".hybridos.cfg";
 
 	private final static String SOC_CFG_SECTION_MINIGUI = "minigui";
 	private final static String SOC_CFG_SECTION_RUNMODE = "runmode";
