@@ -246,7 +246,7 @@ public class MStudioDeployWizard extends Wizard{
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());	        
 
-		Process root = launcher.execute(editCommand, 
+		/*Process root = */launcher.execute(editCommand, 
 				(String[])args.toArray(new String[args.size()]), 
 				createEnvStringList(envProps), workingDir);
 		//get the process output string,this would be catch the information

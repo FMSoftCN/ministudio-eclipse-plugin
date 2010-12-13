@@ -550,13 +550,17 @@ public class MStudioWizardHandler extends CWizardHandler {
 		}
 		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
 		String[] pcIncludePath    = { einfo.getPCIncludePath(), locateInclude };
-		String[] pcLibPath        = { einfo.getPCLibraryPath(), locateInclude };
-		String[] crossIncludePath = { einfo.getCrossIncludePath() };
+		String[] pcLibPath        = { einfo.getPCLibraryPath()};
+		String[] crossIncludePath = { einfo.getCrossIncludePath(), locateInclude };
 		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
 		
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		for (int i = 0; i < cur_cfgs.length; i++) {
+			String id = CDataUtil.genId(cur_cfgs[i].getId());
+			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
+			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
+			newconfig.setDescription(newconfig.getName());
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
 			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
 					try {
@@ -574,10 +578,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 						e.printStackTrace();
 					}
 			}
-			String id = CDataUtil.genId(cur_cfgs[i].getId());
-			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
-			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
-			newconfig.setDescription(newconfig.getName());
 			for (ITool t : newconfig.getToolChain().getTools() ) {
 				t.setToolCommand(crossToolPrefix + t.getToolCommand());
 				try {
