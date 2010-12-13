@@ -47,13 +47,16 @@ class SkinFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
 		File skinFile = new File(file.getPath() + File.separator + fname);
-		return (skinFile.isFile() && fname.toLowerCase().endsWith(".png"));
+		return (skinFile.isFile() && fname.toLowerCase().endsWith(
+				MStudioSelectSkinDialog.IMAGE_SUFFIX_NAME));
 	}
 }
 
 public class MStudioSelectSkinDialog extends Dialog {
 
 	private static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
+	private static String SKIN_SUFFIX_NAME = ".skin";
+	protected static String IMAGE_SUFFIX_NAME = ".png";
 	private Shell shell = null;
 	private Button cancelBtn = null;
 	private Button okBtn = null;
@@ -70,8 +73,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 	}
 
 	public MStudioSelectSkinDialog(Shell parent) {
-		this(parent, 0); // your default style bits go here (not the Shell's
-		// style bits)
+		this(parent, 0);
 	}
 
 	private void createContents() {
@@ -85,7 +87,6 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		Composite tableCom = new Composite(shell, SWT.NONE);
 		GridLayout layout = new GridLayout(2, false);
-		// layout.marginWidth = 5;
 		layout.horizontalSpacing = 20;
 		tableCom.setLayout(layout);
 		tableCom.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -165,7 +166,6 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		createContents();
 		shell.open();
-		// shell.layout();
 		Display display = getParent().getDisplay();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
@@ -177,11 +177,20 @@ public class MStudioSelectSkinDialog extends Dialog {
 	// get all valid skin file
 	private String[] getSkinFile() {
 		File skinFile = new File(SKIN_PATH);
-		return skinFile.list(new SkinFilter());
+		String[] skinNames = skinFile.list(new SkinFilter());
+		if (null == skinNames) {
+			return null;
+		}
+		for (int i = 0; i < skinNames.length; i++) {
+			if (skinNames[i].length() > IMAGE_SUFFIX_NAME.length())
+				skinNames[i] = skinNames[i].substring(0, skinNames[i].length()
+						- IMAGE_SUFFIX_NAME.length());
+		}
+		return skinNames;
 	}
 
 	private void initSkinTable() {
-
+		
 		String[] imageNames = getSkinFile();
 		if (null != imageNames && imageNames.length > 0) {
 			ctv.add(imageNames);
@@ -197,10 +206,13 @@ public class MStudioSelectSkinDialog extends Dialog {
 		}
 
 		// set the skin name's default state
-		if (null == skinDefaultName || skinDefaultName.length()<5) {
+		if (null == skinDefaultName
+				|| skinDefaultName.length() < SKIN_SUFFIX_NAME.length()) {
 			return;
 		}
-		String skinDefaultImg = skinDefaultName.substring(0, skinDefaultName.length() - 5) + ".png";
+		String skinDefaultImg = skinDefaultName.substring(0, skinDefaultName
+				.length()
+				- SKIN_SUFFIX_NAME.length());
 		if (null == skinDefaultImg) {
 			return;
 		}
@@ -219,7 +231,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		if (null == imageNames || imageNames.length <= 0) {
 			return;
 		}
-		String name = SKIN_PATH + imageNames[0];
+		String name = SKIN_PATH + imageNames[0] + IMAGE_SUFFIX_NAME;
 
 		try {
 			File file = new File(name);
@@ -258,9 +270,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		for (int i = 0; i < items.length; i++) {
 			if (items[i].getChecked()) {
-				skinName = items[i].getText();
-				skinName = skinName.substring(0, skinName.length() - 4)
-						+ ".skin";
+				skinName = items[i].getText() + SKIN_SUFFIX_NAME;
 				return true;
 			}
 		}
@@ -279,7 +289,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		String name = SKIN_PATH
 				+ (String) ((IStructuredSelection) (event.getSelection()))
-						.getFirstElement();
+						.getFirstElement() + IMAGE_SUFFIX_NAME;
 
 		try {
 			File file = new File(name);

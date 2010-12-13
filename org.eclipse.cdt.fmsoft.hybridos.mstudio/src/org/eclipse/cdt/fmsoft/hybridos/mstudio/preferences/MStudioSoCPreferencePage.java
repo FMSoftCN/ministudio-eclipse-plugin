@@ -65,7 +65,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private TableViewer infoTv = null;
 	private Combo resolutionCombo = null;
 	private Combo colorCombo = null;
-	private Button skinBtn;
+	private Button skinBtn = null;
 	private String[] socType = null;
 	private String[] socInfo = null;
 	private String[] resolution = null;
@@ -102,7 +102,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	@Override
 	public void init(IWorkbench workbench) {
-		setTitle(MStudioMessages.getString("MStudioSoCPreferencePage.title"));
 		setDescription(MStudioMessages
 				.getString("MStudioSoCPreferencePage.desc"));
 	}
@@ -276,6 +275,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			return false;
 		}
 
+		socTypeCheckedPos = -1;
 		socCtv.add(socType);
 		String currentSoc = getCurrentSoC();
 		for (int i = 0; i < socType.length; i++) {
@@ -359,16 +359,19 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private String[] getResolutionData() {
-		return new String[] { "320x240", "640x480", "1024x768" };
+		return new String[] { "320x240", "640x480", "1024x768" };// do it later
 	}
 
 	private String[] getColorDepthData() {
-		return new String[] { "8", "16", "24", "32" };
+		return new String[] { "8", "16", "24", "32" };// do it later
 	}
 
 	private boolean initResolutionCombo() {
 		resolution = getResolutionData();
 
+		if (null == resolution) {
+			return false;
+		}
 		for (int i = 0; i < resolution.length; i++) {
 			resolutionCombo.add(resolution[i].toString());
 		}
@@ -381,6 +384,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private boolean initColorCombo() {
 		colorDepth = getColorDepthData();
 
+		if (null == colorDepth) {
+			return false;
+		}
 		for (int i = 0; i < colorDepth.length; i++) {
 			colorCombo.add(colorDepth[i].toString());
 		}
@@ -509,7 +515,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 			for (ITool t : cur_cfgs[i].getToolChain().getTools()) {
 				try {
-					// change the include settings
+					// change the include path settings
 					if (t.getId().contains("c.compiler")) {
 						IOption o = t
 								.getOptionBySuperClassId("gnu.c.compiler.option.include.paths");
@@ -523,7 +529,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 						}
 					}
 
-					// change the libs settings
+					// change the libs path settings
 					if (t.getId().contains("c.link")) {
 						IOption o = t
 								.getOptionBySuperClassId("gnu.c.link.option.paths");
@@ -643,7 +649,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		String oldSoc = getCurrentSoC();
 		String newSoc = (String) selectedItems[0];
-		/* if (!newSoc.equals(oldSoc)) */{
+		if (!newSoc.equals(oldSoc)) {
 			setCurrentSoC(newSoc);
 			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
 				MessageDialog
