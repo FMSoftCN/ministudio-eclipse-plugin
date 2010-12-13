@@ -15,12 +15,25 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
+import java.net.URI;
+
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.cdt.core.CCProjectNature;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 public class MStudioNewCCAppWizard extends MStudioNewCAppWizard {
 	
-	public boolean performFinish() {
+	public MStudioNewCCAppWizard (){
+		
+	}
+	
+	public IProject createIProject(final String name, final URI location) throws CoreException {
+
+		System.out.println("Now convert Project From C to C++");
+		super.createIProject(name, location);
 		if (newProject != null){
 			try {
 				CCorePlugin.getDefault().convertProjectFromCtoCC(newProject, null);
@@ -28,7 +41,10 @@ public class MStudioNewCCAppWizard extends MStudioNewCAppWizard {
 				e.printStackTrace();
 			}
 		}
-		return super.performFinish();
+		return newProject;
 	}
-	
+
+	public String[] getNatures() {
+		return new String[] {CCProjectNature.CC_NATURE_ID, CProjectNature.C_NATURE_ID, MStudioProjectNature.MSTUDIO_NATURE_ID};
+	}
 }

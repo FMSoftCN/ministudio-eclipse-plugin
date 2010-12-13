@@ -85,6 +85,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	private CheckboxTableViewer ctv = null;
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+	private boolean hasInitializeTable = false;
 
 	public MStudioSoftDevPackagePropertyPage() {
 	}
@@ -118,6 +119,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 		table = new Table(composite2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
 		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+		table.setSize(200, 100);
 
 		contentDes = new Label(composite2, SWT.WRAP);
 		contentDes.setText(EMPTY_STR);
@@ -180,10 +182,17 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			}
 		});
 
-		loadPersistentSettings();
-		getCheckboxTableViewerData();
 
 		return composite;
+	}
+	
+	public void setVisible(boolean visible){
+		if (visible && !hasInitializeTable ){
+			getCheckboxTableViewerData();
+			loadPersistentSettings();
+			hasInitializeTable = true;
+		}
+		super.setVisible(visible);
 	}
 
 	public boolean performOk() {

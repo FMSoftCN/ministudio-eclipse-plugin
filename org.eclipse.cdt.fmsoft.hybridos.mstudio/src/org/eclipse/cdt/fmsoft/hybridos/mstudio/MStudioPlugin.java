@@ -104,6 +104,9 @@ public class MStudioPlugin extends AbstractUIPlugin {
 			//please waiting for closing process
 			serverSocket.closeProject(projectName);
 		}
+		
+		//TODO, change the name of <project_name>_res.cfg .
+		
 	}
 
 	public class MStudioResourceChangeListener implements IResourceChangeListener {
@@ -118,12 +121,10 @@ public class MStudioPlugin extends AbstractUIPlugin {
 
 			IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) {
-
-					if (delta.getKind() == IResourceDelta.REMOVED) {
-							IResource resource = delta.getResource();
-							if (resource.getType() == IResource.PROJECT) {
-								updateProject(resource.getName());
-							}
+					IResource resource = delta.getResource();
+					if (delta.getKind() == IResourceDelta.CHANGED
+							&& resource.getType() == IResource.PROJECT) {
+						updateProject(resource.getName());
 					}
 
 					return true;

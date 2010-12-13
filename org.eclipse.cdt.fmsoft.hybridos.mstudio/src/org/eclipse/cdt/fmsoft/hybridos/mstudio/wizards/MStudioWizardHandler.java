@@ -527,7 +527,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		mngr.setProjectDescription(project, des);
 		doTemplatesPostProcess(project);
 
-		createTargetConfiguration(project);
+		//createTargetConfiguration(project);
 		doCustom(project);
 	}
 

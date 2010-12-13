@@ -48,7 +48,7 @@
     <process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
         <simple name="name" value="$(projectName)" /> 
         <simple name="artifactExtension" value="exe" /> 
-        <simple name="isCProject" value="true" /> 
+        <simple name="isCProject" value="false" /> 
     </process>
 
     <process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
@@ -78,8 +78,8 @@
         <simple name="projectName" value="$(projectName)"/>
         <complex-array name="files">
             <element>
-                <simple name="source" value="src/Basename.c"/>
-                <simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+                <simple name="source" value="src/Basename.cpp"/>
+                <simple name="target" value="$(sourceDir)/$(projectName)_main.cpp"/>
                 <simple name="replaceable" value="true"/>
             </element>
         </complex-array>
@@ -102,7 +102,7 @@
             </element>
             <element>
                 <simple name="source" value="src/Basename_mg.c"/>
-                <simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+                <simple name="target" value="$(sourceDir)/$(projectName)_main.cpp"/>
                 <simple name="replaceable" value="true"/>
             </element>
             <element>

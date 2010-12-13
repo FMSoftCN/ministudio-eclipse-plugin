@@ -297,7 +297,6 @@
 
     <extension
         id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templateProcessTypes"
-        name="%MStudioTemplateProcessTypes.name"
         point="org.eclipse.cdt.core.templateProcessTypes">
         <processType
             name="MStudioAddFiles"
