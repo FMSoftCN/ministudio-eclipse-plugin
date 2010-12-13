@@ -137,7 +137,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		Label sizeLabel = new Label(bottomPanel3, SWT.NONE);
 		sizeLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
-		sizeCombo = new Combo(bottomPanel3, SWT.READ_ONLY);
+		sizeCombo = new Combo(bottomPanel3, SWT.NONE);
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
 
 		Label colorLabel = new Label(bottomPanel3, SWT.NONE);
@@ -275,14 +275,20 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			setPageComplete(false);
 			return false;
 		}
-
+		/*
 		if (!locationChanged() || sizeCombo.getSelectionIndex() < 0
 				|| colorCombo.getSelectionIndex() < 0) {
 			setPageComplete(false);
 			return false;
 		}
-
+*/
+		if(!locationChanged() || sizeCombo.getText().trim() == ""
+				|| colorCombo.getSelectionIndex() < 0){
+			setPageComplete(false);
+			return false;
+		}
 		//select target
+		
 		if (!MStudioDeployWizard.deployTypeIsHost) {
 			if (0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()
 					|| gal == null || ial == null) {
@@ -290,7 +296,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				return false;
 			}
 		}
-
+		
+		
 		setPageComplete(true);
 
 		return true;
@@ -328,8 +335,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	//resolution format: 320x240
 	public String getResolution() {
-		String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
-
+	//	String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
+		String resolution =sizeCombo.getText().trim();
 		if (validateResolution(resolution))
 			return resolution;
 
