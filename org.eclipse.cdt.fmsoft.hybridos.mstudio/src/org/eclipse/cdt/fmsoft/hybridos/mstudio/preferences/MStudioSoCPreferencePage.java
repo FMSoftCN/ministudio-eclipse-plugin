@@ -15,6 +15,7 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
+import java.io.File;
 import java.util.regex.Pattern;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -405,6 +406,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		String skinName = iniFile.getStringProperty(PC_XVFB_SECTION,
 				SKIN_PROPERTY);
+		skinName = skinName.substring(skinName.lastIndexOf(File.separator)
+				+ File.separator.length());
 		skinNameLabel.setText(skinName == null ? "" : skinName);
 		return true;
 	}
@@ -597,7 +600,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			return false;
 		}
 
-		if (null == skinNameLabel.getText() || "" == skinNameLabel.getText()) {
+		if (null == skinNameLabel.getText()) {
 			MessageDialog
 					.openError(
 							getShell(),
