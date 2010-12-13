@@ -15,12 +15,8 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
@@ -48,7 +44,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSelectSkinDialog;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
@@ -396,9 +391,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean initSkinNameLabel() {
-		String cfgName = MStudioPlugin.getDefault().getMStudioEnvInfo()
-				.getPCMgCfgFileName();
-		MStudioParserIniFile iniFile = new MStudioParserIniFile(cfgName);
+
+		MStudioParserIniFile iniFile = new MStudioParserIniFile(
+				MINIGUI_CFG_FILE_NAME);
 		if (null == iniFile)
 			return false;
 
@@ -484,102 +479,87 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		}
 	}
-	
-	private boolean modifyProjectSetting(IProject project, String oldSocName, String newSocName) {
 
-		// change the include settings	
-		// change the libs settings
-		
-		if (null == project || null == oldSocName || null == newSocName) 
+	private boolean modifyProjectSetting(IProject project, String oldSocName,
+			String newSocName) {
+
+		if (null == project || null == oldSocName || null == newSocName)
 			return false;
-		
-		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		String crossToolPrefix = einfo.getToolChainPrefix(); 
-//		String socName = einfo.getCurSoCName();
-//		String configSuffix = newSocName;
-		final String hostName = "Host";
-		final String locateInclude = "../include/";
-		
-//		List<String> depLibList = new ArrayList<String> ();
-//		String[] pkgs = new MStudioProject(project).getDepPkgs();
-//		for (int idx = 0; idx < pkgs.length; idx++) {
-//			String[] libs = einfo.getPackageLibs(pkgs[idx]);
-//			for (int c = 0; c < libs.length; c++){
-//				depLibList.add(libs[c]);
-//			}
-//		}
-		
-//		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
-		String[] pcIncludePath    = { einfo.getPCIncludePath(), locateInclude };
-		String[] pcLibPath        = { einfo.getPCLibraryPath(), locateInclude };
-		String[] crossIncludePath = { einfo.getCrossIncludePath() };
-		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
-		
-		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+
+		MStudioPlugin.getDefault().getMStudioEnvInfo().updateSoCName();
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project)
+				.getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
-		
+
 		for (int i = 0; i < cur_cfgs.length; i++) {
-//			if (cur_cfgs[i].getName()) {
-//				
-//			}
-			
-			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
-			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
-					try {
-						if ( t.getId().contains("c.compiler") ) {
-							IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
-							cur_cfgs[i].setOption(t, o, pcIncludePath);
-						}
-						if (t.getId().contains("c.link")){
-							IOption o = t.getOptionById("gnu.c.link.option.paths");
-							cur_cfgs[i].setOption(t, o, pcLibPath);
-//							o = t.getOptionById("gnu.c.link.option.libs");
-//							cur_cfgs[i].setOption(t, o, depLibs);
-						}
-					} catch (BuildException e) {
-						e.printStackTrace();
-					}
+
+			// change the configure name
+			String configureName = cur_cfgs[i].getName();
+			if (null != configureName) {
+				cur_cfgs[i].setName(configureName.replaceFirst(oldSocName,
+						newSocName));
 			}
-			
-			String id = CDataUtil.genId(cur_cfgs[i].getId());
-			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
-			newconfig.setName(cur_cfgs[i].getName() + "4" + newSocName);
-			newconfig.setDescription(newconfig.getName());
-			for (ITool t : newconfig.getToolChain().getTools() ) {
-				t.setToolCommand(crossToolPrefix + t.getToolCommand());
+
+			String description = cur_cfgs[i].getDescription();
+			if (null != description) {
+				cur_cfgs[i].setDescription(description.replaceFirst(oldSocName,
+						newSocName));
+
+			}
+
+			for (ITool t : cur_cfgs[i].getToolChain().getTools()) {
 				try {
-					if ( t.getId().contains("c.compiler") ) {
-						IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
-						newconfig.setOption(t, o, crossIncludePath);
+					// change the include settings
+					if (t.getId().contains("c.compiler")) {
+						IOption o = t
+								.getOptionBySuperClassId("gnu.c.compiler.option.include.paths");
+						String[] includePaths = o.getBasicStringListValue();
+						if (null != includePaths) {
+							for (int j = 0; j < includePaths.length; j++) {
+								includePaths[j] = includePaths[j].replaceFirst(
+										oldSocName, newSocName);
+							}
+							cur_cfgs[i].setOption(t, o, includePaths);
+						}
 					}
-					if (t.getId().contains("c.link")){
-						IOption o = t.getOptionById("gnu.c.link.option.paths");
-						newconfig.setOption(t, o, crossLibPath);
-//						o = t.getOptionById("gnu.c.link.option.libs");
-//						newconfig.setOption(t, o, depLibs);
+
+					// change the libs settings
+					if (t.getId().contains("c.link")) {
+						IOption o = t
+								.getOptionBySuperClassId("gnu.c.link.option.paths");
+						String[] libPaths = o.getBasicStringListValue();
+						if (null != libPaths) {
+							for (int j = 0; j < libPaths.length; j++) {
+								libPaths[j] = libPaths[j].replaceFirst(
+										oldSocName, newSocName);
+							}
+							cur_cfgs[i].setOption(t, o, libPaths);
+						}
 					}
 				} catch (BuildException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		
+
 		if (cur_cfgs.length > 0)
 			ManagedBuildManager.saveBuildInfo(project, false);
-		
+
 		return true;
 	}
-	
-	private boolean modifyOldProjectsSetting(String oldSocName, String newSocName) {
-		
-		// search the whole projects 
-		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
-		for (int i=0; i<projects.length; i++) {
-			if(!modifyProjectSetting(projects[i], oldSocName, newSocName)) {
+
+	private boolean modifyOldProjectsSetting(String oldSocName,
+			String newSocName) {
+
+		// search the whole projects
+		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo()
+				.getMStudioProjects();
+		for (int i = 0; i < projects.length; i++) {
+			if (!modifyProjectSetting(projects[i], oldSocName, newSocName)) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -660,21 +640,21 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 									.getString("MStudioSoCPreferencePage.error.selectSocType"));
 			return false;
 		}
-		
+
 		String oldSoc = getCurrentSoC();
 		String newSoc = (String) selectedItems[0];
-		/*if (!newSoc.equals(oldSoc))*/ {
+		/* if (!newSoc.equals(oldSoc)) */{
 			setCurrentSoC(newSoc);
-//			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
-//				MessageDialog
-//						.openError(
-//								getShell(),
-//								MStudioMessages
-//										.getString("MStudioSoCPreferencePage.error.title"),
-//								MStudioMessages
-//										.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
-//				return false;
-//			}
+			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
+				MessageDialog
+						.openError(
+								getShell(),
+								MStudioMessages
+										.getString("MStudioSoCPreferencePage.error.title"),
+								MStudioMessages
+										.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
+				return false;
+			}
 		}
 
 		// update MiniGUI.cfg and MiniGUI.cfg.target file

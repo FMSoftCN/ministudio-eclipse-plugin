@@ -47,7 +47,7 @@ class SkinFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
 		File skinFile = new File(file.getPath() + File.separator + fname);
-		return (skinFile.isFile());
+		return (skinFile.isFile() && fname.toLowerCase().endsWith(".png"));
 	}
 }
 
@@ -62,6 +62,8 @@ public class MStudioSelectSkinDialog extends Dialog {
 	private CheckboxTableViewer ctv = null;
 	private Label imgLabel = null;
 	public String skinDefaultName = null;
+	private int imageWidth = 200;
+	private int imageHeight = 200;
 
 	public MStudioSelectSkinDialog(Shell parent, int style) {
 		super(parent, style);
@@ -82,8 +84,8 @@ public class MStudioSelectSkinDialog extends Dialog {
 		shell.setLayoutData(new GridData());
 
 		Composite tableCom = new Composite(shell, SWT.NONE);
-		GridLayout layout = new GridLayout(2, true);
-//		layout.marginWidth = 5;
+		GridLayout layout = new GridLayout(2, false);
+		// layout.marginWidth = 5;
 		layout.horizontalSpacing = 20;
 		tableCom.setLayout(layout);
 		tableCom.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -91,7 +93,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		// create skinTable
 		skinTable = new Table(tableCom, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL
 				| SWT.H_SCROLL);
-		GridData gd = new GridData(GridData.FILL_BOTH);
+		GridData gd = new GridData(140, 200);
 		skinTable.setLayoutData(gd);
 
 		ctv = new CheckboxTableViewer(skinTable);
@@ -109,13 +111,13 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		// create image label
 		imgLabel = new Label(tableCom, SWT.NONE);
-		GridData imageGd = new GridData(GridData.FILL_BOTH);
+		GridData imageGd = new GridData(imageWidth, imageHeight);
 		imgLabel.setLayoutData(imageGd);
 
 		Composite btnCom = new Composite(shell, SWT.NONE);
 		btnCom.setLayout(new GridLayout(2, true));
 		btnCom.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-		
+
 		initSkinTable();
 		initImageLabel();
 
@@ -183,7 +185,6 @@ public class MStudioSelectSkinDialog extends Dialog {
 		String[] imageNames = getSkinFile();
 		if (null != imageNames && imageNames.length > 0) {
 			ctv.add(imageNames);
-			// ctv.setCheckedElements(imageNames);
 		} else {
 			MessageDialog
 					.openError(
@@ -194,13 +195,17 @@ public class MStudioSelectSkinDialog extends Dialog {
 									.getString("MStudioSelectSkinDialog.error.initSkinTable"));
 			return;
 		}
-		
-		// set the skin name's default state 
-		if (null == skinDefaultName) {
+
+		// set the skin name's default state
+		if (null == skinDefaultName || skinDefaultName.length()<5) {
+			return;
+		}
+		String skinDefaultImg = skinDefaultName.substring(0, skinDefaultName.length() - 5) + ".png";
+		if (null == skinDefaultImg) {
 			return;
 		}
 		for (int i = 0; i < imageNames.length; i++) {
-			if (imageNames[i].equals(skinDefaultName)) {
+			if (imageNames[i].equals(skinDefaultImg)) {
 				ctv.setChecked(imageNames[i], true);
 				skinTable.setSelection(i);
 				break;
@@ -209,7 +214,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 	}
 
 	private void initImageLabel() {
-		
+
 		Object[] imageNames = ctv.getCheckedElements();
 		if (null == imageNames || imageNames.length <= 0) {
 			return;
@@ -223,32 +228,49 @@ public class MStudioSelectSkinDialog extends Dialog {
 					.createFromURL(url);
 			Image img = imageDescriptor.createImage();
 			imgLabel.setImage(img);
+
+			ImageDescriptor autofitImageDescriptor = ImageDescriptor
+					.createFromImageData(img.getImageData().scaledTo(
+							imageWidth, imageHeight));
+			Image autofitImg = autofitImageDescriptor.createImage();
+
+			imgLabel.setImage(autofitImg);
 		} catch (Exception e) {
 			MessageDialog.openError(shell, MStudioMessages
 					.getString("MStudioSelectSkinDialog.error.title"), e
 					.getMessage());
 		}
 	}
-	
+
 	private boolean setSkinName() {
-		
+
 		TableItem[] items = skinTable.getItems();
 		if (null == items || items.length <= 0) {
-			MessageDialog.openError(shell, 
-					MStudioMessages.getString("MStudioSelectSkinDialog.error.title"), 
-					MStudioMessages.getString("MStudioSelectSkinDialog.error.skinName"));
+			MessageDialog
+					.openError(
+							shell,
+							MStudioMessages
+									.getString("MStudioSelectSkinDialog.error.title"),
+							MStudioMessages
+									.getString("MStudioSelectSkinDialog.error.skinName"));
 			return false;
 		}
 
 		for (int i = 0; i < items.length; i++) {
 			if (items[i].getChecked()) {
 				skinName = items[i].getText();
+				skinName = skinName.substring(0, skinName.length() - 4)
+						+ ".skin";
 				return true;
 			}
 		}
-		MessageDialog.openError(shell, 
-				MStudioMessages.getString("MStudioSelectSkinDialog.error.title"), 
-				MStudioMessages.getString("MStudioSelectSkinDialog.error.selectSkinNameTip"));
+		MessageDialog
+				.openError(
+						shell,
+						MStudioMessages
+								.getString("MStudioSelectSkinDialog.error.title"),
+						MStudioMessages
+								.getString("MStudioSelectSkinDialog.error.selectSkinNameTip"));
 		return false;
 
 	}
@@ -265,10 +287,17 @@ public class MStudioSelectSkinDialog extends Dialog {
 			ImageDescriptor imageDescriptor = ImageDescriptor
 					.createFromURL(url);
 			Image img = imageDescriptor.createImage();
-			imgLabel.setImage(img);
+
+			ImageDescriptor autofitImageDescriptor = ImageDescriptor
+					.createFromImageData(img.getImageData().scaledTo(
+							imageWidth, imageHeight));
+			Image autofitImg = autofitImageDescriptor.createImage();
+
+			imgLabel.setImage(autofitImg);
 		} catch (Exception e) {
 			MessageDialog.openError(shell, MStudioMessages
-					.getString("MStudioSelectSkinDialog.error.title"), e.getMessage());
+					.getString("MStudioSelectSkinDialog.error.title"), e
+					.getMessage());
 		}
 	}
 }
