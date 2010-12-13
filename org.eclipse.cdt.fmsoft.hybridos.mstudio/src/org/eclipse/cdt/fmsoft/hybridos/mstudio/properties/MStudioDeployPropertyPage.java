@@ -146,8 +146,9 @@ public class MStudioDeployPropertyPage extends PropertyPage
 				deployButton.setEnabled(true);
 			}
 		});
-		deployButton = new Button(col2,SWT.NONE);
+		deployButton = new Button(col2,SWT.FILL_WINDING);
 		deployButton.setText(MStudioMessages.getString("MStudioDeployPropertyPage.deployButtonText"));
+		deployButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		deployButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -163,9 +164,9 @@ public class MStudioDeployPropertyPage extends PropertyPage
 					deployButton.setEnabled(false);
 			}
 		});
-		removeButton = new Button(col2,SWT.NONE);
+		removeButton = new Button(col2,SWT.FILL_WINDING);
 		removeButton.setText(MStudioMessages.getString("MStudioDeployPropertyPage.removeButtonText"));
-		deployButton.setBounds(removeButton.getBounds());
+		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		removeButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
