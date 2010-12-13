@@ -527,7 +527,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		mngr.setProjectDescription(project, des);
 		doTemplatesPostProcess(project);
 
-		//createTargetConfiguration(project);
+		createTargetConfiguration(project);
 		doCustom(project);
 	}
 
@@ -564,14 +564,25 @@ public class MStudioWizardHandler extends CWizardHandler {
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
 			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
 					try {
-						if ( t.getId().contains("c.compiler") ) {
+						if( t.getId().contains("c.compiler") ) {
 							IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
 							cur_cfgs[i].setOption(t, o, pcIncludePath);
 						}
+						if( t.getId().contains("cpp.compiler") ) {
+							IOption o = t.getOptionById("gnu.cpp.compiler.option.include.paths");
+							cur_cfgs[i].setOption(t, o, pcIncludePath);
+						}
+						
 						if (t.getId().contains("c.link")){
 							IOption o = t.getOptionById("gnu.c.link.option.paths");
 							cur_cfgs[i].setOption(t, o, pcLibPath);
 							o = t.getOptionById("gnu.c.link.option.libs");
+							cur_cfgs[i].setOption(t, o, depLibs);
+						}
+						if (t.getId().contains("cpp.link")){
+							IOption o = t.getOptionById("gnu.cpp.link.option.paths");
+							cur_cfgs[i].setOption(t, o, pcLibPath);
+							o = t.getOptionById("gnu.cpp.link.option.libs");
 							cur_cfgs[i].setOption(t, o, depLibs);
 						}
 					} catch (BuildException e) {
@@ -585,10 +596,21 @@ public class MStudioWizardHandler extends CWizardHandler {
 						IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
 						newconfig.setOption(t, o, crossIncludePath);
 					}
+					if ( t.getId().contains("cpp.compiler") ) {
+						IOption o = t.getOptionById("gnu.cpp.compiler.option.include.paths");
+						newconfig.setOption(t, o, crossIncludePath);
+					}
+					
 					if (t.getId().contains("c.link")){
 						IOption o = t.getOptionById("gnu.c.link.option.paths");
 						newconfig.setOption(t, o, crossLibPath);
 						o = t.getOptionById("gnu.c.link.option.libs");
+						newconfig.setOption(t, o, depLibs);
+					}
+					if (t.getId().contains("cpp.link")){
+						IOption o = t.getOptionById("gnu.cpp.link.option.paths");
+						newconfig.setOption(t, o, crossLibPath);
+						o = t.getOptionById("gnu.cpp.link.option.libs");
 						newconfig.setOption(t, o, depLibs);
 					}
 				} catch (BuildException e) {

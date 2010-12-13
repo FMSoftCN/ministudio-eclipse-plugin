@@ -32,7 +32,7 @@ public class MStudioNewCCAppWizard extends MStudioNewCAppWizard {
 	
 	public IProject createIProject(final String name, final URI location) throws CoreException {
 
-		System.out.println("Now convert Project From C to C++");
+		//System.out.println("Now convert Project From C to C++");
 		super.createIProject(name, location);
 		if (newProject != null){
 			try {
