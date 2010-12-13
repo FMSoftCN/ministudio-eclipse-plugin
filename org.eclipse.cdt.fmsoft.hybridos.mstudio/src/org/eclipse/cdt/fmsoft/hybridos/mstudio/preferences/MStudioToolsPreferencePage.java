@@ -76,7 +76,6 @@ class MsVersionListener extends SelectionAdapter {
 	}
 
 	public void widgetSelected(SelectionEvent e) {
-
 		if (m_control == ADD) {
 			MStudioVersionWizard versionWizard =
 				new MStudioVersionWizard(MStudioMessages.getString("MStudioVersionWizard.add.title"));
