@@ -256,14 +256,6 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	public boolean performCancel() {
 		clearProject();
 		return fMainPage.h_selected.doCancel();
-/*
-		if (MStudioNewCAppSoCConfigWizardPage.isOnlyOneSoC())
-			return true;
-
-		MStudioSoCPreferencePage.setCurrentSoC("null");
-
-		return true;
-*/		
 	}
 
 	public void setInitializationData(IConfigurationElement config,
