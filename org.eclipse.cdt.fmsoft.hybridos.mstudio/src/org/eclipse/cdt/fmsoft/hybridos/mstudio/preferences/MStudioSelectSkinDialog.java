@@ -54,7 +54,7 @@ class SkinFilter implements FilenameFilter {
 
 public class MStudioSelectSkinDialog extends Dialog {
 
-	private static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
+	public static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
 	private static String SKIN_SUFFIX_NAME = ".skin";
 	protected static String IMAGE_SUFFIX_NAME = ".png";
 	private Shell shell = null;

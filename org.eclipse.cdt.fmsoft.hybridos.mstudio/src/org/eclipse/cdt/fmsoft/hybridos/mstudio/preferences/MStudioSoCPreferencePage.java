@@ -692,8 +692,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		// update MiniGUI.cfg file
 		// set skin info
-		cfgFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY, skinNameLabel
-				.getText(), null);
+		cfgFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY,
+				MStudioSelectSkinDialog.SKIN_PATH + skinNameLabel.getText(),
+				null);
 		cfgFile.save();
 		if (!cfgFile.save()) {
 			MessageDialog
