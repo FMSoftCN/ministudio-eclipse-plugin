@@ -155,7 +155,8 @@ public class MStudioEnvInfo {
 		if (iniFile == null)
 			return null;
 
-		int srvCount = iniFile.getIntegerProperty(SOC_CFG_SECTION_SERVICES, "num");
+		Integer numSer = iniFile.getIntegerProperty(SOC_CFG_SECTION_SERVICES, "num");
+		int srvCount = (numSer == null ? 0 : numSer);
 		if (srvCount <= 0)
 			return null;
 
@@ -179,7 +180,8 @@ public class MStudioEnvInfo {
 		if (iniFile == null)
 			return new String[0];
 
-		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_GAL, "num");
+		Integer numGal = iniFile.getIntegerProperty(SOC_CFG_SECTION_GAL, "num");
+		int num = (numGal == null ? 0 : numGal);
 		String[] ret = new String[num];
 
 		for (int i = 0; i < num; i++) {
@@ -194,7 +196,8 @@ public class MStudioEnvInfo {
 		if (iniFile == null)
 			return new String[0];
 
-		int num = iniFile.getIntegerProperty(SOC_CFG_SECTION_IAL, "num");
+		Integer numIal = iniFile.getIntegerProperty(SOC_CFG_SECTION_IAL, "num");
+		int num = (numIal == null ? 0 : numIal);
 		String[] ret = new String[num];
 
 		for (int i = 0; i < num; i++) {
@@ -353,8 +356,13 @@ public class MStudioEnvInfo {
 			return;
 
 //		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE));
-		mgRunMode = MiniGUIRunMode.valueOf((
-					iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE)));
+		String runMode = iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE);
+		if (null != runMode) {		
+			mgRunMode = MiniGUIRunMode.valueOf(runMode);
+		}
+		else {
+			mgRunMode = MiniGUIRunMode.thread;
+		}
 
 		File socDir = new File(SOC_PATH_PREFIX + SoCName);
 		if (!socDir.exists())
