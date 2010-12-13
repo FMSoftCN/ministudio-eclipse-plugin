@@ -560,7 +560,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 			String id = CDataUtil.genId(cur_cfgs[i].getId());
 			IConfiguration newconfig = managedProj.createConfiguration(cur_cfgs[i], id);
 			newconfig.setName(cur_cfgs[i].getName() + "4" + configSuffix);
-			newconfig.setDescription(newconfig.getName());
 			cur_cfgs[i].setName(cur_cfgs[i].getName() + "4" + hostName);
 			for (ITool t : cur_cfgs[i].getToolChain().getTools() ) {
 					try {
