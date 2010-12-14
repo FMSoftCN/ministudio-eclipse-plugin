@@ -294,16 +294,12 @@ public class MStudioDeployPropertyPage extends PropertyPage
 	}
 
 	public boolean performOk() {
-		if(savePersistentSettings()){
-			MessageDialog.openInformation(getShell(), MStudioMessages.getString("MStudioDeployPropertyPage.saveSuccessDialogTitle"), 
-					MStudioMessages.getString("MStudioDeployPropertyPage.saveSuccessDialogcontent"));
-			return true;
-		}
-		else{
+		if(!savePersistentSettings()){
 			MessageDialog.openError(getShell(), MStudioMessages.getString("MStudioDeployPropertyPage.saveErrorDialogTitle"),
 					MStudioMessages.getString("MStudioDeployPropertyPage.saveErrorDialogcontent"));
 			return false;
 		}
+		return true;
 	}
 	
 }

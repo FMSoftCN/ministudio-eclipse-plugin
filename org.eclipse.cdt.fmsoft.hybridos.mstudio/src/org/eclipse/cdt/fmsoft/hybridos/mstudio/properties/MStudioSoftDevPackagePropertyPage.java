@@ -242,12 +242,9 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.error"),
 					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.errorMessages"));
 			 return false;
-		} else {
-			 MessageDialog.openInformation(this.getShell(),
-					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.storeOK"),
-					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.storeOKMessages"));
-			 return true;
-		}
+		} 
+		
+		return true;
 	}
 
 	private boolean dailogPkgsChecked(String title, String pkgName, List<String> listPkgs) {
@@ -381,7 +378,9 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		for (int idx = 0; idx < obj.length; idx++) {
 			String[] libs = einfo.getPackageLibs(obj[idx].toString());
 			for (int c = 0; c < libs.length; c++) {
-				depLibList.add(libs[c]);
+				if (!depLibList.contains(libs[c])){
+					depLibList.add(libs[c]);
+				}
 			}
 		}
 
@@ -392,6 +391,10 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 				try {
 					if (t.getId().contains("c.link")) {
 						IOption o = t.getOptionById("gnu.c.link.option.libs");
+						cur_cfgs[i].setOption(t, o, depLibs);
+					}
+					if (t.getId().contains("cpp.link")) {
+						IOption o = t.getOptionById("gnu.cpp.link.option.libs");
 						cur_cfgs[i].setOption(t, o, depLibs);
 					}
 				} catch (BuildException e) {
