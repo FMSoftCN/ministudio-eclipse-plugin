@@ -248,6 +248,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				}
 				selServList.clear();
 				selServList.addAll(allServList);
+				ctv.setCheckedElements(selServList.toArray());
 			}
 		});
 
