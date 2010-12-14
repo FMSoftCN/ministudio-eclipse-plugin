@@ -406,6 +406,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		String skinName = iniFile.getStringProperty(PC_XVFB_SECTION,
 				SKIN_PROPERTY);
+		if (null == skinName) {
+			return false;
+		}
 		skinName = skinName.substring(skinName.lastIndexOf(File.separator)
 				+ File.separator.length());
 		skinNameLabel.setText(skinName == null ? "" : skinName);
@@ -513,7 +516,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			if (null != description) {
 				cur_cfgs[i].setDescription(description.replaceFirst(oldSocName,
 						newSocName));
-
 			}
 
 			for (ITool t : cur_cfgs[i].getToolChain().getTools()) {
@@ -525,8 +527,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 						String[] includePaths = o.getBasicStringListValue();
 						if (null != includePaths) {
 							for (int j = 0; j < includePaths.length; j++) {
-								includePaths[j] = includePaths[j].replaceFirst(
-										oldSocName, newSocName);
+								if (null != includePaths[j]) {
+									includePaths[j] = includePaths[j].replaceFirst(
+											oldSocName, newSocName);								
+								}
 							}
 							cur_cfgs[i].setOption(t, o, includePaths);
 						}
@@ -539,8 +543,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 						String[] libPaths = o.getBasicStringListValue();
 						if (null != libPaths) {
 							for (int j = 0; j < libPaths.length; j++) {
-								libPaths[j] = libPaths[j].replaceFirst(
-										oldSocName, newSocName);
+								if (null != libPaths[j]) {
+									libPaths[j] = libPaths[j].replaceFirst(
+											oldSocName, newSocName);									
+								}
 							}
 							cur_cfgs[i].setOption(t, o, libPaths);
 						}
