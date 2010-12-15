@@ -122,7 +122,7 @@ public class MStudioEnvInfo {
 		if (SoCName == null)
 			return null;
 
-		return SOC_PATH_PREFIX + SoCName + "/" + SOC_CONFIG_FILE;
+		return SOC_PATH_PREFIX + SoCName + File.separator + SOC_CONFIG_FILE;
 	}
 
 	//get current SoC
@@ -134,14 +134,14 @@ public class MStudioEnvInfo {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 
-		return SOC_PATH_PREFIX + SoCName + "/" + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
+		return SOC_PATH_PREFIX + SoCName + File.separator + iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "bin");
 	}
 
 	public String getMginitCfgFile() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return null;
 
-		String path = SOC_PATH_PREFIX + SoCName + "/"
+		String path = SOC_PATH_PREFIX + SoCName + File.separator
 							+ iniFile.getStringProperty(SOC_CFG_SECTION_MGINIT, "cfg");
 
 		File file = new File (path);
@@ -314,14 +314,6 @@ public class MStudioEnvInfo {
 	public String[] getSoCPaths() {
 		File hybridosDir = new File(SOC_PATH_PREFIX);
 		return hybridosDir.list(new DirFilter());
-//		if(hybridosDir.exists()){
-//			String[] socDirs = hybridosDir.list(new DirFilter());
-//			// the path
-//			for(int i = 0; i < socDirs.length; i++)
-//				socDirs[i]=hybridosDir.getPath()+File.separator+socDirs[i];
-//			return socDirs;
-//		}
-//		return new String[0];
 	}
 
 	//retry to get SoC name from preference
@@ -376,7 +368,7 @@ public class MStudioEnvInfo {
 			// ".../.XXXX" -->>-- "XXXX"
 			pkgName = pkgName.substring(pkgName.lastIndexOf('.') + 1);
 
-			MStudioParserIniFile pfgFile = new MStudioParserIniFile(socDir.getAbsolutePath() + "/" + hpkgFiles[i]);
+			MStudioParserIniFile pfgFile = new MStudioParserIniFile(socDir.getAbsolutePath() + File.separator + hpkgFiles[i]);
 			allSoftPkgs.put(pkgName, pfgFile);
 
 			// parse the pfgFile
