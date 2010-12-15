@@ -68,9 +68,9 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	@SuppressWarnings("unchecked")
 	public void updateElement(UIElement element, Map parameters) {
 		if (mginitHasRunning())
-			element.setText(MStudioMessages.getString("MStudioMenu.mginit.start.label"));
-		else
 			element.setText(MStudioMessages.getString("MStudioMenu.mginit.stop.label"));
+		else
+			element.setText(MStudioMessages.getString("MStudioMenu.mginit.start.label"));
 	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -78,13 +78,18 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 		ICommandService commandService =
 			(ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
 		
-		commandService.refreshElements(MSMS_COMMAND_ID, null);
-
 		if (mginitHasRunning()) {
 			stopMginit();
 		} else {
 			startMginit();
 		}
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		commandService.refreshElements(MSMS_COMMAND_ID, null);
 
 		return null;
 	}
