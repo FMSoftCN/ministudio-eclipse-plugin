@@ -76,6 +76,7 @@ public class MStudioCommonPreferencePage extends PreferencePage
 		if (null != intro) {
 			intro.setFont(parent.getFont());
 			intro.setText(MSCPP_HYBRIDOS_INTRO);
+			intro.setLayoutData(new GridData(320, 200));
 		}
 
 		return composite;
