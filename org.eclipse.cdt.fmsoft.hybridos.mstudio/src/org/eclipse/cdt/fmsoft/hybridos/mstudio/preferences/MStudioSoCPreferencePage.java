@@ -461,18 +461,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 									.getString("MStudioSoCPreferencePage.error.initColorDepthCombo"));
 			return false;
 		}
-
-		if (!initSkinNameLabel()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initSkinNameLabel"));
-			return false;
-		}
-
+		
+		initSkinNameLabel();
 		return true;
 	}
 
