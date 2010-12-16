@@ -17,6 +17,7 @@ HPACKAGE hPackage = HPACKAGE_NULL;
 #ifdef _MGNCS_INCORE_RES
 extern HPACKAGE ncsLoadIncoreResPackage(void);
 extern GHANDLE ncsGetIncoreEtc(void);
+extern GHANDLE ncsGetIncoreAppIniInfo(void);
 #endif
 
 int DlModuleInit(void)
@@ -27,24 +28,32 @@ int DlModuleInit(void)
 
 #ifdef _MGNCS_INCORE_RES
 	ncsSetEtcHandle(ncsGetIncoreEtc());
+	ncsSetAppIniInfo(ncsGetIncoreAppIniInfo());
+
 	ncsInitialize();
 
 	hPackage = ncsLoadIncoreResPackage();
 #else
 	char f_package[MAX_PATH];
 
+	ncsSetAppIniInfo(ncsLoadAppIniInfo("$(projectName)"));
+
 	ncsInitialize();
-	sprintf(f_package, "%s", "res/$(projectName).res");
 	SetResPath("./");
+
+	if (!ncsGetResPackage("$(projectName).res", f_package, MAX_PATH)) {
+		fprintf(stderr, "Haven't find the  Resource Package File.");
+		return 1;
+	}
 
 	hPackage = ncsLoadResPackage (f_package);
 #endif
 
 	if (hPackage == HPACKAGE_NULL) {
 #ifdef _MGNCS_INCORE_RES
-		printf ("Error: load in-core resource package failure.\n");
+		fprintf (stderr, "Error: load in-core resource package failure.\n");
 #else
-		printf ("Error: load resource package:%s failure.\n", f_package);
+		fprintf (stderr, "Error: load resource package:%s failure.\n", f_package);
 #endif
 		return 1;
 	}
@@ -67,6 +76,7 @@ int DlModuleInit(void)
 	ncsUnloadResPackage(hPackage);
 
 	ncsUninitialize();
+	ncsUnloadAppIniInfo();
 #endif
 
 	return 0;
