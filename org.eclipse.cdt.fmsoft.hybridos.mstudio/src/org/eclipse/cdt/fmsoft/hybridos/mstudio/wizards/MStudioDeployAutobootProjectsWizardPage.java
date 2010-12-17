@@ -168,8 +168,6 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	}
 	//keep the state of the checked items
 	private void keepCheckedItem() {
-		if(projectOfChecked == null)
-			projectOfChecked = new ArrayList<String>();
 		projectOfChecked.clear();
 		TableItem[] itm = table.getItems();
 		for(int i=0; i<itm.length; i++){
@@ -273,9 +271,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	
 	public IProject[] getDeployAutobootProjects() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
-		if(wizard == null)
-			return null;
-		if (projects == null || projects.length <= 0)
+		if (wizard == null || projects == null || projects.length <= 0)
 			return null;
 		IProject[] exeProjects = wizard.getDeployExeProjects();
 		List<IProject> exeList=new ArrayList<IProject>();
