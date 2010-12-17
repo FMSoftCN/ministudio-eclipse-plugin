@@ -269,7 +269,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 			String id1 = ((IToolChain) ob).getId();
 			IToolChain sup = ((IToolChain) ob).getSuperClass();
-			String id2 = sup == null ? null : sup.getId();
+			String id2 = (sup == null ? null : sup.getId());
 
 			for (int i = 0; i < ss.length; i++) {
 				if ((ss[i] != null && ss[i].equals(id1))
@@ -286,12 +286,12 @@ public class MStudioWizardHandler extends CWizardHandler {
 	}
 
 	public MStudioWizardHandler(Composite p, IWizard w) {
-		this("MiniGUI Project", p, w);
+		this(MStudioMessages.getString("MStudioWizardHandler.8"), p, w);
 	}
 
-	public MStudioWizardHandler(IProjectType _pt, Composite p, IWizard w) {
-		super(p, MStudioMessages.getString("MStudioWizardHandler.0"), _pt.getName());
-		pt = _pt;
+	public MStudioWizardHandler(IProjectType pt, Composite p, IWizard w) {
+		super(p, MStudioMessages.getString("MStudioWizardHandler.0"), pt.getName());
+		this.pt = pt;
 		setWizard(w);
 	}
 
@@ -385,11 +385,11 @@ public class MStudioWizardHandler extends CWizardHandler {
 			// load all custom pages specified via extensions
 			try {
 				MBSCustomPageManager.loadExtensions();
+				customPages = MBSCustomPageManager.getCustomPages();
 			} catch (BuildException e) {
 				e.printStackTrace();
 			}
 
-			customPages = MBSCustomPageManager.getCustomPages();
 
 			if (customPages == null)
 				customPages = new IWizardPage[0];
@@ -517,11 +517,10 @@ public class MStudioWizardHandler extends CWizardHandler {
 			config.setArtifactName(removeSpaces(project.getName()));
 
 			IBuildProperty b = config.getBuildProperties().getProperty(PROPERTY);
-			if (cfgDebug == null && b != null && b.getValue() != null
+			if (b != null && b.getValue() != null
 					&& PROP_VAL.equals(b.getValue().getId()))
 				cfgDebug = cfgDes;
-			if (cfgFirst == null) // select at least first configuration
-				cfgFirst = cfgDes;
+			cfgFirst = cfgDes;
 		}
 
 		mngr.setProjectDescription(project, des);
@@ -542,10 +541,14 @@ public class MStudioWizardHandler extends CWizardHandler {
 		
 		List<String> depLibList = new ArrayList<String> ();
 		String[] pkgs = new MStudioProject(project).getDepPkgs();
-		for (int idx = 0; idx < pkgs.length; idx++) {
-			String[] libs = einfo.getPackageLibs(pkgs[idx]);
-			for (int c = 0; c < libs.length; c++){
-				depLibList.add(libs[c]);
+		if (pkgs != null) {
+			for (int idx = 0; idx < pkgs.length; idx++) {
+				String[] libs = einfo.getPackageLibs(pkgs[idx]);
+				if (libs != null) {
+					for (int c = 0; c < libs.length; c++){
+						depLibList.add(libs[c]);
+					}
+				}
 			}
 		}
 		String[] depLibs          = depLibList.toArray(new String[depLibList.size()]);
