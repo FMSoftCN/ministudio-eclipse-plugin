@@ -303,7 +303,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 				for (int i = 0; i < affectedList.size(); i++) {
 					String affString = affectedList.get(i);
 					getAffectedPkgsChecked(affString, affected);
-					if (isListSameItem(affString, affected))
+					if (affected.contains(affString))
 						continue;
 					affected.add(affString);
 				}
@@ -341,14 +341,14 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 				for (int i = 0; i < dep.size(); i++) {
 					String depString = dep.get(i);
 					getDependPkgsChecked(depString, depend);
-					if (isListSameItem(depString, depend))
+					if (depend.contains(depString))
 						continue;
 					depend.add(depString);
 				}
 			}
 		}
 	}
-
+/*
 	private boolean isListSameItem(String sameString, List<String> listStr) {
 
 		for (int i = 0; i < listStr.size(); i++) {
@@ -359,7 +359,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 		return false;
 	}
-
+*/
 	private void getCheckboxTableViewerData() {
 
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
