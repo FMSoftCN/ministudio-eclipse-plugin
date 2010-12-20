@@ -15,8 +15,12 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 import org.osgi.framework.BundleContext;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -30,6 +34,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioSocketServerThread;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 
 
 /**
@@ -96,24 +102,48 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	class resCfgFilter implements FilenameFilter {
 
-	public void updateProject(String projectName) {
+		public boolean accept(File file, String fname) {
+			System.out.println("resCfgFilter : "+ fname);
+			return fname.toLowerCase().endsWith("_res.cfg");
+		}
+	}
 
+	public void updateProject(String projectName) throws CoreException {
 		MStudioSocketServerThread serverSocket = MStudioSocketServerThread.get();
 		if (serverSocket != null) {
 			//please waiting for closing process
 			serverSocket.closeProject(projectName);
 		}
 		
-		//TODO, change the name of <project_name>_res.cfg .
-		
+		// TODO
+		// change the name of <project_name>_res.cfg .
+		// maybe need to changed some code in main()
+		// or maybe not to changed the file name.
+		/*
+		IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if (prj.hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
+			// this is the new file
+			String prj_res_cfg = new MStudioProject(prj).getProgramCfg();
+			if (null != prj_res_cfg){
+				String ofs[] = prj.getFullPath().toFile().list(new resCfgFilter());
+				if (ofs != null && ofs.length > 0){
+					System.out.println("old file : " + ofs[0]);
+					File of =  new File(ofs[0]);
+					if (of.exists()) {
+						of.renameTo(new File(prj_res_cfg));
+					}
+				}
+			}
+		}
+		*/
 	}
 
 	public class MStudioResourceChangeListener implements IResourceChangeListener {
 
-		@Override
 		public void resourceChanged(IResourceChangeEvent event) {
-			// TODO Auto-generated method stub
 			IResourceDelta delta = event.getDelta();
 			if (delta == null) {
 				return;
@@ -121,10 +151,17 @@ public class MStudioPlugin extends AbstractUIPlugin {
 
 			IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
 				public boolean visit(IResourceDelta delta) {
+					
 					IResource resource = delta.getResource();
+
 					if (delta.getKind() == IResourceDelta.CHANGED
 							&& resource.getType() == IResource.PROJECT) {
-						updateProject(resource.getName());
+						try {
+							updateProject(resource.getName());
+						} catch (CoreException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
 					return true;

@@ -35,7 +35,6 @@ import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
 
-import org.eclipse.cdt.managedbuilder.buildproperties.IBuildProperty;
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
@@ -87,9 +86,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 	public final static String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
 	public final static String EMPTY_STR = "";
-
-	private final static String PROPERTY = "org.eclipse.cdt.build.core.buildType";
-	private final static String PROP_VAL = PROPERTY + ".debug";
 
 	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
 	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
@@ -495,9 +491,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		cfgs = CfgHolder.unique(cfgs);
 		cfgs = CfgHolder.reorder(cfgs);
 
-		ICConfigurationDescription cfgDebug = null;
-		ICConfigurationDescription cfgFirst = null;
-
 		for (int i = 0; i < cfgs.length; i++) {
 			cf = (Configuration) cfgs[i].getConfiguration();
 			String id = ManagedBuildManager.calculateChildId(cf.getId(), null);
@@ -515,12 +508,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 
 			config.setName(cfgs[i].getName());
 			config.setArtifactName(removeSpaces(project.getName()));
-
-			IBuildProperty b = config.getBuildProperties().getProperty(PROPERTY);
-			if (b != null && b.getValue() != null
-					&& PROP_VAL.equals(b.getValue().getId()))
-				cfgDebug = cfgDes;
-			cfgFirst = cfgDes;
 		}
 
 		mngr.setProjectDescription(project, des);

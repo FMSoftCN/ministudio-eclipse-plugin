@@ -38,9 +38,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.core.resources.IProject;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.jface.dialogs.MessageDialog;
 
 
@@ -51,9 +49,6 @@ public class MStudioDeployPropertyPage extends PropertyPage
 	private final String BIN_LOCATION = "/usr/local/bin";
 	private final String LIB_LOCATION = "/usr/local/lib";
 	private final String CUSTOM_FILE_LOCATION = "/usr/local/share";
-	private final String SECTION_PATH_INFO="path_info";
-	private final String KEY_RESPKG_PATH="respkg_path";
-	private final String KEY_USR_PATH="usr_path";
 	
 	private Button deployToRootfs = null;
 	private Label resLabel;
@@ -213,7 +208,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
 		deployToRootfs.setSelection(mStudioProject.getDefaultDeployable());		
 		//load the path
-		//check .{projectname}.cfg file exists
+		//check .{projectname}_res.cfg file exists
 		//PRIFIX...load from the file
 		//paths is not null,the min length of paths is 0
 		String[] paths = mStudioProject.getDeployPathInfo();
@@ -275,22 +270,37 @@ public class MStudioDeployPropertyPage extends PropertyPage
 	}
 
 	private boolean savePersistentSettings() {
-		 MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
-		 if(!mStudioProject.setDefaultDeployable(deployToRootfs.getSelection()))
-			 return false;		
-		 String paths[] = new String[]{resText.getText(),binText.getText(),libText.getText(),customFileText.getText()};
-		 if(!mStudioProject.setDeployPathInfo(paths))
-			 return false;
-		 String cfgFileName = ((IProject)getElement()).getLocation().toOSString()+File.separator+"."+((IProject)getElement()).getName()+"_res.cfg";
-		 MStudioParserIniFile cfg = new MStudioParserIniFile(cfgFileName);
-		 if (null == cfg)
-			 return false;
-
-		 cfg.setStringProperty(SECTION_PATH_INFO, KEY_RESPKG_PATH,MStudioPlugin.getDefault().getMStudioEnvInfo().getRootfsPath() + resText.getText(), null);
-		 cfg.setStringProperty(SECTION_PATH_INFO, KEY_USR_PATH,MStudioPlugin.getDefault().getMStudioEnvInfo().getRootfsPath() + customFileText.getText(), null);
-		 if(!cfg.save())
-			 return false;
-		 return mStudioProject.setDeployCustomFiles(destList.getItems());
+		 
+		MStudioProject msp = new MStudioProject((IProject)getElement());
+		if(!msp.setDefaultDeployable(deployToRootfs.getSelection()))
+			return false;		
+		
+		String paths[] = new String[] {
+			resText.getText(), 
+			binText.getText(), 
+			libText.getText(), 
+			customFileText.getText()
+		};
+		if(!msp.setDeployPathInfo(paths))
+			return false;
+		/*
+		String cfgFileName = msp.getProgramCfg();
+		if (null == cfgFileName)
+			return false;
+		
+		MStudioParserIniFile cfg = new MStudioParserIniFile(cfgFileName);
+		if (null == cfg)
+			return false;
+	
+		cfg.setStringProperty(SECTION_PATH_INFO, KEY_RESPKG_PATH, 
+				MStudioPlugin.getDefault().getMStudioEnvInfo().getRootfsPath() + resText.getText(), null);
+		cfg.setStringProperty(SECTION_PATH_INFO, KEY_USR_PATH,
+				MStudioPlugin.getDefault().getMStudioEnvInfo().getRootfsPath() + customFileText.getText(), null);
+		if(!cfg.save())
+			return false;
+		*/
+		
+		return msp.setDeployCustomFiles(destList.getItems());
 	}
 
 	public boolean performOk() {
@@ -303,6 +313,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 	}
 	
 }
+
 class FileFilter implements FilenameFilter{
 	@Override
 	public boolean accept(File dir, String name) {

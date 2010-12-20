@@ -116,6 +116,11 @@ description="%MStudioMginitModuleCProject.template.description" help="help.html"
 				<simple name="target" value="mgncs.cfg"/>
 				<simple name="replaceable" value="true"/>
 			</element>
+			<element>
+				<simple name="source" value="etc/prjcfg.base"/>
+				<simple name="target" value=".$(projectName)_res.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
 		</complex-array>
 	</process>
 	

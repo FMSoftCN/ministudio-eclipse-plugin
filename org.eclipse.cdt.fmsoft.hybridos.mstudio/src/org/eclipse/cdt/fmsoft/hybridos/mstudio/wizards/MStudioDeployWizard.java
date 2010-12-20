@@ -26,8 +26,10 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -99,8 +101,14 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
 	private final static String MODULES_DEPLOY_PATH = "/usr/local/lib";
 	private final static String APP_DEPLOY_PATH = "/usr/bin";
-	private final static String APP_CFG_PATH = "_res.cfg";
+
 	private final static String DEPLIBS_PROGRAM_DEPLOY = "/usr/local/lib";
+	
+	private final String SECTION_PATH_INFO="path_info";
+	private final String KEY_RESPKG_PATH="respkg_path";
+	private final String KEY_USR_PATH="usr_path";
+	private final String DEF_RES_LOCATION = "/usr/local/share/";
+	private final String DEF_CUSTOM_FILE_LOCATION = "/usr/local/share";
 	
 	private static final String MSMS_EMPTY_STR = "";
 
@@ -189,12 +197,13 @@ public class MStudioDeployWizard extends Wizard{
 							error=true;
 							break;
 						}
-					}while(false);
+					} while(false);
+					
 					if(!error){
 						dialog.close();
 						distory();
 					}
-				}catch(Exception ex){
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 				finally{
@@ -203,22 +212,8 @@ public class MStudioDeployWizard extends Wizard{
 			}
 		});		
 		return false;
-/*
-		if (saveDeployInfo(DEPLOY_INI_PATH + DEPLOY_INI_NAME)) {
-			
-			MessageDialog.openWarning(getShell(),
-					MStudioMessages.getString("MStudioDeployProject.error.title"),
-					MStudioMessages.getString("MStudioDeployProject.save.successContent"));
-			return true;
-		} else {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioDeployProject.error.title"),
-					MStudioMessages.getString("MStudioDeployProject.save.errorContent"));
-			return false;
-		}
-		*/
-		//return true;
 	}
+	
 	public boolean runScript(){
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
@@ -299,19 +294,59 @@ public class MStudioDeployWizard extends Wizard{
 		iniFile = new MStudioParserIniFile(filename);
 		if (null == iniFile)
 			return false;	
-		//update the host and target config files ,some section would be changed when slect the deploy target
+		//update the host and target config files ,
+		//some section would be changed when slect the deploy target
 		if(!updateCfgFiles())
 			return false;
+		
 		setCfgsSection();	
 		setServicesSection();
 		setDlcustomSection();
 		setModulesSection();		
 		setAutobootSection();
 		setAppsSection();
-		if (iniFile.save()) 
-			return true;
-		else
-			return false;		
+		
+		if (!iniFile.save()) 
+			return false;
+		
+		if (!saveProjectResCfgs())
+			return false;
+			
+		return true;
+	}
+	
+	private boolean saveProjectResCfgs (){
+		IProject[] projects = getDeployExeProjects();
+		if (null != projects) {
+			for (int i = 0; i < projects.length; i++) {
+				try {
+					String prj_res_cfg = null;
+					if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
+						MStudioProject msp = new MStudioProject(projects[i]);
+						prj_res_cfg = msp.getProgramCfg();
+						if (null != prj_res_cfg){
+							// FIXME, there must be create a new file
+							// for example , prj_res.cfg.target
+							MStudioParserIniFile prjResFile = new MStudioParserIniFile(prj_res_cfg);
+							String[] paths = msp.getDeployPathInfo();
+							if (paths.length == 4){
+								prjResFile.setStringProperty(SECTION_PATH_INFO, 
+										KEY_RESPKG_PATH, paths[0], null);
+								prjResFile.setStringProperty(SECTION_PATH_INFO, 
+										KEY_USR_PATH, paths[3], null);
+							} else {
+								prjResFile.setStringProperty(SECTION_PATH_INFO, 
+										KEY_RESPKG_PATH, DEF_RES_LOCATION, null);
+								prjResFile.setStringProperty(SECTION_PATH_INFO, 
+										KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION, null);
+							}
+							prjResFile.save();
+						}
+					}
+				} catch (CoreException e) {e.printStackTrace();}
+			}
+		}
+		return true;
 	}
 
 	private boolean updateCfgFiles() {		
@@ -456,7 +491,12 @@ public class MStudioDeployWizard extends Wizard{
 			String temp = getModuleDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
-			temp = getProgramCfg(projects[i]);
+			
+			try {
+				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
+					temp = new MStudioProject(projects[i]).getProgramCfg();
+				}
+			} catch (CoreException e) {e.printStackTrace();}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
 					temp == null ? "" : temp, null);
 			temp = getResPack(projects[i]);
@@ -501,7 +541,8 @@ public class MStudioDeployWizard extends Wizard{
 		}
 		
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
-				projects.length, null);				
+				projects.length, null);	
+		
 		for (int i = 0; i < projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i),
 					projects[i].getName(), null);
@@ -509,9 +550,17 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.addSection(projects[i].getName(), null);			
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString().trim(), null);
-			String temp = getProgramCfg(projects[i]);
+			
+			String prj_res_cfg = null;
+			try {
+				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
+					prj_res_cfg = new MStudioProject(projects[i]).getProgramCfg();
+				}
+			} catch (CoreException e) {e.printStackTrace();}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
-					temp == null ? "" : temp, null);
+					prj_res_cfg == null ? "" : prj_res_cfg, null);
+			
+			String temp = null;
 			temp = getAppDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName().trim(), PROGRAM_DEPLOY_PROPERTY, 
 					temp == null ? "" : temp, null);
@@ -528,11 +577,6 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 		}
-	}
-	
-	private String getProgramCfg(IProject project) {
-		return project.getLocation()/*.removeLastSegments(1)*/.toOSString()
-				+ "/." + project.getName().trim() + APP_CFG_PATH;
 	}
 	
 	private String getAppDeploy(IProject project) {

@@ -15,6 +15,8 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.project;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -45,6 +47,7 @@ public class MStudioProject {
 //	private final static String SPLIT_SEMICOLON = ";";
 	private final static String DEPLOY_SPLIT_CHAR=":";
 	private final static String EMPTY_STR = "";
+	private final static String APP_CFG_PATH = "_res.cfg";
 
 	public enum MStudioProjectTemplateType {
 		exe,
@@ -297,7 +300,7 @@ public class MStudioProject {
 			if(files.length > 0)
 				tempStr = semicolonMerger(files);
 		}
-		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES,tempStr);
+		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES, tempStr);
 	}
 	
 	private String semicolonMerger(String[] sm) {
@@ -310,6 +313,17 @@ public class MStudioProject {
 		}
 
 		return deploy;
+	}
+	
+	public String getProgramCfg(){
+		if (isMiniGUIEntryType()) {
+			String f = wrapped.getLocation().toOSString() 
+						+ "/." + wrapped.getName().trim() + APP_CFG_PATH;
+			if (new File(f).exists()){
+				return f;
+			}
+		}
+		return null;
 	}
 }
 
