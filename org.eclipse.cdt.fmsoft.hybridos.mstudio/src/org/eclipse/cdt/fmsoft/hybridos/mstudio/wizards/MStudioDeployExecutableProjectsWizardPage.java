@@ -30,10 +30,14 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -139,12 +143,15 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
 		sizeCombo = new Combo(bottomPanel3, SWT.NONE);
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
-
+		sizeCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		sizeCombo.addKeyListener(new ComboKeyListener());
 		Label colorLabel = new Label(bottomPanel3, SWT.NONE);
 		colorLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.colorLabel"));
-		colorCombo = new Combo(bottomPanel3, SWT.READ_ONLY);
+		colorCombo = new Combo(bottomPanel3, SWT.NONE);
 		colorCombo.addSelectionListener(new SelectedChangeListener());
+		colorCombo.addKeyListener(new ComboKeyListener());
+		colorCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		initSizeAndColor();
 
 		bottomPanel = new Composite(topPanel, SWT.NONE);
@@ -265,8 +272,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*[xX][1-9]+[0-9]*";
+		String regexString = "[1-9]+[0-9]*[*xX][1-9]+[0-9]*";
 		return Pattern.matches(regexString, resolution);
+	}
+	private boolean validateColorDepth(String colorDepth){
+		String regexString = "[1-9]+[0-9]*";
+		return Pattern.matches(regexString, colorDepth);
 	}
 
 	protected boolean validatePage() {
@@ -275,15 +286,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			setPageComplete(false);
 			return false;
 		}
-		/*
-		if (!locationChanged() || sizeCombo.getSelectionIndex() < 0
-				|| colorCombo.getSelectionIndex() < 0) {
-			setPageComplete(false);
-			return false;
-		}
-*/
-		if(!locationChanged() || sizeCombo.getText().trim() == ""
-				|| colorCombo.getSelectionIndex() < 0){
+		
+		if(!locationChanged()
+				|| (sizeCombo.getText().trim() == "" || !validateResolution(sizeCombo.getText().trim()))
+				|| (colorCombo.getText().trim() == "" || !validateColorDepth(colorCombo.getText().trim()))){
 			setPageComplete(false);
 			return false;
 		}
@@ -296,7 +302,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				return false;
 			}
 		}
-		
 		
 		setPageComplete(true);
 
@@ -330,7 +335,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	public String getColorDepth() {
-		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
+//		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
+		String color = colorCombo.getText().trim();
+		if(validateResolution(color))
+			return color;
+		return null;
 	}
 
 	//resolution format: 320x240
@@ -373,6 +382,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		}
 
 		public void widgetSelected(SelectionEvent e) {
+			validatePage();
+		}
+	}
+	protected class ComboKeyListener implements KeyListener{
+		
+		public void keyPressed(KeyEvent e){
+			validatePage();
+		}
+		
+		public void keyReleased(KeyEvent e){
 			validatePage();
 		}
 	}
