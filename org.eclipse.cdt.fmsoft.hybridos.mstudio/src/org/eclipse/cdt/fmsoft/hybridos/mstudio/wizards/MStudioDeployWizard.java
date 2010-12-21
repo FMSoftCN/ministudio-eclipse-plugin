@@ -16,6 +16,8 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -308,44 +310,7 @@ public class MStudioDeployWizard extends Wizard{
 		
 		if (!iniFile.save()) 
 			return false;
-		
-		if (!saveProjectResCfgs())
-			return false;
 			
-		return true;
-	}
-	
-	private boolean saveProjectResCfgs (){
-		IProject[] projects = getDeployExeProjects();
-		if (null != projects) {
-			for (int i = 0; i < projects.length; i++) {
-				try {
-					String prj_res_cfg = null;
-					if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-						MStudioProject msp = new MStudioProject(projects[i]);
-						prj_res_cfg = msp.getProgramCfgFile();
-						if (null != prj_res_cfg && msp.isProgramCfgFileExist()){
-							// FIXME, there must be create a new file
-							// for example , prj_res.cfg.target
-							MStudioParserIniFile prjResFile = new MStudioParserIniFile(prj_res_cfg);
-							String[] paths = msp.getDeployPathInfo();
-							if (paths.length == 4){
-								prjResFile.setStringProperty(SECTION_PATH_INFO, 
-										KEY_RESPKG_PATH, paths[0], null);
-								prjResFile.setStringProperty(SECTION_PATH_INFO, 
-										KEY_USR_PATH, paths[3], null);
-							} else {
-								prjResFile.setStringProperty(SECTION_PATH_INFO, 
-										KEY_RESPKG_PATH, DEF_RES_LOCATION, null);
-								prjResFile.setStringProperty(SECTION_PATH_INFO, 
-										KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION, null);
-							}
-							prjResFile.save();
-						}
-					}
-				} catch (CoreException e) {e.printStackTrace();}
-			}
-		}
 		return true;
 	}
 
@@ -492,13 +457,10 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 			
-			try {
-				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-					temp = new MStudioProject(projects[i]).getProgramCfgFile();
-				}
-			} catch (CoreException e) {e.printStackTrace();}
+			temp = saveProjectResCfgs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
 					temp == null ? "" : temp, null);
+			
 			temp = getResPack(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY,
 					temp == null ? "" : temp, null);
@@ -551,16 +513,10 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					projects[i].getLocation().toOSString().trim(), null);
 			
-			String prj_res_cfg = null;
-			try {
-				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-					prj_res_cfg = new MStudioProject(projects[i]).getProgramCfgFile();
-				}
-			} catch (CoreException e) {e.printStackTrace();}
+			String temp =  saveProjectResCfgs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
-					prj_res_cfg == null ? "" : prj_res_cfg, null);
+					temp == null ? "" : temp, null);
 			
-			String temp = null;
 			temp = getAppDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName().trim(), PROGRAM_DEPLOY_PROPERTY, 
 					temp == null ? "" : temp, null);
@@ -577,6 +533,83 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 		}
+	}
+	
+	private boolean copyFile(String oldPath, String newPath) {
+
+		try {
+			int bytesum = 0;
+			int byteread = 0;
+			File oldFile = new File(oldPath);
+
+			if (oldFile.exists()) {
+				File newFile = new File(newPath);
+				if (newFile.exists())
+					newFile.delete();
+
+				FileInputStream inStream = new FileInputStream(oldPath);
+				FileOutputStream fs = new FileOutputStream(newPath);
+				byte[] buffer = new byte[4096];
+
+				while ((byteread = inStream.read(buffer)) != -1) {
+					bytesum += byteread;
+					fs.write(buffer, 0, byteread);
+				}
+				inStream.close();
+
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private String saveProjectResCfgs (IProject prj){
+		
+		try {
+			if (null == prj || !prj.hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID))
+				return null;
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		
+		String prj_res_cfg = null;
+		MStudioProject msp = new MStudioProject(prj);
+		prj_res_cfg = msp.getProgramCfgFile();
+		if (null == prj_res_cfg && !msp.isProgramCfgFileExist()){
+			return null;
+		}
+			
+		String newCfgFile = prj_res_cfg + ".target";
+		if (copyFile (prj_res_cfg, newCfgFile)){
+			return null;
+		}
+
+		MStudioParserIniFile prjResFile = new MStudioParserIniFile(newCfgFile);
+		if (null ==prjResFile) {
+			return null;
+		}
+			
+		String[] paths = msp.getDeployPathInfo();
+		if (paths.length == 4){
+			prjResFile.setStringProperty(SECTION_PATH_INFO, 
+					KEY_RESPKG_PATH, paths[0], null);
+			prjResFile.setStringProperty(SECTION_PATH_INFO, 
+					KEY_USR_PATH, paths[3], null);
+		} else {
+			prjResFile.setStringProperty(SECTION_PATH_INFO, 
+					KEY_RESPKG_PATH, DEF_RES_LOCATION, null);
+			prjResFile.setStringProperty(SECTION_PATH_INFO, 
+					KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION, null);
+		}
+		if (!prjResFile.save()){
+			return null;
+		}
+
+		return newCfgFile;
 	}
 	
 	private String getAppDeploy(IProject project) {
