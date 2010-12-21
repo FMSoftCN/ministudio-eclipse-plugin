@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -91,6 +92,14 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private String socName = null;
 	private String defaultSocName = null;
+	
+	private class PakckageSorter extends ViewerSorter {
+		 public int compare(Viewer viewer, Object e1, Object e2) {
+			 String n1 = ((PackageItem)e1).getName();
+			 String n2 = ((PackageItem)e2).getName();
+			 return n1.compareTo(n2);
+		 }
+	}
 
 	public MStudioNewCAppSoCConfigWizardPage(MStudioWizardHandler wh) {
 		super(TITLE);
@@ -203,6 +212,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					packageDesc.setText(pck.getDescription());
 			}
 		});
+		ctv.setSorter(new PakckageSorter());
 
 //		setCheckboxTableViewerData();
 
