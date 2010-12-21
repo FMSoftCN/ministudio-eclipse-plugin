@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -86,6 +87,14 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private boolean hasInitializeTable = false;
+	
+	private class PakckageSorter extends ViewerSorter {
+		 public int compare(Viewer viewer, Object e1, Object e2) {
+			 String n1 = e1.toString();
+			 String n2 = e2.toString();
+			 return n1.compareTo(n2);
+		 }
+	}
 
 	public MStudioSoftDevPackagePropertyPage() {
 	}
@@ -169,6 +178,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 					contentDes.setText(msEnvInfo.getAllSoftPkgs().get(obj).toString());
 			}
 		});
+		ctv.setSorter(new PakckageSorter());
+		
 
 		selectAll = new Button(composite2, SWT.CHECK);
 		selectAll.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.selectAll"));
