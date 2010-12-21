@@ -36,7 +36,7 @@ int DlModuleInit(void)
 #else
 	char f_package[MAX_PATH];
 
-	ncsSetAppIniInfo(ncsLoadAppIniInfo("$(projectName)"));
+	ncsSetAppIniInfo(ncsLoadAppIniInfo(argv[0]));
 
 	ncsInitialize();
 	SetResPath("./");
