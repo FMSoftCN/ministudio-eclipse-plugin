@@ -28,6 +28,8 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 
@@ -54,6 +56,7 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	 * The constructor
 	 */
 	public MStudioPlugin() {
+		//System.out.println("in MStudioPlugin construct function");
 	}
 
 	/*
@@ -61,10 +64,12 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		//System.out.println("in MStudioPlugin --start-- function");
 		super.start(context);
 		plugin = this;
 		listener = new MStudioResourceChangeListener();
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_CHANGE);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, 
+				IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/*
@@ -106,7 +111,6 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	class resCfgFilter implements FilenameFilter {
 
 		public boolean accept(File file, String fname) {
-			System.out.println("resCfgFilter : "+ fname);
 			return fname.toLowerCase().endsWith("_res.cfg");
 		}
 	}
@@ -118,30 +122,60 @@ public class MStudioPlugin extends AbstractUIPlugin {
 			serverSocket.closeProject(projectName);
 		}
 		
-		// TODO
-		// change the name of <project_name>_res.cfg .
-		// maybe need to changed some code in main()
-		// or maybe not to changed the file name.
-		/*
+		// rename the file <project_name>_res.cfg .	
 		IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		if (prj.hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-			// this is the new file
-			String prj_res_cfg = new MStudioProject(prj).getProgramCfg();
-			if (null != prj_res_cfg){
-				String ofs[] = prj.getFullPath().toFile().list(new resCfgFilter());
-				if (ofs != null && ofs.length > 0){
-					System.out.println("old file : " + ofs[0]);
-					File of =  new File(ofs[0]);
-					if (of.exists()) {
-						of.renameTo(new File(prj_res_cfg));
-					}
+		
+		if (prj.hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID))
+		{
+			String new_res_cfg = new MStudioProject(prj).getProgramCfgFile();
+			if (null == new_res_cfg){
+				return;
+			}
+			File newFile = new File (new_res_cfg);
+			if (newFile.exists()){
+				return;
+			}
+			IPath prjPath = new Path (new_res_cfg).removeLastSegments(1);
+			if (null == prjPath || !prjPath.toFile().exists()){
+				return;
+			}
+			String ofs[] = prjPath.toFile().list(new resCfgFilter());
+			if (ofs != null && ofs.length > 0){
+				File of =  prjPath.append(ofs[0]).toFile();
+				if (of.exists()) {
+					of.renameTo(newFile);
 				}
 			}
 		}
-		*/
+		
 	}
 
 	public class MStudioResourceChangeListener implements IResourceChangeListener {
+		
+		IResourceDeltaVisitor visitor = null;
+		
+		public MStudioResourceChangeListener() {
+			
+			visitor = new IResourceDeltaVisitor() {
+				
+				public boolean visit(IResourceDelta delta) {
+	
+					IResource resource = delta.getResource();
+					
+					if (delta.getKind() == IResourceDelta.CHANGED
+							&& resource.getType() == IResource.PROJECT) {
+						try {
+							System.out.println("MStudioResourceChangeListener : visit resource.Name = " + resource.getName());
+							updateProject(resource.getName());
+						} catch (CoreException e) {
+							e.printStackTrace();
+						}
+					}
+					
+					return true;
+				}
+			};
+		}
 
 		public void resourceChanged(IResourceChangeEvent event) {
 			IResourceDelta delta = event.getDelta();
@@ -149,29 +183,9 @@ public class MStudioPlugin extends AbstractUIPlugin {
 				return;
 			}
 
-			IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
-				public boolean visit(IResourceDelta delta) {
-					
-					IResource resource = delta.getResource();
-
-					if (delta.getKind() == IResourceDelta.CHANGED
-							&& resource.getType() == IResource.PROJECT) {
-						try {
-							updateProject(resource.getName());
-						} catch (CoreException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-
-					return true;
-				}
-			};
-
 			try {
 				delta.accept(visitor);
-			} catch (CoreException e) {
-			}
+			} catch (CoreException e) { }
 		}
 	}
 

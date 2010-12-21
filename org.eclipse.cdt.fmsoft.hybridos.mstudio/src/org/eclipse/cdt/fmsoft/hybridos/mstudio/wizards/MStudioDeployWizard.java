@@ -323,8 +323,8 @@ public class MStudioDeployWizard extends Wizard{
 					String prj_res_cfg = null;
 					if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
 						MStudioProject msp = new MStudioProject(projects[i]);
-						prj_res_cfg = msp.getProgramCfg();
-						if (null != prj_res_cfg){
+						prj_res_cfg = msp.getProgramCfgFile();
+						if (null != prj_res_cfg && msp.isProgramCfgFileExist()){
 							// FIXME, there must be create a new file
 							// for example , prj_res.cfg.target
 							MStudioParserIniFile prjResFile = new MStudioParserIniFile(prj_res_cfg);
@@ -494,7 +494,7 @@ public class MStudioDeployWizard extends Wizard{
 			
 			try {
 				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-					temp = new MStudioProject(projects[i]).getProgramCfg();
+					temp = new MStudioProject(projects[i]).getProgramCfgFile();
 				}
 			} catch (CoreException e) {e.printStackTrace();}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
@@ -554,7 +554,7 @@ public class MStudioDeployWizard extends Wizard{
 			String prj_res_cfg = null;
 			try {
 				if (projects[i].hasNature(MStudioProjectNature.MSTUDIO_NATURE_ID)){
-					prj_res_cfg = new MStudioProject(projects[i]).getProgramCfg();
+					prj_res_cfg = new MStudioProject(projects[i]).getProgramCfgFile();
 				}
 			} catch (CoreException e) {e.printStackTrace();}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,

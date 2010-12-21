@@ -315,15 +315,19 @@ public class MStudioProject {
 		return deploy;
 	}
 	
-	public String getProgramCfg(){
+	public String getProgramCfgFile(){
 		if (isMiniGUIEntryType()) {
-			String f = wrapped.getLocation().toOSString() 
+			return wrapped.getLocation().toOSString() 
 						+ "/." + wrapped.getName().trim() + APP_CFG_PATH;
-			if (new File(f).exists()){
-				return f;
-			}
 		}
 		return null;
+	}
+	
+	public boolean isProgramCfgFileExist() {
+		if (!isMiniGUIEntryType()) {
+			return false;
+		}
+		return new File(getProgramCfgFile()).exists();
 	}
 }
 
