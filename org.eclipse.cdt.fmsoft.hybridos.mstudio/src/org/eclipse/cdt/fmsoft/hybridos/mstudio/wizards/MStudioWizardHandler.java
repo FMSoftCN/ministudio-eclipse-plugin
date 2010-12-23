@@ -35,6 +35,11 @@ import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
 
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
 import org.eclipse.cdt.managedbuilder.core.IBuilder;
@@ -80,6 +85,10 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioProjectTemplateType;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.internal.core.LaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+import org.eclipse.debug.internal.ui.launchConfigurations.EnvironmentVariable;
 
 
 public class MStudioWizardHandler extends CWizardHandler {
@@ -517,6 +526,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		doCustom(project);
 	}
 
+	@SuppressWarnings("restriction")
 	private void createTargetConfiguration(IProject project) {
 
 		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
@@ -610,6 +620,44 @@ public class MStudioWizardHandler extends CWizardHandler {
 		
 		if (cur_cfgs.length > 0)
 			ManagedBuildManager.saveBuildInfo(project, false);
+		
+		/////////////////////////////////////////
+		////////add envs for run & Debug/////////
+		/////////////////////////////////////////
+		DebugUIPlugin dp = DebugUIPlugin.getDefault();
+		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
+		
+		Map<String, String> map = new HashMap<String, String>(2);
+		
+		map.put("MG_CFG_PATH", "/usr/local/etc/");
+		map.put("LD_LIBRARY_PATH", "/usr/local/lib/");
+		if (configs.length <= 0) {
+			LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
+			String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
+			ILaunchConfigurationType type = lm.getLaunchConfigurationType(stype[0]);
+
+			try {
+				ILaunchConfigurationWorkingCopy wc = type.newInstance(null, 
+						lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
+				wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+				wc.doSave();
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			try {
+				for (int i = 0; i < configs.length; i++){
+					ILaunchConfigurationWorkingCopy wc;
+					wc = configs[i].getWorkingCopy();
+					wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+					wc.doSave();
+				}
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	protected void doTemplatesPostProcess(IProject prj) {
