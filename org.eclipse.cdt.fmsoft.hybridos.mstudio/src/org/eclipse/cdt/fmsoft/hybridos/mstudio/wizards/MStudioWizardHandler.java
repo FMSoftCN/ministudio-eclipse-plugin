@@ -34,6 +34,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.core.settings.model.extension.CConfigurationData;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.core.templateengine.process.ProcessFailureException;
+import org.eclipse.cdt.debug.core.ICDTLaunchConfigurationConstants;
 
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -69,6 +70,7 @@ import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -630,34 +632,30 @@ public class MStudioWizardHandler extends CWizardHandler {
 		Map<String, String> map = new HashMap<String, String>(2);
 		
 		map.put("MG_CFG_PATH", "/usr/local/etc/");
-		map.put("LD_LIBRARY_PATH", "/usr/local/lib/");
-		if (configs.length <= 0) {
-			LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
-			String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
-			ILaunchConfigurationType type = lm.getLaunchConfigurationType(stype[0]);
-
-			try {
-				ILaunchConfigurationWorkingCopy wc = type.newInstance(null, 
-						lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
-				wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
-				wc.doSave();
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-
-		} else {
-			try {
-				for (int i = 0; i < configs.length; i++){
-					ILaunchConfigurationWorkingCopy wc;
-					wc = configs[i].getWorkingCopy();
-					wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
-					wc.doSave();
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
+		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
+		ILaunchConfigurationWorkingCopy wc = null;
+		
+		try {
+			if (configs.length <= 0) {
+				LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
+				String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
+				ILaunchConfigurationType type = lm.getLaunchConfigurationType(stype[0]);
+				wc = type.newInstance(null, 
+						lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
+			} else {
+				wc = configs[0].getWorkingCopy();
+			}		
+			wc.rename("Run/Debug - " + project.getName());
+			wc.setMappedResources(new IResource[] {project});
+			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
+			//FIXME ....
+			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROGRAM_NAME, project.getName());
+			wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+			wc.doSave();
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected void doTemplatesPostProcess(IProject prj) {
