@@ -27,7 +27,12 @@ import java.util.TreeSet;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.IBinary;
+import org.eclipse.cdt.core.model.IBinaryContainer;
+import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
@@ -73,6 +78,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -87,6 +93,8 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioProjectTemplateType;
+import org.eclipse.cdt.internal.core.model.BinaryContainer;
+import org.eclipse.cdt.internal.core.model.CProject;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
@@ -626,12 +634,30 @@ public class MStudioWizardHandler extends CWizardHandler {
 		/////////////////////////////////////////
 		////////add envs for run & Debug/////////
 		/////////////////////////////////////////
+		/*
+		IBinary bin = null;
+		try {
+			if (!(CProject.hasCNature(project) || CProject.hasCCNature(project))){
+				return;
+			}
+			CProject cp = new CProject(null, project);
+			IBinary[] bcs = cp.getBinaryContainer().getBinaries();
+			
+			if (bcs == null || bcs.length == 0){
+				return;
+			}
+			bin = bcs[0];
+			
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		*/
 		DebugUIPlugin dp = DebugUIPlugin.getDefault();
 		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
 		
 		Map<String, String> map = new HashMap<String, String>(2);
 		
-		map.put("MG_CFG_PATH", "/usr/local/etc/");
+		map.put("MG_CFG_PATH", Platform.getInstanceLocation().getURL().getPath() + ".metadata/");
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
 		ILaunchConfigurationWorkingCopy wc = null;
@@ -650,7 +676,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 			wc.setMappedResources(new IResource[] {project});
 			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
 			//FIXME ....
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROGRAM_NAME, project.getName());
+			//String programName = bin.getResource().getProjectRelativePath().toString();
+			String programName = "Debug4Host/" + project.getName();
+			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROGRAM_NAME, programName);
 			wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
 			wc.doSave();
 		} catch (CoreException e) {
