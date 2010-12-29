@@ -165,7 +165,6 @@ public class MStudioPlugin extends AbstractUIPlugin {
 					if (delta.getKind() == IResourceDelta.CHANGED
 							&& resource.getType() == IResource.PROJECT) {
 						try {
-							System.out.println("MStudioResourceChangeListener : visit resource.Name = " + resource.getName());
 							updateProject(resource.getName());
 						} catch (CoreException e) {
 							e.printStackTrace();
