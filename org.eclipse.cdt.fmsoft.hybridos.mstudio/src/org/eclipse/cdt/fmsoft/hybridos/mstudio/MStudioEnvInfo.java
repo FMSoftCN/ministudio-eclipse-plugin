@@ -500,5 +500,23 @@ public class MStudioEnvInfo {
 		
 		return dxwxh.substring(0, dxwxh.lastIndexOf('-'));
 	}
+	
+	public String getScreenDepth(){
+		String PC_XVFB_SECTION = "pc_xvfb";
+		String DEFAULT_MODE_PROPERTY = "defaultmode";
+		
+		String cfgF = getWorkSpaceMetadataPath() + "MiniGUI.cfg";
+		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
+		if (f == null)
+			return null;
+		
+		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
+		
+		// Check the string is "WWWxHHH-DDbpp" or not. 
+		if (!dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp")) 
+			return null;
+		
+		return dxwxh.substring(dxwxh.lastIndexOf('-') + 1, dxwxh.lastIndexOf("bpp"));
+	}
 }
 

@@ -52,7 +52,6 @@ import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -97,8 +96,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	@Override
 	public void init(IWorkbench workbench) {
-		setDescription(MStudioMessages
-				.getString("MStudioSoCPreferencePage.desc"));
+		setDescription(MStudioMessages.getString("MStudioSoCPreferencePage.desc"));
 	}
 
 	@Override
@@ -113,15 +111,14 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		typeCom.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL));
 
 		Label titleType = new Label(typeCom, SWT.FILL);
-		titleType.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.socTypeLabel"));
+		titleType.setText(MStudioMessages.getString("MStudioSoCPreferencePage.socTypeLabel"));
 		GridData typeGd = new GridData();
 		typeGd.horizontalSpan = 2;
 		titleType.setLayoutData(typeGd);
 
 		// create socTable
-		socTable = new Table(typeCom, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL
-				| SWT.H_SCROLL | SWT.SINGLE);
+		socTable = new Table(typeCom, SWT.BORDER 
+				| SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
 		GridData socGd = new GridData(170, 100);
 		socTable.setLayoutData(socGd);
 
@@ -181,8 +178,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		skinCom.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label skinLabel = new Label(skinCom, SWT.NONE);
-		skinLabel.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.skinSettingsLabel"));
+		skinLabel.setText(MStudioMessages.getString("MStudioSoCPreferencePage.skinSettingsLabel"));
 		GridData skinGd = new GridData();
 		skinGd.horizontalAlignment = GridData.FILL;
 		skinGd.horizontalSpan = 2;
@@ -197,8 +193,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		// create select skin button
 		skinBtn = new Button(skinCom, SWT.NONE);
-		skinBtn.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.selectSkinLabel"));
+		skinBtn.setText(MStudioMessages.getString("MStudioSoCPreferencePage.selectSkinLabel"));
 		skinBtn.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -216,26 +211,20 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		});
 
 		if (!initWidgetValues()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
 		}
 		return composite;
 	}
 
 	public static void setCurrentSoC(String name) {
-		IPreferenceStore store = MStudioPlugin.getDefault()
-				.getPreferenceStore();
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, name);
 	}
 
 	public static String getCurrentSoC() {
-		IPreferenceStore store = MStudioPlugin.getDefault()
-				.getPreferenceStore();
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
 			return null;
 		return store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
@@ -254,7 +243,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "^[1-9]+[0-9]*[xX][1-9]+[0-9]*$";
+		String regexString = "^\\d{1,3}x\\d{1,3}$";
 		return Pattern.matches(regexString, resolution);
 	}
 
@@ -298,14 +287,11 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 			socInfo[i] = "";
 			// add soc section info
-			String[] socSectionProperties = iniFile
-					.getPropertyNames(SOC_SECTION);
+			String[] socSectionProperties = iniFile.getPropertyNames(SOC_SECTION);
 			if (null != socSectionProperties) {
 				for (int j = 0; j < socSectionProperties.length; j++) {
-					socInfo[i] += socSectionProperties[j]
-							+ ":"
-							+ iniFile.getStringProperty(SOC_SECTION,
-									socSectionProperties[j]) + "\n";
+					socInfo[i] += socSectionProperties[j]+ ":"
+							+ iniFile.getStringProperty(SOC_SECTION, socSectionProperties[j]) + "\n";
 				}
 			}
 
@@ -314,10 +300,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					.getPropertyNames(MINIGUI_SECTION);
 			if (null != miniguiSectionProperties) {
 				for (int j = 0; j < miniguiSectionProperties.length; j++) {
-					socInfo[i] += miniguiSectionProperties[j]
-							+ ":"
-							+ iniFile.getStringProperty(MINIGUI_SECTION,
-									miniguiSectionProperties[j]) + "\n";
+					socInfo[i] += miniguiSectionProperties[j] + ":"
+							+ iniFile.getStringProperty(MINIGUI_SECTION, miniguiSectionProperties[j]) + "\n";
 				}
 			}
 
@@ -326,22 +310,17 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					.getPropertyNames(KERNEL_SECTION);
 			if (null != kernelSectionProperties) {
 				for (int j = 0; j < kernelSectionProperties.length; j++) {
-					socInfo[i] += kernelSectionProperties[j]
-							+ ":"
-							+ iniFile.getStringProperty(KERNEL_SECTION,
-									kernelSectionProperties[j]) + "\n";
+					socInfo[i] += kernelSectionProperties[j] + ":"
+							+ iniFile.getStringProperty(KERNEL_SECTION, kernelSectionProperties[j]) + "\n";
 				}
 			}
 
 			// add toolchain section info
-			String[] toolchainSectionProperties = iniFile
-					.getPropertyNames(TOOLCHAIN_SECTION);
+			String[] toolchainSectionProperties = iniFile.getPropertyNames(TOOLCHAIN_SECTION);
 			if (null != toolchainSectionProperties) {
 				for (int j = 0; j < toolchainSectionProperties.length; j++) {
-					socInfo[i] += toolchainSectionProperties[j]
-							+ ":"
-							+ iniFile.getStringProperty(TOOLCHAIN_SECTION,
-									toolchainSectionProperties[j]) + "\n";
+					socInfo[i] += toolchainSectionProperties[j] + ":"
+							+ iniFile.getStringProperty(TOOLCHAIN_SECTION, toolchainSectionProperties[j]) + "\n";
 				}
 			}
 		}
@@ -354,7 +333,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private String[] getResolutionData() {
-		return new String[] { "320x240", "640x480", "1024x768" };// do it later
+		return new String[] { "320x240", "640x480", "800x600", "1024x768" };// do it later
 	}
 
 	private String[] getColorDepthData() {
@@ -362,53 +341,83 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean initResolutionCombo() {
+		int selIndex = 0;
+		String defaultSize = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenSize();
+		if (defaultSize == null)
+			defaultSize = "800x600";
+
 		resolution = getResolutionData();
-
 		if (null == resolution) {
-			return false;
+			resolutionCombo.add(defaultSize);
+			selIndex = 0;
+		} else {
+			int i;
+			boolean find = false;
+			for (i = 0; i < resolution.length; i++) {
+				resolutionCombo.add(resolution[i]);
+				if (resolution[i].equals(defaultSize)){
+					selIndex = i;
+					find = true;
+				}
+			}
+			if (!find) {
+				resolutionCombo.add(defaultSize);
+				selIndex = i;
+			}
 		}
-		for (int i = 0; i < resolution.length; i++) {
-			resolutionCombo.add(resolution[i].toString());
-		}
+		resolutionCombo.select(selIndex);
 
-		// set the default value
-		resolutionCombo.select(0);
 		return true;
 	}
 
 	private boolean initColorCombo() {
+		int selIndex = 0;
+		String defaultDepth = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenDepth();
+		if (defaultDepth == null)
+			defaultDepth = "16";
+		
 		colorDepth = getColorDepthData();
 
 		if (null == colorDepth) {
-			return false;
-		}
-		for (int i = 0; i < colorDepth.length; i++) {
-			colorCombo.add(colorDepth[i].toString());
+			colorCombo.add(defaultDepth);
+			selIndex = 0;
+		} else {
+			int i;
+			boolean find = false;
+			for (i = 0; i < colorDepth.length; i++) {
+				colorCombo.add(colorDepth[i]);
+				if (colorDepth[i].equals(defaultDepth)){
+					selIndex = i;
+					find = true;
+				}
+			}
+			if (!find) {
+				colorCombo.add(defaultDepth);
+				selIndex = i;
+			}
 		}
 
-		// set the default value
-		colorCombo.select(0);
+		colorCombo.select(selIndex);
+
 		return true;
 	}
 
 	private boolean initSkinNameLabel() {
 		String MINIGUI_CFG_FILE_NAME = 
-			MStudioPlugin.getDefault().getMStudioEnvInfo()
-			.getWorkSpaceMetadataPath() + "MiniGUI.cfg";
+			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 
-		MStudioParserIniFile iniFile = new MStudioParserIniFile(
-				MINIGUI_CFG_FILE_NAME);
-		if (null == iniFile)
+		MStudioParserIniFile iniFile = new MStudioParserIniFile(MINIGUI_CFG_FILE_NAME);
+		if (null == iniFile){
 			return false;
-
-		String skinName = iniFile.getStringProperty(PC_XVFB_SECTION,
-				SKIN_PROPERTY);
+		}
+		String skinName = iniFile.getStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY);
 		if (null == skinName) {
 			return false;
 		}
-		skinName = skinName.substring(skinName.lastIndexOf(File.separator)
-				+ File.separator.length());
+		
+		skinName = skinName.substring(skinName.lastIndexOf(File.separator) + File.separator.length());
 		skinNameLabel.setText(skinName == null ? "" : skinName);
+		
 		return true;
 	}
 
@@ -416,46 +425,30 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private boolean initWidgetValues() {
 
 		if (!initSocTable()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initSocTypeTable"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocTypeTable"));
 			return false;
 		}
 
 		if (!initInfoTable()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initSocInfoTable"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocInfoTable"));
 			return false;
 		}
 
 		if (!initResolutionCombo()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initResolutionCombo"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.initResolutionCombo"));
 			return false;
 		}
 
 		if (!initColorCombo()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.initColorDepthCombo"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.initColorDepthCombo"));
 			return false;
 		}
 		
@@ -574,76 +567,51 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		String resolutionSelected = resolutionCombo.getText();
 		if (null == resolutionSelected
 				|| !validateResolution(resolutionSelected)) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.resolutionSetting"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.resolutionSetting"));
 			return false;
 		}
 
 		String colorDepthSelected = colorCombo.getText();
 		if (null == colorDepthSelected
 				|| !validateColorDepth(colorDepthSelected)) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.colorDepthSetting"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.colorDepthSetting"));
 			return false;
 		}
 
 		if (null == skinNameLabel.getText()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.skinSetting"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.skinSetting"));
 			return false;
 		}
 
 		MStudioParserIniFile cfgTargetFile = new MStudioParserIniFile(
 				MINIGUI_TARGET_CFG_FILE_NAME);
 		if (null == cfgTargetFile) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.getCfgTargetFile"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgTargetFile"));
 			return false;
 		}
 
-		MStudioParserIniFile cfgFile = new MStudioParserIniFile(
-				MINIGUI_CFG_FILE_NAME);
+		MStudioParserIniFile cfgFile = new MStudioParserIniFile(MINIGUI_CFG_FILE_NAME);
 		if (null == cfgFile) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.getCfgFile"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgFile"));
 			return false;
 		}
 
 		// save current soc
 		Object[] selectedItems = socCtv.getCheckedElements();
 		if (null == selectedItems || selectedItems.length <= 0) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.selectSocType"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.selectSocType"));
 			return false;
 		}
 
@@ -652,13 +620,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		if (!newSoc.equals(oldSoc)) {
 			setCurrentSoC(newSoc);
 			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
-				MessageDialog
-						.openError(
-								getShell(),
-								MStudioMessages
-										.getString("MStudioSoCPreferencePage.error.title"),
-								MStudioMessages
-										.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
+				MessageDialog.openError(getShell(),
+						MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+						MStudioMessages.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
 				return false;
 			}
 		}
@@ -666,28 +630,20 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		// update MiniGUI.cfg and MiniGUI.cfg.target file
 		// set resolution and color depth
 		String temp = resolutionSelected + "-" + colorDepthSelected + "bpp";
-		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY,
-				temp, null);
-		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY,
-				temp, null);
+		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
+		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 
-		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp,
-				null);
-		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp,
-				null);
+		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
+		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 
 		// update MiniGUI.cfg.target file
 		// set skin info
-		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY,
-				skinNameLabel.getText(), null);
+		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+				SKIN_PROPERTY, skinNameLabel.getText(), null);
 		if (!cfgTargetFile.save()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.saveCfgTargetFile"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgTargetFile"));
 		}
 
 		// update MiniGUI.cfg file
@@ -697,13 +653,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				null);
 		cfgFile.save();
 		if (!cfgFile.save()) {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.saveCfgFile"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgFile"));
 		}
 
 		return true;
@@ -725,13 +677,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		if (saveWidgetValues())
 			return true;
 		else {
-			MessageDialog
-					.openError(
-							getShell(),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.title"),
-							MStudioMessages
-									.getString("MStudioSoCPreferencePage.error.saveWidgetValues"));
+			MessageDialog.openError(getShell(),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
+					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveWidgetValues"));
 			return false;
 		}
 	}
