@@ -50,10 +50,8 @@ public class MStudioDeployWizard extends Wizard{
 	public static boolean deployTypeIsHost = false;
 	private MStudioParserIniFile iniFile = null;
 	private MStudioDeployDialog dialog;
-	//this string is ths process of run make_rootfs script return string.this save the information of the process
-	//private String returnString = "";
-	//private final static String DEPLOY_INI_PATH = MStudioPlugin.getDefault().getStateLocation().toOSString();
-	private final static String DEPLOY_INI_PATH = Platform.getInstanceLocation().getURL().getPath()+".metadata/";
+	private static MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+	private final String DEPLOY_INI_PATH = einfo.getWorkSpaceMetadataPath();
 	private String miniguiCfgNewPath = DEPLOY_INI_PATH	+ MINIGUI_CFG_FILE_NAME;
 	private String mgncsCfgNewPath = DEPLOY_INI_PATH + MGNCS_CFG_FILE_NAME;
 	private String miniguiTargetCfgNewPath = DEPLOY_INI_PATH + MINIGUI_TARGET_CFG_FILE_NAME;
@@ -221,8 +219,7 @@ public class MStudioDeployWizard extends Wizard{
 		launcher.showCommand(true);
 		StringBuffer cmd = new StringBuffer("make_rootfs");
 
-		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
-		String binPath = envInfo.getSOCBinPath();
+		String binPath = einfo.getSOCBinPath();
 		if (binPath == null)
 			return false;
 		Path editCommand = null;
@@ -349,20 +346,18 @@ public class MStudioDeployWizard extends Wizard{
 
 	// get executable projects in workspace
 	public static IProject[] getExeProjects() {
-		return MStudioPlugin.getDefault().getMStudioEnvInfo().getExecutableProjects();
+		return einfo.getExecutableProjects();
 	}
 
 	// get shared library projects in workspace, not include dlcustom ial
 	// project.
 	public static IProject[] getModuleProjects() {
-		return MStudioPlugin.getDefault().getMStudioEnvInfo()
-				.getSharedLibProjects();
+		return einfo.getSharedLibProjects();
 	}
 
 	// get dlcustom ial projects in workspace.
 	public static IProject[] getIALProjects() {
-		return MStudioPlugin.getDefault().getMStudioEnvInfo()
-				.getDlCustomProjects();
+		return einfo.getDlCustomProjects();
 	}
 
 	// get dlcustom project in wizard page user select
@@ -406,7 +401,7 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
 					mgncsTargetCfgNewPath, null);
 		}
-		String temp = MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode();
+		String temp = einfo.getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);
 	}
@@ -635,7 +630,6 @@ public class MStudioDeployWizard extends Wizard{
 		// List<String> depLibList = new ArrayList<String> ();
 		String[] pkgs = mprj.getDepPkgs();
 		String depLibStr = "";
-		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		for (int idx = 0; idx < pkgs.length; idx++) {
 			String[] libs = einfo.getPackageLibs(pkgs[idx]);
 			for (int c = 0; c < libs.length; c++) {

@@ -83,12 +83,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String PC_XVFB_SECTION = "pc_xvfb";
 	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
 	private final static String SKIN_PROPERTY = "skin";
-	private final static String MINIGUI_CFG_FILE_NAME = Platform
-			.getInstanceLocation().getURL().getPath()
-			+ ".metadata/MiniGUI.cfg";
-	private final static String MINIGUI_TARGET_CFG_FILE_NAME = Platform
-			.getInstanceLocation().getURL().getPath()
-			+ ".metadata/MiniGUI.cfg.target";
 
 	public MStudioSoCPreferencePage() {
 	}
@@ -398,6 +392,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean initSkinNameLabel() {
+		String MINIGUI_CFG_FILE_NAME = 
+			MStudioPlugin.getDefault().getMStudioEnvInfo()
+			.getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 
 		MStudioParserIniFile iniFile = new MStudioParserIniFile(
 				MINIGUI_CFG_FILE_NAME);
@@ -489,8 +486,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			return false;
 
 		MStudioPlugin.getDefault().getMStudioEnvInfo().updateSoCName();
-		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project)
-				.getManagedProject();
+		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 
 		for (int i = 0; i < cur_cfgs.length; i++) {
@@ -557,8 +553,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			String newSocName) {
 
 		// search the whole projects
-		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo()
-				.getMStudioProjects();
+		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
 		for (int i = 0; i < projects.length; i++) {
 			if (!modifyProjectSetting(projects[i], oldSocName, newSocName)) {
 				return false;
@@ -569,6 +564,12 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean saveWidgetValues() {
+		String MINIGUI_CFG_FILE_NAME = 
+			MStudioPlugin.getDefault().getMStudioEnvInfo()
+			.getWorkSpaceMetadataPath() + "MiniGUI.cfg";
+		String MINIGUI_TARGET_CFG_FILE_NAME = 
+			MStudioPlugin.getDefault().getMStudioEnvInfo()
+			.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 
 		String resolutionSelected = resolutionCombo.getText();
 		if (null == resolutionSelected

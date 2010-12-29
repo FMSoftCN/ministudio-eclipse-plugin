@@ -36,6 +36,8 @@ import org.eclipse.ui.IEditorLauncher;
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioSocketServerThread;
 
 
@@ -59,8 +61,7 @@ public class MStudioResEditorLauncher implements IEditorLauncher {
 		launcher.showCommand(true);
 
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-		IFile ifile = root.getFileForLocation(file);
-		IProject project = ifile.getProject();
+		IProject project = root.getFileForLocation(file).getProject();
 		String binPath = new MStudioProject(project).getMStudioBinPath();
 
 		if (binPath == null || binPath.equals(MSEL_EMPTY_STR)) {
@@ -84,10 +85,14 @@ public class MStudioResEditorLauncher implements IEditorLauncher {
 		List<String> args = new ArrayList<String>();
 		IPath projectDir = removeFileName(file).removeLastSegments(1);
 
+		MStudioEnvInfo info = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		args.add("-project");
 		args.add(projectDir.toOSString());
 		args.add("-project-name");
 		args.add(projectDir.lastSegment());
+		args.add("-screen-size");
+		args.add(info.getScreenSize());
+		System.out.println(info.getScreenSize());
 
 		//add port information
 		MStudioSocketServerThread serverThread = MStudioSocketServerThread.getInstance();

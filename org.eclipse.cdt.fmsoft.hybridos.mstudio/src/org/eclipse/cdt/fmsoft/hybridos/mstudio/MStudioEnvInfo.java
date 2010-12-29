@@ -27,6 +27,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
@@ -476,6 +477,28 @@ public class MStudioEnvInfo {
 		}
 
 		return (IProject[])msProjects.toArray(new IProject[msProjects.size()]);
+	}
+	
+	public String getWorkSpaceMetadataPath(){
+		return Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
+	}
+	
+	public String getScreenSize(){
+		String PC_XVFB_SECTION = "pc_xvfb";
+		String DEFAULT_MODE_PROPERTY = "defaultmode";
+		
+		String cfgF = getWorkSpaceMetadataPath() + "MiniGUI.cfg";
+		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
+		if (f == null)
+			return null;
+		
+		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
+		if (!dxwxh.endsWith("bpp"))
+			return null;
+		
+		//dxwxh.matches("");
+		
+		return dxwxh.substring(0, dxwxh.lastIndexOf('-'));
 	}
 }
 

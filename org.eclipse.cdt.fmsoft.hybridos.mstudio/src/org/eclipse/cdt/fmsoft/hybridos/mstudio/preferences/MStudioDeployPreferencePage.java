@@ -82,6 +82,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private CheckboxTableViewer ctv = null;
 	private String selectedGalEngine;
 	private String selectedIalEngine;
+	private MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 
 	public MStudioDeployPreferencePage() {
 	}
@@ -98,7 +99,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	public void init(IWorkbench workbench) {
 		setTitle(MStudioMessages.getString("MStudioDeployPreferencePage.title"));
 
-		MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		allServList = envInfo.getServices();
 	}
 
@@ -142,8 +142,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		}
 		ctv.setCheckedElements(defaultSelServ);
 
-		String metaDataPath = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
-		String tagetMgconfigureFile = metaDataPath + "MiniGUI.cfg.target";
+		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
 		if (file == null)
 			return; 
@@ -187,8 +186,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES, servToStore);
 		
-		String metaDataPath = Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
-		String tagetMgconfigureFile = metaDataPath + "MiniGUI.cfg.target";
+		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
 		if (file == null)
 			return; 
@@ -280,10 +278,9 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 	
 	private void createEnginesContent (Composite parent){
-		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		
 		Composite engineC = new Composite(parent, SWT.NULL);
-	   GridLayout layout = new GridLayout();
+		GridLayout layout = new GridLayout();
 		layout.numColumns = 4;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -293,18 +290,18 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		Label galT = new Label(engineC, SWT.NULL);
 		galT.setText(MSDPP_GAL_ENGINE);
 		galCom =  new Combo(engineC, SWT.READ_ONLY);
-		galCom.setItems(einfo.getGalOptions());
+		galCom.setItems(envInfo.getGalOptions());
 		galCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedGalEngine = galCom.getItem(galCom.getSelectionIndex());
 				System.out.println("selected Gal Engine = " + selectedGalEngine);
-			}
+		}
 		});
 		
 		Label ialT = new Label(engineC, SWT.NULL);
 		ialT.setText(MSDPP_IAL_ENGINE);
 		ialCom =  new Combo(engineC, SWT.READ_ONLY);
-		ialCom.setItems(einfo.getIalOptions());
+		ialCom.setItems(envInfo.getIalOptions());
 		ialCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedIalEngine = ialCom.getItem(ialCom.getSelectionIndex());

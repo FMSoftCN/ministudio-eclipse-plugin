@@ -657,7 +657,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		
 		Map<String, String> map = new HashMap<String, String>(2);
 		
-		map.put("MG_CFG_PATH", Platform.getInstanceLocation().getURL().getPath() + ".metadata/");
+		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
 		ILaunchConfigurationWorkingCopy wc = null;
