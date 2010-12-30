@@ -2,6 +2,8 @@
 respkg_path=.
 usr_path=.
 
+##BEGIN_GUIBUILDER_GEN##
 [import_font]
 font_numbers=0
 fontfile0=
+##END_GUIBUILDER_GEN##
