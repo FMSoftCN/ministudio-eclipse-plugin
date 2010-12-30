@@ -115,13 +115,15 @@ public class MStudioPlugin extends AbstractUIPlugin {
 		}
 	}
 
-	public void updateProject(String projectName) throws CoreException {
+	public void updateProject(String projectName) {
 		MStudioSocketServerThread serverSocket = MStudioSocketServerThread.get();
 		if (serverSocket != null) {
 			//please waiting for closing process
 			serverSocket.closeProject(projectName);
 		}
-		
+	}
+	
+	public void renameProject(String projectName) throws CoreException {	
 		// rename the file <project_name>_res.cfg .	
 		IProject prj = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		
@@ -162,12 +164,15 @@ public class MStudioPlugin extends AbstractUIPlugin {
 	
 					IResource resource = delta.getResource();
 					
-					if (delta.getKind() == IResourceDelta.CHANGED
-							&& resource.getType() == IResource.PROJECT) {
-						try {
+					if (resource.getType() == IResource.PROJECT) {
+						if (delta.getKind() == IResourceDelta.REMOVED){
 							updateProject(resource.getName());
-						} catch (CoreException e) {
-							e.printStackTrace();
+						} else if (delta.getKind() == IResourceDelta.CHANGED){	
+							try {
+								renameProject(resource.getName());
+							} catch (CoreException e) {
+								e.printStackTrace();
+							}
 						}
 					}
 					

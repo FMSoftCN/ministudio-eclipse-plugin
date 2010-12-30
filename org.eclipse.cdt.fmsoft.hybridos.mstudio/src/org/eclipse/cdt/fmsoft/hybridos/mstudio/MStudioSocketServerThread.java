@@ -73,12 +73,9 @@ public class MStudioSocketServerThread extends Thread {
 						closeSocket(socket);
 						return;
 					}
-					System.out.println("before parseData()");
 					parseData();
-					System.out.println("---- after parseData()");
 				}
 			} catch (IOException e) {
-				//e.printStackTrace();
 				return;
 			}
 		}
