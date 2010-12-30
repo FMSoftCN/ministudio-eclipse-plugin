@@ -177,6 +177,10 @@ public class MStudioPlugin extends AbstractUIPlugin {
 		}
 
 		public void resourceChanged(IResourceChangeEvent event) {
+			if (event.getType() != IResourceChangeEvent.POST_CHANGE){
+				return;
+			}
+				
 			IResourceDelta delta = event.getDelta();
 			if (delta == null) {
 				return;

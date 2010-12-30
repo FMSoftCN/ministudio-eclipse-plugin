@@ -15,13 +15,16 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.editor;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -110,12 +113,30 @@ public class MStudioResEditorLauncher implements IEditorLauncher {
 		envProps.setProperty("CWD", workingDir.toOSString());
 		envProps.setProperty("PWD", workingDir.toOSString());
 
-		Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
+		final Process p = launcher.execute(editCommand, (String[])args.toArray(new String[args.size()]),
 				createEnvStringList(envProps), workingDir);
 		if (p != null) {
 			subMonitor.newChild(1).subTask(MSEL_TASK_STARTING + launcher.getCommandLine());
 			if (serverThread != null)
 				serverThread.addBuilderProcs(projectDir.lastSegment(), p);
+			
+			/////////////////////////////////////////////////////////////////////////
+			// get the guibuilder console output
+			// for test
+			new Thread() { 
+				public void run(){ 
+					BufferedInputStream in = new BufferedInputStream(p.getInputStream());
+					BufferedReader br = new BufferedReader(new InputStreamReader(in));
+					String s;
+					try {
+						while ((s = br.readLine()) != null)
+							System.out.println(s);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+			/////////////////////////////////////////////////////////////////////////
 		}
 	}
 

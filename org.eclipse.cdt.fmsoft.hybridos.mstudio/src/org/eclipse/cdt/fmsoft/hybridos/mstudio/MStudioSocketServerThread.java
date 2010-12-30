@@ -73,8 +73,9 @@ public class MStudioSocketServerThread extends Thread {
 						closeSocket(socket);
 						return;
 					}
-
+					System.out.println("before parseData()");
 					parseData();
+					System.out.println("---- after parseData()");
 				}
 			} catch (IOException e) {
 				//e.printStackTrace();
@@ -313,7 +314,6 @@ public class MStudioSocketServerThread extends Thread {
 	}
 
 	private void closeSocket(Socket sock) throws IOException {
-
 		if (!sock.isClosed()) {
 			if (!sock.isInputShutdown()) {
 				sock.getInputStream().close();
