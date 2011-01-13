@@ -29,12 +29,14 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
 
@@ -109,6 +111,9 @@ public class MStudioDeployWizard extends Wizard{
 	private final String KEY_USR_PATH="usr_path";
 	private final String DEF_RES_LOCATION = "/usr/local/share/";
 	private final String DEF_CUSTOM_FILE_LOCATION = "/usr/local/share";
+	
+	private final String LIB_SUFFIX_NAME = ".so";
+	private final String LIB_PREFIX_NAME = "lib";
 	
 	private static final String MSMS_EMPTY_STR = "";
 
@@ -231,7 +236,9 @@ public class MStudioDeployWizard extends Wizard{
         }
         
 		List<String> args = new ArrayList<String>();
-		args.add(binPath);
+		args.add("-f");
+		args.add(DEPLOY_INI_PATH + DEPLOY_INI_NAME);
+		args.add("-p");
 		args.add(this.getDeployExecuteableWizardPage().getDeployLocation());
 
 		IPath workingDir = new Path(binPath);
@@ -421,12 +428,67 @@ public class MStudioDeployWizard extends Wizard{
 				serv[i], null);
 		}
 	}
+	
+	private String getConfigureName(IProject project) {
+		
+		if (null == project) {
+			return null;
+		}
+		
+		String type = null;
+		String targetType = deployTypePage.getTargetType();
+		String buildType = deployTypePage.getBuildType();
+		if (targetType.equals("Host") && buildType.equals("Debug")) {
+			type = "Debug4Host";
+			return type;
+		}
+		else if (targetType.equals("Host") && buildType.equals("Release")) {
+			type = "Release4Host";
+			return type;
+		}
+		else if (targetType.equals("Target") && buildType.equals("Debug")) {
+			type = "Debug4";
+			IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+			IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+			String tmp;
+			for (int i = 0; i < cur_cfgs.length; i++) {
+				tmp = cur_cfgs[i].getName();
+				if (null != tmp && type.equals(tmp.substring(0, type.length())) 
+						&& !tmp.equals("Debug4Host")) {
+					type = tmp;
+					return type;
+				}
+			}
+		}
+		else if (targetType.equals("Target") && buildType.equals("Release")) {
+			type = "Release4";
+			IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
+			IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+			String tmp;
+			for (int i = 0; i < cur_cfgs.length; i++) {
+				tmp = cur_cfgs[i].getName();
+				if (null != tmp && type.equals(tmp.substring(0, type.length()))
+						&& !tmp.equals("Release4Host")) {
+					type = tmp;
+					return type;
+				}
+			}
+		}
+
+		return null;
+	}
 
 	private void setDlcustomSection() {
 		iniFile.addSection(DEPLOY_DLCUSTOM_SECTION, null);
 		IProject project = getDeployDLCustom();
-		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION,DLCUSTOM_PROGRAM_PROPERTY,
-				project == null ? "" : project.getLocation().toOSString(), null);
+		String dlcustom = null;
+		if (null != project) {
+			dlcustom = project.getLocation().toOSString() + File.separatorChar
+				+ getConfigureName(project) + File.separatorChar + LIB_PREFIX_NAME 
+				+ project.getName() + LIB_SUFFIX_NAME;
+		}
+		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY,
+				dlcustom, null);
 	}
 
 	private void setModulesSection() {
@@ -441,13 +503,18 @@ public class MStudioDeployWizard extends Wizard{
 		
 		iniFile.setIntegerProperty(DEPLOY_MODULES_SECTION,
 				MODULES_NUMBERS_PROPERTY, projects.length, null);
+		
+		String program = null;
 		for (int i = 0; i < projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_MODULES_SECTION,
 					(MODULES_NAME_PROPERTY + i), projects[i].getName(), null);
 			
 			iniFile.addSection(projects[i].getName(), null);
+			program = projects[i].getLocation().toOSString() + File.separatorChar
+					+ getConfigureName(projects[i]) + File.separatorChar + LIB_PREFIX_NAME 
+					+ projects[i].getName() + LIB_SUFFIX_NAME;
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					projects[i].getLocation().toOSString(), null);
+					program, null);
 			String temp = getModuleDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
@@ -500,13 +567,16 @@ public class MStudioDeployWizard extends Wizard{
 		iniFile.setIntegerProperty(DEPLOY_APPS_SECTION, APPS_NUMBER_PROPERTY, 
 				projects.length, null);	
 		
+		String program = null;
 		for (int i = 0; i < projects.length; i++) {
 			iniFile.setStringProperty(DEPLOY_APPS_SECTION, (APPS_NAME_PROPERTY + i),
 					projects[i].getName(), null);
 			
 			iniFile.addSection(projects[i].getName(), null);			
+			program = projects[i].getLocation().toOSString() + File.separatorChar
+					+ getConfigureName(projects[i]) + File.separatorChar + projects[i].getName();
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					projects[i].getLocation().toOSString().trim(), null);
+					program, null);
 			
 			String temp =  saveProjectResCfgs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
