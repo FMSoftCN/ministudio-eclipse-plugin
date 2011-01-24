@@ -337,7 +337,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	public String getColorDepth() {
 //		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
 		String color = colorCombo.getText().trim();
-		if(validateResolution(color))
+		if(validateColorDepth(color))
 			return color;
 		return null;
 	}
