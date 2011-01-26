@@ -27,12 +27,7 @@ import java.util.TreeSet;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.cdt.core.CProjectNature;
-import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.IBinary;
-import org.eclipse.cdt.core.model.IBinaryContainer;
-import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
@@ -78,7 +73,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -93,12 +87,9 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioProjectTemplateType;
-import org.eclipse.cdt.internal.core.model.BinaryContainer;
-import org.eclipse.cdt.internal.core.model.CProject;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.debug.internal.ui.launchConfigurations.EnvironmentVariable;
 
 
 public class MStudioWizardHandler extends CWizardHandler {
@@ -599,7 +590,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 					}
 			}
 			for (ITool t : newconfig.getToolChain().getTools() ) {
-				t.setToolCommand(crossToolPrefix + t.getToolCommand());
+				t.setToolCommand(einfo.getSOCBinPath() + crossToolPrefix + t.getToolCommand());
 				try {
 					if ( t.getId().contains("c.compiler") ) {
 						IOption o = t.getOptionById("gnu.c.compiler.option.include.paths");
