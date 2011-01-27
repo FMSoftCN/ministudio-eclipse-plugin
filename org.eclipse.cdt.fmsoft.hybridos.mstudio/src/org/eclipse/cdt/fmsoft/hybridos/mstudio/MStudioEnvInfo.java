@@ -264,6 +264,12 @@ public class MStudioEnvInfo {
 			return EMPTY_STR;
 		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/lib/";
 	}
+	
+	public String getPCBinPath() {
+		if (null == SoCName)
+			return EMPTY_STR;
+		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/bin/";
+	}
 
 	public String getCrossIncludePath() {
 		if (null == SoCName)
