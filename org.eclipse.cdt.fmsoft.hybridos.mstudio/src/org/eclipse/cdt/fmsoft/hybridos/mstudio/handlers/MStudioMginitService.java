@@ -172,42 +172,9 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				miniguiServer.destroy();
 				miniguiServer = null;
 			} else {
-				List<String> args = new ArrayList<String>();
-				args.add("killall");
-				args.add("mginit");
-				Process p = Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));
+				String[] args = {"killall","mginit"};
+				Process p = Runtime.getRuntime().exec(args);
 				p.destroy();
-				/*
-				//find mginit process in all processes ,if find kill it.
-				List<String> args = new ArrayList<String>();
-				List<String> returnValues = new ArrayList<String>();
-
-				args.add("pgrep");
-				args.add("-o");
-				args.add("mginit");
-
-				Process p = Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));
-				InputStream is = p.getInputStream();
-				BufferedReader br = new BufferedReader(new InputStreamReader(is));
-				String line = MSMS_EMPTY_STR;
-
-				while ((line = br.readLine()) != null) {
-					returnValues.add(line.toString());
-				}
-
-				br.close();
-
-				if (returnValues.size() > 0) {
-					for (int i = 0; i < returnValues.size(); i++) {
-						args.clear();
-						args.add("kill");
-						args.add(returnValues.get(i).toString());
-						Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));
-					}
-				}
-
-				p.destroy();
-				*/
 			}
 
 			//find the temp file, if exist delete it
