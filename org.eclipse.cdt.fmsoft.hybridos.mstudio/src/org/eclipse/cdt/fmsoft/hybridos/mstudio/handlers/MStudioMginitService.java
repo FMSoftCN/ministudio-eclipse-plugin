@@ -49,6 +49,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	private final static String MSMS_COMMAND_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.mginitservice";
 	private final static String MSMS_MGINIT_TEMP_FILE = "/var/tmp/mginit";
 	private static final String MSMS_EMPTY_STR = "";
+	private static final String MSMS_ENVINFO = "/lib:/usr/lib:/usr/local/lib:";
 
 	private Process miniguiServer = null;
 
@@ -154,7 +155,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 				envProps.setProperty("CWD", workingDir.toOSString());
 				envProps.setProperty("PWD", workingDir.toOSString());
-				envProps.setProperty("LD_LIBRARY_PATH", "/lib:/usr/lib:/usr/local/lib:" + envInfo.getPCLibraryPath());
+				envProps.setProperty("LD_LIBRARY_PATH", MSMS_ENVINFO + envInfo.getPCLibraryPath());
 
 				miniguiServer = launcher.execute(editCommand, 
 						(String[])args.toArray(new String[args.size()]), 
