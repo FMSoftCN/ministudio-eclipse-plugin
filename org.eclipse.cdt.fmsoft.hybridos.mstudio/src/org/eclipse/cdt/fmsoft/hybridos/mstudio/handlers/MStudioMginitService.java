@@ -126,6 +126,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 				MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 				String binPath = envInfo.getMginitBinPath();
+				System.out.println(binPath);
 				if (binPath == null)
 					return;
 
@@ -147,11 +148,13 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 					args.add("-c");
 					args.add(cfgFile);
 				}
+				System.out.println(cfgFile);
 				IPath workingDir = new Path(binPath);
 				Properties envProps = EnvironmentReader.getEnvVars();
 
 				envProps.setProperty("CWD", workingDir.toOSString());
-				envProps.setProperty("PWD", workingDir.toOSString());	        
+				envProps.setProperty("PWD", workingDir.toOSString());
+				envProps.setProperty("LD_LIBRARY_PATH", "/lib:/usr/lib:/usr/local/lib:" + envInfo.getPCLibraryPath());
 
 				miniguiServer = launcher.execute(editCommand, 
 						(String[])args.toArray(new String[args.size()]), 
