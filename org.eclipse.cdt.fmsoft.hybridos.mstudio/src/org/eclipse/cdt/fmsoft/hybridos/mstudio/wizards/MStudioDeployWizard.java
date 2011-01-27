@@ -103,7 +103,7 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String IAL_PROPERTY = "ial_engine";
 	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
 	private final static String MODULES_DEPLOY_PATH = "/usr/local/lib";
-	private final static String APP_DEPLOY_PATH = "/usr/bin";
+	private final static String APP_DEPLOY_PATH = "/usr/local/bin";
 
 	private final static String DEPLIBS_PROGRAM_DEPLOY = "/usr/local/lib";
 	
@@ -494,7 +494,7 @@ public class MStudioDeployWizard extends Wizard{
 				+ project.getName() + LIB_SUFFIX_NAME;
 		}
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY,
-				dlcustom, null);
+				dlcustom == null ? "" : dlcustom, null);
 	}
 
 	private void setModulesSection() {
@@ -525,7 +525,8 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 			
-			temp = saveProjectResCfgs(projects[i]);
+			saveProjectResCfgs(projects[i]);
+			temp = getProjectResCfgs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
 					temp == null ? "" : temp, null);
 			
@@ -584,7 +585,8 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					program, null);
 			
-			String temp =  saveProjectResCfgs(projects[i]);
+			saveProjectResCfgs(projects[i]);
+			String temp = getProjectResCfgs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_CFG_PROPERTY,
 					temp == null ? "" : temp, null);
 			
@@ -683,12 +685,47 @@ public class MStudioDeployWizard extends Wizard{
 		return newCfgFile;
 	}
 	
+	private String getProjectResCfgs (IProject prj){
+		
+		if (null == prj)
+			return null;
+		
+		MStudioProject msp = new MStudioProject(prj);
+		String prj_res_cfg = msp.getProgramCfgFile();
+		if (null == prj_res_cfg) {
+			return null;
+		}
+			
+		String targetType = deployTypePage.getTargetType();
+		if (targetType.equals("Target")) {
+			prj_res_cfg += ".target";
+		}
+
+		return prj_res_cfg;
+	}
+	
 	private String getAppDeploy(IProject project) {
-		return APP_DEPLOY_PATH;
+		if (project == null)
+			return null;
+		MStudioProject mStudioProject = new MStudioProject(project);
+		String[] paths = mStudioProject.getDeployPathInfo();
+		if (paths.length == 4) {
+			return paths[1];
+		}
+		else
+			return APP_DEPLOY_PATH;
 	}
 	
 	private String getModuleDeploy(IProject project) {
-		return MODULES_DEPLOY_PATH;
+		if (project == null)
+			return null;
+		MStudioProject mStudioProject = new MStudioProject(project);
+		String[] paths = mStudioProject.getDeployPathInfo();
+		if (paths.length == 4) {
+			return paths[2];
+		}
+		else
+			return MODULES_DEPLOY_PATH;
 	}
 	
 	private String getResPack(IProject project) {
@@ -696,6 +733,8 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	private String getResPackDepoloy(IProject project) {
+		if (project == null)
+			return null;
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
 		if (paths.length == 4) {
@@ -723,7 +762,15 @@ public class MStudioDeployWizard extends Wizard{
 	}
 	
 	private String getDeplibsDeploy(IProject project) {
-		return DEPLIBS_PROGRAM_DEPLOY;
+		if (project == null)
+			return null;
+		MStudioProject mStudioProject = new MStudioProject(project);
+		String[] paths = mStudioProject.getDeployPathInfo();
+		if (paths.length == 4) {
+			return paths[2];
+		}
+		else
+			return DEPLIBS_PROGRAM_DEPLOY;
 	}
 
 }
