@@ -649,7 +649,7 @@ public class MStudioDeployWizard extends Wizard{
 		}
 			
 		String newCfgFile = prj_res_cfg + ".target";
-		if (copyFile (prj_res_cfg, newCfgFile)){
+		if (!copyFile (prj_res_cfg, newCfgFile)){
 			return null;
 		}
 
