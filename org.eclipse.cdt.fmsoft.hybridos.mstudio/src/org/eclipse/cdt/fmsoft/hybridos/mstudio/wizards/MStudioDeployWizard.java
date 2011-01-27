@@ -59,7 +59,8 @@ public class MStudioDeployWizard extends Wizard{
 	private String miniguiTargetCfgNewPath = DEPLOY_INI_PATH + MINIGUI_TARGET_CFG_FILE_NAME;
 	private String mgncsTargetCfgNewPath = DEPLOY_INI_PATH + MGNCS_TARGET_CFG_FILE_NAME;
 	private final static String DEPLOY_INI_NAME = "deploy.ini";
-
+	private final static String ROOTFS_NAME = "make_rootfs";
+	
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
 	private final static String DEPLOY_SERVICES_SECTION = "deploy_services";
 	private final static String DEPLOY_DLCUSTOM_SECTION = "deploy_dlcustom";
@@ -222,9 +223,14 @@ public class MStudioDeployWizard extends Wizard{
 	public boolean runScript(){
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
-		StringBuffer cmd = new StringBuffer("make_rootfs");
+		StringBuffer cmd = new StringBuffer(ROOTFS_NAME);
 
 		String binPath = einfo.getSOCBinPath();
+		String targetType = deployTypePage.getTargetType();
+		if (targetType.equals("Host")) {
+			binPath = einfo.getPCBinPath();
+		}
+
 		if (binPath == null)
 			return false;
 		Path editCommand = null;
@@ -661,14 +667,14 @@ public class MStudioDeployWizard extends Wizard{
 		String[] paths = msp.getDeployPathInfo();
 		if (paths.length == 4){
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_RESPKG_PATH, paths[0], null);
+					KEY_RESPKG_PATH, paths[0] + "/" + prj.getName(), null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_USR_PATH, paths[3], null);
+					KEY_USR_PATH, paths[3] + "/" + prj.getName(), null);
 		} else {
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_RESPKG_PATH, DEF_RES_LOCATION, null);
+					KEY_RESPKG_PATH, DEF_RES_LOCATION + "/" + prj.getName(), null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION, null);
+					KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION + "/" + prj.getName(), null);
 		}
 		if (!prjResFile.save()){
 			return null;
@@ -690,7 +696,13 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	private String getResPackDepoloy(IProject project) {
-		return "/usr/share/" + project.getName().trim() + "/res";
+		MStudioProject mStudioProject = new MStudioProject(project);
+		String[] paths = mStudioProject.getDeployPathInfo();
+		if (paths.length == 4) {
+			return paths[0];
+		}
+		else
+			return DEF_RES_LOCATION + project.getName().trim() + "/res";
 	}
 
 	private String getDepLibs(IProject project) {
