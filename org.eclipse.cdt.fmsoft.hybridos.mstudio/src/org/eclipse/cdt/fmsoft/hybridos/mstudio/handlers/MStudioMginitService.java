@@ -127,7 +127,6 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 				MStudioEnvInfo envInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 				String binPath = envInfo.getMginitBinPath();
-				System.out.println(binPath);
 				if (binPath == null)
 					return;
 
@@ -149,7 +148,6 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 					args.add("-c");
 					args.add(cfgFile);
 				}
-				System.out.println(cfgFile);
 				IPath workingDir = new Path(binPath);
 				Properties envProps = EnvironmentReader.getEnvVars();
 
@@ -174,6 +172,12 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				miniguiServer.destroy();
 				miniguiServer = null;
 			} else {
+				List<String> args = new ArrayList<String>();
+				args.add("killall");
+				args.add("mginit");
+				Process p = Runtime.getRuntime().exec((String [])args.toArray(new String[args.size()]));
+				p.destroy();
+				/*
 				//find mginit process in all processes ,if find kill it.
 				List<String> args = new ArrayList<String>();
 				List<String> returnValues = new ArrayList<String>();
@@ -203,6 +207,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				}
 
 				p.destroy();
+				*/
 			}
 
 			//find the temp file, if exist delete it
