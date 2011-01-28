@@ -669,12 +669,12 @@ public class MStudioDeployWizard extends Wizard{
 		String[] paths = msp.getDeployPathInfo();
 		if (paths.length == 4){
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_RESPKG_PATH, paths[0] + "/" + prj.getName(), null);
+					KEY_RESPKG_PATH, paths[0], null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
 					KEY_USR_PATH, paths[3] + "/" + prj.getName(), null);
 		} else {
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_RESPKG_PATH, DEF_RES_LOCATION + "/" + prj.getName(), null);
+					KEY_RESPKG_PATH, DEF_RES_LOCATION + "/" + prj.getName() + "/res", null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
 					KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION + "/" + prj.getName(), null);
 		}
