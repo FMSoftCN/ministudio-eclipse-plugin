@@ -195,13 +195,13 @@ public class MStudioSelectSkinDialog extends Dialog {
 		if (null != imageNames && imageNames.length > 0) {
 			ctv.add(imageNames);
 		} else {
-			MessageDialog
-					.openError(
-							shell,
-							MStudioMessages
-									.getString("MStudioSelectSkinDialog.error.title"),
-							MStudioMessages
-									.getString("MStudioSelectSkinDialog.error.initSkinTable"));
+//			MessageDialog
+//					.openError(
+//							shell,
+//							MStudioMessages
+//									.getString("MStudioSelectSkinDialog.error.title"),
+//							MStudioMessages
+//									.getString("MStudioSelectSkinDialog.error.initSkinTable"));
 			return;
 		}
 
