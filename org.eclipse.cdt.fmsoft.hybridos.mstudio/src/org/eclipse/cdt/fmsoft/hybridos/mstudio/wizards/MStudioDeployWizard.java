@@ -60,6 +60,7 @@ public class MStudioDeployWizard extends Wizard{
 	private String mgncsTargetCfgNewPath = DEPLOY_INI_PATH + MGNCS_TARGET_CFG_FILE_NAME;
 	private final static String DEPLOY_INI_NAME = "deploy.ini";
 	private final static String ROOTFS_NAME = "make_rootfs";
+	private String mginitCfgNewPath = DEPLOY_INI_PATH	+ MGINIT_CFG_FILE_NAME;
 	
 	private final static String DEPLOY_CFG_SECTION = "deploy_cfgs";
 	private final static String DEPLOY_SERVICES_SECTION = "deploy_services";
@@ -70,6 +71,7 @@ public class MStudioDeployWizard extends Wizard{
 
 	private final static String MINIGUI_CFG_PROPERTY = "minigui_cfg";
 	private final static String MGNCS_CFG_PROPERTY = "mgncs_cfg";
+	private final static String MGINIT_CFG_PROPERTY = "mginit_cfg";
 	private final static String MINIGUI_RUNMODE_PROPERTY = "minigui_runmode";
 
 	private final static String SERVICES_NUMBER_PROPERTY = "services_number";
@@ -97,6 +99,7 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String MINIGUI_CFG_FILE_NAME = "MiniGUI.cfg";
 	private final static String MINIGUI_TARGET_CFG_FILE_NAME = "MiniGUI.cfg.target";
 	private final static String MGNCS_CFG_FILE_NAME = "mgncs.cfg";
+	private final static String MGINIT_CFG_FILE_NAME = "mginit.cfg";
 	private final static String MGNCS_TARGET_CFG_FILE_NAME = "mgncs.cfg.target";
 	private final static String SYSTEM_SECTION = "system";
 	private final static String GAL_PROPERTY = "gal_engine";
@@ -226,8 +229,7 @@ public class MStudioDeployWizard extends Wizard{
 		StringBuffer cmd = new StringBuffer(ROOTFS_NAME);
 
 		String binPath = einfo.getSOCBinPath();
-		String targetType = deployTypePage.getTargetType();
-		if (targetType.equals("Host")) {
+		if (isHost()) {
 			binPath = einfo.getPCBinPath();
 		}
 
@@ -402,7 +404,7 @@ public class MStudioDeployWizard extends Wizard{
 	private void setCfgsSection() {
 
 		iniFile.addSection(DEPLOY_CFG_SECTION, null);
-		if(isHost()){
+		if (isHost()) {
 			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_CFG_PROPERTY,
 					miniguiCfgNewPath, null);
 			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
@@ -414,9 +416,12 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGNCS_CFG_PROPERTY,
 					mgncsTargetCfgNewPath, null);
 		}
+		
 		String temp = einfo.getMgRunMode();
 		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MINIGUI_RUNMODE_PROPERTY, 
 				temp == null ? "" : temp, null);
+		iniFile.setStringProperty(DEPLOY_CFG_SECTION, MGINIT_CFG_PROPERTY,
+				mginitCfgNewPath, null);
 	}
 
 	private void setServicesSection() {
@@ -696,8 +701,7 @@ public class MStudioDeployWizard extends Wizard{
 			return null;
 		}
 			
-		String targetType = deployTypePage.getTargetType();
-		if (targetType.equals("Target")) {
+		if (!isHost()) {
 			prj_res_cfg += ".target";
 		}
 
