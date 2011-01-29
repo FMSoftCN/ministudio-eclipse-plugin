@@ -18,6 +18,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
 
@@ -118,6 +120,9 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private final String LIB_SUFFIX_NAME = ".so";
 	private final String LIB_PREFIX_NAME = "lib";
+	
+	private final String SECTION_MODULES = "modules";
+	private final String SECTION_TASKS = "tasks";
 	
 	private static final String MSMS_EMPTY_STR = "";
 
@@ -322,10 +327,44 @@ public class MStudioDeployWizard extends Wizard{
 		
 		if (!iniFile.save()) 
 			return false;
-			
-		return true;
+		return createMginitCfg();
 	}
 
+	private boolean createMginitCfg(){
+		String fileName = "mginit.cfg";
+		String oldFilePath = MStudioPlugin.getDefault().getMStudioEnvInfo().getSocMginitCfgFile();
+		String newFilePath = DEPLOY_INI_PATH + fileName;
+		MStudioParserIniFile targetCfgFile;
+
+		if(!copyFile(oldFilePath, newFilePath))
+		{
+			MessageDialog.openError(getShell(), "error", "the mginit.cfg file is not exist, please reset up the SOC pakage or check the file");
+			return false;
+		}
+		targetCfgFile = new MStudioParserIniFile(newFilePath);
+		int nr = targetCfgFile.getIntegerProperty(SECTION_MODULES, "nr");
+		IProject[] p1 = getMginitProjects();
+		System.out.println(p1.length + "");
+		for(int i = 0; i < p1.length; i++){
+			targetCfgFile.setStringProperty(SECTION_MODULES, "lib" + (nr + i), 
+					getModuleDeploy(p1[i]) + File.separatorChar + LIB_PREFIX_NAME 
+					+ p1[i].getName() + LIB_SUFFIX_NAME, null);
+		}
+		targetCfgFile.setIntegerProperty(SECTION_MODULES, "nr", nr + p1.length , null);
+		nr = targetCfgFile.getIntegerProperty(SECTION_TASKS, "nr");
+		IProject[] p = getDeployAutobootProject();
+		System.out.println(p.length + "");
+		for(int i=0; i < p.length; i++){
+			targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), "." + getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
+			targetCfgFile.setStringProperty(SECTION_TASKS, "cmd_line" + (nr + i), p[i].getName(), null);
+			targetCfgFile.setStringProperty(SECTION_TASKS, "action" + (nr + i), "once", null);
+		}
+		targetCfgFile.setIntegerProperty(SECTION_TASKS, "nr", nr + p.length - 1, null);
+		targetCfgFile.save();
+		
+		return true;
+	}
+	
 	private boolean updateCfgFiles() {		
 		// select target
 		if (!deployTypeIsHost) {
@@ -370,6 +409,9 @@ public class MStudioDeployWizard extends Wizard{
 		return einfo.getSharedLibProjects();
 	}
 
+	public IProject[] getMginitProjects(){
+		return sharedLibPage.getMginitProjects();
+	}
 	// get dlcustom ial projects in workspace.
 	public static IProject[] getIALProjects() {
 		return einfo.getDlCustomProjects();
