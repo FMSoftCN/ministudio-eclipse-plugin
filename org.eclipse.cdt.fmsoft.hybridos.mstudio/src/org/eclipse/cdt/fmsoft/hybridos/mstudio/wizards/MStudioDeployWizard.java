@@ -344,16 +344,15 @@ public class MStudioDeployWizard extends Wizard{
 		targetCfgFile = new MStudioParserIniFile(newFilePath);
 		int nr = targetCfgFile.getIntegerProperty(SECTION_MODULES, "nr");
 		IProject[] p1 = getMginitProjects();
-		System.out.println(p1.length + "");
 		for(int i = 0; i < p1.length; i++){
 			targetCfgFile.setStringProperty(SECTION_MODULES, "lib" + (nr + i), 
 					getModuleDeploy(p1[i]) + File.separatorChar + LIB_PREFIX_NAME 
 					+ p1[i].getName() + LIB_SUFFIX_NAME, null);
 		}
 		targetCfgFile.setIntegerProperty(SECTION_MODULES, "nr", nr + p1.length , null);
+		
 		nr = targetCfgFile.getIntegerProperty(SECTION_TASKS, "nr");
 		IProject[] p = getDeployAutobootProject();
-		System.out.println(p.length + "");
 		for(int i=0; i < p.length; i++){
 			targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), "." + getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
 			targetCfgFile.setStringProperty(SECTION_TASKS, "cmd_line" + (nr + i), p[i].getName(), null);
