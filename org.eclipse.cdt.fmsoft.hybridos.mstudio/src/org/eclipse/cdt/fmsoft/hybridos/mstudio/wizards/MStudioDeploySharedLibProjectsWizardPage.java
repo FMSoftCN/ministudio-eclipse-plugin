@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -171,6 +172,20 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		}
 		return (IProject[])(list.toArray(new IProject[list.size()]));
 	}
+	
+	public IProject[] getMginitProjects() {
+		IProject[] msProjects = getDeploySharedLibProjects();
+		List<IProject> sProj = new ArrayList<IProject>();
+		for (int i = 0; i < msProjects.length ; i++) {
+			MStudioProject mpr = new MStudioProject(msProjects[i]);
+			if (mpr.isMginitModuleTmplType()) {
+				sProj.add(msProjects[i]);
+			}
+		}
+
+		return (IProject[])sProj.toArray(new IProject[sProj.size()]);
+	}
+	
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
 		if(wizard == null)
