@@ -151,6 +151,7 @@ public class MStudioEnvInfo {
 
 		return (new File(path).exists()) ? path : null;
 	}
+	
 
 	public List<String> getServices() {
 		if (iniFile == null)
@@ -297,6 +298,12 @@ public class MStudioEnvInfo {
 		if (null == SoCName)
 			return EMPTY_STR;
 		return SOC_PATH_PREFIX + SoCName + "/cross/etc/mgncs.cfg";
+	}
+	public String getSocMginitCfgFile(){
+		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
+			return EMPTY_STR;
+
+		return SOC_PATH_PREFIX + SoCName + File.separator + "cross/etc/mginit.cfg";
 	}
 
 	public String getSOCBinPath(){
@@ -456,14 +463,29 @@ public class MStudioEnvInfo {
 
 		for (int i = 0; i < msProjects.length ; i++) {
 			MStudioProject mpr = new MStudioProject(msProjects[i]);
-			if (mpr.isNormalLibTmplType()) {
+			if (mpr.isNormalLibTmplType() || mpr.isMginitModuleTmplType()) {
 				sProj.add(msProjects[i]);
 			}
 		}
 
 		return (IProject[])sProj.toArray(new IProject[sProj.size()]);
 	}
+/*
+	public IProject[] getMginitProjects() {
 
+		IProject[] msProjects = getMStudioProjects();
+		List<IProject> sProj = new ArrayList<IProject>();
+
+		for (int i = 0; i < msProjects.length ; i++) {
+			MStudioProject mpr = new MStudioProject(msProjects[i]);
+			if (mpr.isMginitModuleTmplType()) {
+				sProj.add(msProjects[i]);
+			}
+		}
+
+		return (IProject[])sProj.toArray(new IProject[sProj.size()]);
+	}
+	*/
 	public IProject[] getMStudioProjects() {
 
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
