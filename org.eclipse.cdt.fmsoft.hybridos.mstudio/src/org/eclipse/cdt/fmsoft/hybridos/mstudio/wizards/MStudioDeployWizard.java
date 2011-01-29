@@ -342,6 +342,8 @@ public class MStudioDeployWizard extends Wizard{
 			return false;
 		}
 		targetCfgFile = new MStudioParserIniFile(newFilePath);
+		if(targetCfgFile == null)
+			return false;
 		int nr = targetCfgFile.getIntegerProperty(SECTION_MODULES, "nr");
 		IProject[] p1 = getMginitProjects();
 		if(p1 != null){
