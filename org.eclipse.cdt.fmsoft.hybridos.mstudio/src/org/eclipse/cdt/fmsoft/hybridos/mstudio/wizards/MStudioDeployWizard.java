@@ -344,21 +344,24 @@ public class MStudioDeployWizard extends Wizard{
 		targetCfgFile = new MStudioParserIniFile(newFilePath);
 		int nr = targetCfgFile.getIntegerProperty(SECTION_MODULES, "nr");
 		IProject[] p1 = getMginitProjects();
-		for(int i = 0; i < p1.length; i++){
-			targetCfgFile.setStringProperty(SECTION_MODULES, "lib" + (nr + i), 
-					getModuleDeploy(p1[i]) + File.separatorChar + LIB_PREFIX_NAME 
-					+ p1[i].getName() + LIB_SUFFIX_NAME, null);
+		if(p1 != null){
+			for(int i = 0; i < p1.length; i++){
+				targetCfgFile.setStringProperty(SECTION_MODULES, "lib" + (nr + i), 
+						getModuleDeploy(p1[i]) + File.separatorChar + LIB_PREFIX_NAME 
+						+ p1[i].getName() + LIB_SUFFIX_NAME, null);
+			}
+			targetCfgFile.setIntegerProperty(SECTION_MODULES, "nr", nr + p1.length , null);
 		}
-		targetCfgFile.setIntegerProperty(SECTION_MODULES, "nr", nr + p1.length , null);
-		
 		nr = targetCfgFile.getIntegerProperty(SECTION_TASKS, "nr");
 		IProject[] p = getDeployAutobootProject();
-		for(int i=0; i < p.length; i++){
-			targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), "." + getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
-			targetCfgFile.setStringProperty(SECTION_TASKS, "cmd_line" + (nr + i), p[i].getName(), null);
-			targetCfgFile.setStringProperty(SECTION_TASKS, "action" + (nr + i), "once", null);
+		if(p !=null){
+			for(int i=0; i < p.length; i++){
+				targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), "." + getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
+				targetCfgFile.setStringProperty(SECTION_TASKS, "cmd_line" + (nr + i), p[i].getName(), null);
+				targetCfgFile.setStringProperty(SECTION_TASKS, "action" + (nr + i), "once", null);
+			}
+			targetCfgFile.setIntegerProperty(SECTION_TASKS, "nr", nr + p.length - 1, null);
 		}
-		targetCfgFile.setIntegerProperty(SECTION_TASKS, "nr", nr + p.length - 1, null);
 		targetCfgFile.save();
 		
 		return true;
