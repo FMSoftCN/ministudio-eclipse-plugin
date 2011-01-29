@@ -358,7 +358,7 @@ public class MStudioDeployWizard extends Wizard{
 		IProject[] p = getDeployAutobootProject();
 		if(p !=null){
 			for(int i=0; i < p.length; i++){
-				targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), "." + getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
+				targetCfgFile.setStringProperty(SECTION_TASKS, "exec_prog" + (nr + i), getAppDeploy(p[i]) + File.separatorChar + p[i].getName(), null);
 				targetCfgFile.setStringProperty(SECTION_TASKS, "cmd_line" + (nr + i), p[i].getName(), null);
 				targetCfgFile.setStringProperty(SECTION_TASKS, "action" + (nr + i), "onece", null);
 			}
