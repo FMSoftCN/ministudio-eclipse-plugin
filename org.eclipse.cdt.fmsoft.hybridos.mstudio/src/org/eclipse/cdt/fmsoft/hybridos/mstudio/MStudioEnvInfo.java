@@ -363,8 +363,13 @@ public class MStudioEnvInfo {
 
 //		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE));
 		String runMode = iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE);
-		if (null != runMode) {		
-			mgRunMode = MiniGUIRunMode.valueOf(runMode);
+		if (null != runMode) {
+			try {
+				mgRunMode = MiniGUIRunMode.valueOf(runMode);
+			} catch (RuntimeException ex) {
+				ex.printStackTrace();
+				mgRunMode = MiniGUIRunMode.thread;
+			}
 		}
 		else {
 			mgRunMode = MiniGUIRunMode.thread;
