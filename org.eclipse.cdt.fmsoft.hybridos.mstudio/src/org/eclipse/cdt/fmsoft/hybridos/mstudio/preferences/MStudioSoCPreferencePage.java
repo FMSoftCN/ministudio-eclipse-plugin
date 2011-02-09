@@ -18,6 +18,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 import java.io.File;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
@@ -481,6 +482,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		MStudioPlugin.getDefault().getMStudioEnvInfo().updateSoCName();
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
+		
+		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		String crossToolPrefix = einfo.getToolChainPrefix();
 
 		for (int i = 0; i < cur_cfgs.length; i++) {
 
@@ -496,13 +500,34 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				cur_cfgs[i].setDescription(description.replaceFirst(oldSocName,
 						newSocName));
 			}
-
+			
 			for (ITool t : cur_cfgs[i].getToolChain().getTools()) {
+				String toolCommand = t.getToolCommand();
+				if (null == toolCommand) {
+					continue;
+				}
+				String newToolCommand = toolCommand.substring(toolCommand.lastIndexOf("-") + 1);
+				if (null != newToolCommand && !toolCommand.equals(newToolCommand)) {
+					t.setToolCommand(einfo.getSOCBinPath() + crossToolPrefix + newToolCommand);
+				}
 				try {
 					// change the include path settings
 					if (t.getId().contains("c.compiler")) {
-						IOption o = t
-								.getOptionBySuperClassId("gnu.c.compiler.option.include.paths");
+						IOption o = t.getOptionBySuperClassId("gnu.c.compiler.option.include.paths");
+						String[] includePaths = o.getBasicStringListValue();
+						if (null != includePaths) {
+							for (int j = 0; j < includePaths.length; j++) {
+								if (null != includePaths[j]) {
+									includePaths[j] = includePaths[j].replaceFirst(
+											oldSocName, newSocName);								
+								}
+							}
+							cur_cfgs[i].setOption(t, o, includePaths);
+						}
+					}
+					
+					if (t.getId().contains("cpp.compiler")) {
+						IOption o = t.getOptionBySuperClassId("gnu.cpp.compiler.option.include.paths");
 						String[] includePaths = o.getBasicStringListValue();
 						if (null != includePaths) {
 							for (int j = 0; j < includePaths.length; j++) {
@@ -517,8 +542,21 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 					// change the libs path settings
 					if (t.getId().contains("c.link")) {
-						IOption o = t
-								.getOptionBySuperClassId("gnu.c.link.option.paths");
+						IOption o = t.getOptionBySuperClassId("gnu.c.link.option.paths");
+						String[] libPaths = o.getBasicStringListValue();
+						if (null != libPaths) {
+							for (int j = 0; j < libPaths.length; j++) {
+								if (null != libPaths[j]) {
+									libPaths[j] = libPaths[j].replaceFirst(
+											oldSocName, newSocName);									
+								}
+							}
+							cur_cfgs[i].setOption(t, o, libPaths);
+						}
+					}
+					
+					if (t.getId().contains("cpp.link")) {
+						IOption o = t.getOptionBySuperClassId("gnu.cpp.link.option.paths");
 						String[] libPaths = o.getBasicStringListValue();
 						if (null != libPaths) {
 							for (int j = 0; j < libPaths.length; j++) {
@@ -558,11 +596,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	private boolean saveWidgetValues() {
 		String MINIGUI_CFG_FILE_NAME = 
-			MStudioPlugin.getDefault().getMStudioEnvInfo()
-			.getWorkSpaceMetadataPath() + "MiniGUI.cfg";
+			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 		String MINIGUI_TARGET_CFG_FILE_NAME = 
-			MStudioPlugin.getDefault().getMStudioEnvInfo()
-			.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
+			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 
 		String resolutionSelected = resolutionCombo.getText();
 		if (null == resolutionSelected
