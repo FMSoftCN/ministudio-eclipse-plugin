@@ -51,17 +51,16 @@ static int wait_event (int which, int maxfd, fd_set *in, fd_set *out,
     __mg_os_time_delay (300);
 #else
     fd_set rfds;
-    inte;
+    int e;
 
     if (!in) {
-        in
         in = &rfds;
         FD_ZERO (in);
     }
 
     e = select (maxfd + 1, in, out, except, timeout);
 
-    if (e < 0) { 
+    if (e < 0) {
         return -1;
     }
 #endif
@@ -96,4 +95,4 @@ BOOL InitCustomInput (INPUT* input, const char* mdev, const char* mtype)
 void TermCustomInput (void)
 {
 }
-#endif /*  _MGIAL_CUSTOM */ 
+#endif /*  _MGIAL_CUSTOM */

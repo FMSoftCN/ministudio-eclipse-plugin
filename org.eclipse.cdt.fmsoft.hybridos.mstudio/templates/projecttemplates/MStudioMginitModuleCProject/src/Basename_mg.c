@@ -36,7 +36,7 @@ int DlModuleInit(void)
 #else
 	char f_package[MAX_PATH];
 
-	ncsSetAppIniInfo(ncsLoadAppIniInfo(basename(argv[0])));
+	ncsSetAppIniInfo(ncsLoadAppIniInfo("$(projectName)"));
 
 	ncsInitialize();
 	SetResPath("./");
@@ -60,7 +60,7 @@ int DlModuleInit(void)
 
 	SetDefaultWindowElementRenderer(ncsGetString(hPackage, NCSRM_SYSSTR_DEFRDR));
 #ifdef _MGRM_PROCESSES
-    JoinLayer(NAME_DEF_LAYER , argv[0], 0 , 0);
+    JoinLayer(NAME_DEF_LAYER , "$(projectName)", 0 , 0);
 #endif
 
 	mWin = ntStartWindowEx(hPackage, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
