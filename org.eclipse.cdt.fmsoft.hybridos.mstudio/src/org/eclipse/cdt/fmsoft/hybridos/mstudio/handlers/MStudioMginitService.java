@@ -68,10 +68,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 	@SuppressWarnings("unchecked")
 	public void updateElement(UIElement element, Map parameters) {
-		if (mginitHasRunning())
-			element.setText(MStudioMessages.getString("MStudioMenu.mginit.stop.label"));
-		else
-			element.setText(MStudioMessages.getString("MStudioMenu.mginit.start.label"));
+		
 	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
