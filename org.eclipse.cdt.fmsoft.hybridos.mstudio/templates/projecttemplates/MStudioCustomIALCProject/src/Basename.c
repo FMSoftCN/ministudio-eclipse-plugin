@@ -4,7 +4,7 @@
 
 #include <minigui/common.h>
 
-#ifdef _MGIAL_CUSTOM
+#ifdef _MGIAL_DLCUSTOM
 #include <minigui/minigui.h>
 #include <minigui/gdi.h>
 #include <minigui/window.h>
@@ -95,4 +95,4 @@ BOOL InitCustomInput (INPUT* input, const char* mdev, const char* mtype)
 void TermCustomInput (void)
 {
 }
-#endif /*  _MGIAL_CUSTOM */
+#endif /*  _MGIAL_DLCUSTOM */
