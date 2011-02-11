@@ -244,7 +244,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "^\\d{1,3}x\\d{1,3}$";
+		String regexString = "^\\d{1,4}x\\d{1,4}$";
 		return Pattern.matches(regexString, resolution);
 	}
 
