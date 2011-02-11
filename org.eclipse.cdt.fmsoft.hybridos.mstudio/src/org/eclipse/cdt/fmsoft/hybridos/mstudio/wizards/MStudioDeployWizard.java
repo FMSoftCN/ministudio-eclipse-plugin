@@ -779,7 +779,7 @@ public class MStudioDeployWizard extends Wizard{
 	}
 	
 	private String getResPack(IProject project) {
-		return project.getLocation().toOSString().trim() + "/res/" + project.getName().trim() + ".res";
+		return project.getLocation().toOSString().trim() + "/res/";
 	}
 
 	private String getResPackDepoloy(IProject project) {
