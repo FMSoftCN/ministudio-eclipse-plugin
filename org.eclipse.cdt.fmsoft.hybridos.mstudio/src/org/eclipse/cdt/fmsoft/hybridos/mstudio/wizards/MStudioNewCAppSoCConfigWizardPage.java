@@ -391,7 +391,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				for (int i = 0; i < affectedList.size(); i++) {
 					String affString = affectedList.get(i);
 					getAffectedPkgsChecked(affString, affected);
-					if (isListSameItem(affString, affected))
+					if (affected.contains(affString))
 						continue;
 					affected.add(affString);
 				}
@@ -415,6 +415,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					if (null == pItem)
 						break;
 					ctv.setChecked(pItem, true);
+					if (selectedPackages.contains(depString))
+						continue;
 					selectedPackages.add(depString);
 				}
 			}
@@ -431,23 +433,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				for (int i = 0; i < dep.size(); i++) {
 					String depString = dep.get(i);
 					getDependPkgsChecked(depString, depend);
-					if (isListSameItem(depString, depend))
+					if (depend.contains(depString))
 						continue;
 					depend.add(depString);
 				}
 			}
 		}
-	}
-
-	private boolean isListSameItem(String sameString, List<String> listStr) {
-
-		for (int i = 0; i < listStr.size(); i++) {
-			String item = listStr.get(i);
-			if (sameString.equals(item))
-				return true;
-		}
-
-		return false;
 	}
 
 	private PackageItem getPackedItem(String findString) {
@@ -462,13 +453,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void setCheckboxTableViewerData() {
+		pkgs.clear();
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
 			pkgs.add(new PackageItem(info.getKey(), info.getValue()));
 		}
+		ctv.remove(pkgs.toArray());
 		ctv.setInput(pkgs.toArray());
 	}
 
 	private void addAllselectedPackages() {
+		selectedPackages.clear();
 		for (int i = 0; i < pkgs.size(); i++) {
 		 	selectedPackages.add(pkgs.get(i).getName());
 		}

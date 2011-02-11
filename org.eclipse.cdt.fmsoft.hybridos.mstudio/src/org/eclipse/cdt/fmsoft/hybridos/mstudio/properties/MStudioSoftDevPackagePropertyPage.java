@@ -359,18 +359,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			}
 		}
 	}
-/*
-	private boolean isListSameItem(String sameString, List<String> listStr) {
 
-		for (int i = 0; i < listStr.size(); i++) {
-			String item = listStr.get(i);
-			if (sameString.equals(item))
-				return true;
-		}
-
-		return false;
-	}
-*/
 	private void getCheckboxTableViewerData() {
 
 		for (Map.Entry<String, String> info : msEnvInfo.getAllSoftPkgs().entrySet()) {
