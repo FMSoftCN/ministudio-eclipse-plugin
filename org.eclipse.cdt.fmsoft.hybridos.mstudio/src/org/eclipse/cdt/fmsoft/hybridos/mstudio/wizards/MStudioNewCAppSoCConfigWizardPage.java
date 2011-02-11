@@ -224,9 +224,11 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				if (buttonCheck.getSelection()) {
 					ctv.setAllChecked(true);
 					addAllselectedPackages();
+					packageDesc.setText("Select All Package.");
 				} else {
 					ctv.setAllChecked(false);
 					selectedPackages.clear();
+					packageDesc.setText("No Select Package.");
 				}
 				setPageComplete(isCustomPageComplete());
 				update();
