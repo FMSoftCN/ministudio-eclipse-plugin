@@ -725,7 +725,7 @@ public class MStudioDeployWizard extends Wizard{
 					KEY_USR_PATH, paths[3] + "/" + prj.getName(), null);
 		} else {
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
-					KEY_RESPKG_PATH, DEF_RES_LOCATION + "/" + prj.getName() + "/res", null);
+					KEY_RESPKG_PATH, DEF_RES_LOCATION + "/" + prj.getName(), null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
 					KEY_USR_PATH, DEF_CUSTOM_FILE_LOCATION + "/" + prj.getName(), null);
 		}

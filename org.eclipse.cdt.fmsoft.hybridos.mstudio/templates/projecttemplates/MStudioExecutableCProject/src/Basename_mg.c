@@ -34,12 +34,19 @@ int MiniGUIMain(int argc, const char* argv[])
 
 	hPackage = ncsLoadIncoreResPackage();
 #else
+	char res_path [MAX_PATH];
 	char f_package[MAX_PATH];
 
 	ncsSetAppIniInfo(ncsLoadAppIniInfo(basename(argv[0])));
 
 	ncsInitialize();
-	SetResPath("./");
+
+	if (ETC_OK != ncsGetValueFromIniInfo (PATH_INFO_SECT,
+				RES_PATH_KEY, res_path, MAX_PATH)){
+		fprintf(stderr, "Resource Path not found.\n");
+		return 1;
+	}
+	SetResPath(res_path);
 
 	if (!ncsGetResPackage("$(projectName).res", f_package, MAX_PATH)) {
 		fprintf(stderr, "Haven't find the  Resource Package File.");
