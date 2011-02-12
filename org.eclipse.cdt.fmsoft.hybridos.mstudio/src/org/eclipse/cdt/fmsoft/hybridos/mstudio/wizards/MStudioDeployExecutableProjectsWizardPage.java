@@ -186,16 +186,33 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return true;
 	}
 	private void initGALAndIAL(){
+		String selectedGalEngine = null;
+		String selectedIalEngine = null;
 		String[] galP = MStudioEnvInfo.getInstance().getGalOptions();
-		if(galP != null){
-			for(int i = 0; i < galP.length; i++){
-				gal.add(galP[i].toString());
-			}
-		}
 		String[] ialP = MStudioEnvInfo.getInstance().getIalOptions();
-		if(ialP != null){
-			for(int i = 0; i < ialP.length; i++){
-				ial.add(ialP[i].toString());
+		
+		if(galP == null || ialP == null){
+			System.out.println("[MStudioDeployExecutableProjectsWizardPage]: Get GAL/IAL items Error.");
+			return;
+		}
+		
+		String tagetMgconfigureFile = MStudioEnvInfo.getInstance().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
+		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
+		if (file != null){
+			selectedGalEngine = file.getStringProperty("system", "gal_engine");
+			selectedIalEngine = file.getStringProperty("system", "ial_engine");			
+		}
+		
+		for(int i = 0; i < galP.length; i++){
+			gal.add(galP[i]);
+			if (selectedGalEngine != null && selectedGalEngine.equals(galP[i])){
+				gal.select(i);
+			}
+		}	
+		for(int i = 0; i < ialP.length; i++){
+			ial.add(ialP[i]);
+			if (selectedIalEngine != null && selectedIalEngine.equals(ialP[i])){
+				ial.select(i);
 			}
 		}
 	}
