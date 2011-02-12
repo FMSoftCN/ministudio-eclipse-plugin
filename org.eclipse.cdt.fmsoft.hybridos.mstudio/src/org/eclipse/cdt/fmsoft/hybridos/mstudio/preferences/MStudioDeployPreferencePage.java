@@ -129,13 +129,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 
 		String locationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
-		if (null == locationValue) {
+		locationPath.setStringValue(locationValue);
+
+		File locationFile = new File(locationValue);
+		if (!locationFile.exists()) {
 			updateTipMessage(MSDPP_PATH_INVALID);
 			setValid(false);
-			locationPath.setStringValue("");
-		}
-		else {
-			locationPath.setStringValue(locationValue);
 		}
 			
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
