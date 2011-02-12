@@ -55,7 +55,6 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
-import org.eclipse.core.runtime.Platform;
 
 
 public class MStudioDeployPreferencePage extends PreferencePage
@@ -128,11 +127,17 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private void initializeByStoreData() {
 
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
-			return;
 
-		locationPath.setStringValue(store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION));
-
+		String locationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
+		if (null == locationValue) {
+			updateTipMessage(MSDPP_PATH_INVALID);
+			setValid(false);
+			locationPath.setStringValue("");
+		}
+		else {
+			locationPath.setStringValue(locationValue);
+		}
+			
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
 		String[] defaultSelServ = storeServ.split(MSDPP_SPLIT);
 
@@ -146,25 +151,26 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
 		if (file == null)
 			return; 
+		
 		selectedGalEngine = file.getStringProperty("system", "gal_engine");
-		if (selectedGalEngine == null)
-			return;
-		String[] galItems = galCom.getItems();
-		for (int i = 0; i < galItems.length; i ++){
-			if (selectedGalEngine.equals(galItems[i])){
-				galCom.select(i);
-				break;
+		if (selectedGalEngine != null) {
+			String[] galItems = galCom.getItems();
+			for (int i = 0; i < galItems.length; i ++){
+				if (selectedGalEngine.equals(galItems[i])){
+					galCom.select(i);
+					break;
+				}
 			}
 		}
 		
 		selectedIalEngine = file.getStringProperty("system", "ial_engine");
-		if (selectedIalEngine == null)
-			return;
-		String[] ialItems = ialCom.getItems();
-		for (int i = 0; i < ialItems.length; i ++){
-			if (selectedIalEngine.equals(ialItems[i])){
-				ialCom.select(i);
-				break;
+		if (selectedIalEngine != null) {
+			String[] ialItems = ialCom.getItems();
+			for (int i = 0; i < ialItems.length; i ++){
+				if (selectedIalEngine.equals(ialItems[i])){
+					ialCom.select(i);
+					break;
+				}
 			}
 		}
 	}
@@ -357,6 +363,11 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	protected void performDefaults() {
+		
+		locationPath.setStringValue("");
+		galCom.deselectAll();
+		ialCom.deselectAll();
+		
 		initializeByStoreData();
 		super.performDefaults();
 	}
