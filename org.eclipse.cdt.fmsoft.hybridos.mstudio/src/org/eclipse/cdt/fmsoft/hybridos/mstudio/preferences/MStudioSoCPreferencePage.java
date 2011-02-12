@@ -703,6 +703,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		infoTv.setItemCount(0);
 		colorCombo.removeAll();
 		resolutionCombo.removeAll();
+		skinNameLabel.setText("");
 
 		initWidgetValues();
 		super.performDefaults();
