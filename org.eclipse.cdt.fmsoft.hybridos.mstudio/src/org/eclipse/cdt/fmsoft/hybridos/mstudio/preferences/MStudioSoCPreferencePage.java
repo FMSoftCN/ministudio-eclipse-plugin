@@ -711,13 +711,13 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	public boolean performOk() {
 
-		if (saveWidgetValues())
-			return true;
-		else {
+		if (!saveWidgetValues()){
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveWidgetValues"));
 			return false;
 		}
+		
+		return true;
 	}
 }
