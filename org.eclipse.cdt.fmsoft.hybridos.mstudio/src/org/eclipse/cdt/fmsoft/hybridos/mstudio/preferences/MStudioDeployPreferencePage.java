@@ -299,7 +299,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		galCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedGalEngine = galCom.getItem(galCom.getSelectionIndex());
-				System.out.println("selected Gal Engine = " + selectedGalEngine);
+				//System.out.println("selected Gal Engine = " + selectedGalEngine);
 		}
 		});
 		
@@ -310,7 +310,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		ialCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedIalEngine = ialCom.getItem(ialCom.getSelectionIndex());
-				System.out.println("selected Ial Engine = " + selectedIalEngine);
+				//System.out.println("selected Ial Engine = " + selectedIalEngine);
 			}
 		});
 	}

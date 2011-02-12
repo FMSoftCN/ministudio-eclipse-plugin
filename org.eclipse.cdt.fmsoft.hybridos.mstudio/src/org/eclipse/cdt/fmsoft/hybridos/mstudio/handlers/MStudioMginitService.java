@@ -151,6 +151,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				envProps.setProperty("CWD", workingDir.toOSString());
 				envProps.setProperty("PWD", workingDir.toOSString());
 				envProps.setProperty("LD_LIBRARY_PATH", MSMS_ENVINFO + envInfo.getPCLibraryPath());
+				envProps.setProperty("MG_CFG_PATH", envInfo.getWorkSpaceMetadataPath());
 
 				miniguiServer = launcher.execute(editCommand, 
 						(String[])args.toArray(new String[args.size()]), 

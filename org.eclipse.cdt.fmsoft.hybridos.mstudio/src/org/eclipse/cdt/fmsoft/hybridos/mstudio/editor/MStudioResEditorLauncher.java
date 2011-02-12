@@ -96,7 +96,7 @@ public class MStudioResEditorLauncher implements IEditorLauncher {
 		args.add("-screen-size");
 		String screenSize = info.getScreenSize();
 		if (null != screenSize){
-			args.add(info.getScreenSize());
+			args.add(screenSize);
 		}
 
 		//add port information

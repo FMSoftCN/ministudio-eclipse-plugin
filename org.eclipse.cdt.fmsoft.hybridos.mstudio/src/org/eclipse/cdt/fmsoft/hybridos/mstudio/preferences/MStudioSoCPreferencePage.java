@@ -663,19 +663,16 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		}
 
-		// update MiniGUI.cfg and MiniGUI.cfg.target file
+		// update MiniGUI.cfg.target file
 		// set resolution and color depth
 		String temp = resolutionSelected + "-" + colorDepthSelected + "bpp";
 		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-
-		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-
-		// update MiniGUI.cfg.target file
 		// set skin info
-		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
-				SKIN_PROPERTY, skinNameLabel.getText(), null);
+		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
+			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+					SKIN_PROPERTY, skinNameLabel.getText(), null);
+		}
 		if (!cfgTargetFile.save()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
@@ -683,11 +680,14 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		}
 
 		// update MiniGUI.cfg file
+		// set resolution and color depth
+		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
+		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		// set skin info
-		cfgFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY,
-				MStudioSelectSkinDialog.SKIN_PATH + skinNameLabel.getText(),
-				null);
-		cfgFile.save();
+		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
+			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+					SKIN_PROPERTY, skinNameLabel.getText(), null);
+		}
 		if (!cfgFile.save()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
