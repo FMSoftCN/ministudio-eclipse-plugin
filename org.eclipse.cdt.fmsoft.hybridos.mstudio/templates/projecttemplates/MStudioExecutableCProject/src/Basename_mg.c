@@ -27,7 +27,6 @@ int MiniGUIMain(int argc, const char* argv[])
 	mMainWnd *mWin;
 
 #ifdef _MGNCS_INCORE_RES
-	ncsSetEtcHandle(ncsGetIncoreEtc());
 	ncsSetAppIniInfo(ncsGetIncoreAppIniInfo());
 
 	ncsInitialize();

@@ -27,7 +27,6 @@ int DlModuleInit(void)
 	mMainWnd *mWin;
 
 #ifdef _MGNCS_INCORE_RES
-	ncsSetEtcHandle(ncsGetIncoreEtc());
 	ncsSetAppIniInfo(ncsGetIncoreAppIniInfo());
 
 	ncsInitialize();
