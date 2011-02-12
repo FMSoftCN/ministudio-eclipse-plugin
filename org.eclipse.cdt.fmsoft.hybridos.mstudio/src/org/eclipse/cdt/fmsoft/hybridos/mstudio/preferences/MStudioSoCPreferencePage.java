@@ -83,6 +83,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String PC_XVFB_SECTION = "pc_xvfb";
 	private final static String DEFAULT_MODE_PROPERTY = "defaultmode";
 	private final static String SKIN_PROPERTY = "skin";
+	private final static String GAL_ENGINE_PROPERTY = "gal_engine";
+	private final static String FBCON_SECTION = "fbcon";
 
 	public MStudioSoCPreferencePage() {
 	}
@@ -667,7 +669,11 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		// set resolution and color depth
 		String temp = resolutionSelected + "-" + colorDepthSelected + "bpp";
 		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
+		
+		String engineProperty = cfgTargetFile.getStringProperty(SYSTEM_SECTION, GAL_ENGINE_PROPERTY);
+		cfgTargetFile.setStringProperty(engineProperty == null ? FBCON_SECTION : engineProperty, 
+				DEFAULT_MODE_PROPERTY, temp, null);
+		
 		// set skin info
 		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
 			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
@@ -685,7 +691,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		// set skin info
 		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
-			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+			cfgFile.setStringProperty(PC_XVFB_SECTION, 
 					SKIN_PROPERTY, skinNameLabel.getText(), null);
 		}
 		if (!cfgFile.save()) {
