@@ -162,7 +162,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				.getString("MStudioSoCPreferencePage.resolutionLabel"));
 
 		// create resolution combo
-		resolutionCombo = new Combo(screenCom, SWT.NONE);
+		resolutionCombo = new Combo(screenCom, SWT.READ_ONLY/*SWT.NONE*/); // TODO it later
 		resolutionCombo.addSelectionListener(new SelectedChangeListener());
 		resolutionCombo.setLayoutData(new GridData(110, 25));
 
@@ -337,7 +337,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private String[] getResolutionData() {
-		return new String[] { "320x240", "640x480", "800x600", "1024x768" };// do it later
+		return new String[] { "240x320", "320x240", "480x272", "640x480", "800x480", "800x600" };// TODO it later
 	}
 
 	private String[] getColorDepthData() {
