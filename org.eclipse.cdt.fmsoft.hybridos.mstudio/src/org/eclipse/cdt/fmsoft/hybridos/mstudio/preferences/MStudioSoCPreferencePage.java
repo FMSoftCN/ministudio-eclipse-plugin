@@ -212,6 +212,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				}
 			}
 		});
+		skinBtn.setEnabled(false); // TODO it later
 
 		if (!initWidgetValues()) {
 			MessageDialog.openError(getShell(),
