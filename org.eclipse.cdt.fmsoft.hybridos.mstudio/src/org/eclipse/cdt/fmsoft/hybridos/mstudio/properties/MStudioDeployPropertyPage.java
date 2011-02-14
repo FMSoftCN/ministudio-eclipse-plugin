@@ -38,6 +38,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.core.resources.IProject;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.jface.dialogs.MessageDialog;
 
@@ -85,8 +86,11 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		l1.setText(MStudioMessages.getString("MStudioDeployPropertyPage.text0"));
 		l1.setFont(new Font(l1.getFont().getDevice(), "", 0, SWT.BOLD));
 		Label l2 = new Label(composite,SWT.NONE);
-		l2.setText(MStudioMessages.getString("MStudioDeployPropertyPage.text1"));
-		
+		String location = MStudioDeployPreferencePage.deployLocation();
+		if(location == null || location == "")
+			l2.setText(MStudioMessages.getString("MStudioDeployPropertyPage.text2") + MStudioMessages.getString("MStudioDeployPropertyPage.text1"));
+		else
+			l2.setText(MStudioMessages.getString("MStudioDeployPropertyPage.text2") + location);
 		Composite com1 = new Composite(composite,SWT.NONE);
 		com1.setLayout(new GridLayout(2,false));
 		com1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
