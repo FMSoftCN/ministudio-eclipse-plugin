@@ -85,6 +85,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	private String lastProjectName = null;
 	private String[] prjDepLibs = null;
 	private boolean existingPath = false;
+	private boolean isFirstProj = false;
 
 	public MStudioNewCAppWizard() {
 		this(MStudioMessages.getString("NewModelCProjectWizard.0"),
@@ -100,6 +101,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		wz_title = title;
 		wz_desc = desc;
 		msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		isFirstProj = (msEnvInfo.getCurSoCName() == null);
 	}
 
 	public void addPages() {
@@ -228,12 +230,14 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 
 		BasicNewProjectResourceWizard.updatePerspective(fConfigElement);
 		selectAndReveal(newProject);
-
-		copyMiniguiCFG();
-		copyMgncsCFG();
-		copyMiniguiCFGTarget();
-		copyMgncsCFGTarget();
-
+		
+		if (isFirstProj) {
+			copyMiniguiCFG();
+			copyMgncsCFG();
+			copyMiniguiCFGTarget();
+			copyMgncsCFGTarget();
+		}
+		
 		return true;
 	}
 
