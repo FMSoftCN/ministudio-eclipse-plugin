@@ -134,7 +134,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		File locationFile = new File(locationValue);
 		if (!locationFile.exists()) {
 			updateTipMessage(MSDPP_PATH_INVALID);
-			setValid(false);
 		}
 			
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
