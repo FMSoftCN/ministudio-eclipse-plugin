@@ -36,8 +36,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -141,7 +139,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		Label sizeLabel = new Label(bottomPanel3, SWT.NONE);
 		sizeLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
-		sizeCombo = new Combo(bottomPanel3, SWT.NONE);
+		sizeCombo = new Combo(bottomPanel3, SWT.READ_ONLY/*SWT.NONE*/);// TODO it later
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
 		sizeCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		sizeCombo.addKeyListener(new ComboKeyListener());
@@ -219,21 +217,37 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private void initSizeAndColor() {
 
-		String[] resolution = new String[]{"320x240", "640x480", "1024x768"};
-		String[] colorDepth = new String[]{"16", "24", "32"};
+		String[] resolution = new String[]{"240x320", "320x240", "480x272", "640x480", "800x480", "800x600"};
+		String[] colorDepth = new String[]{"8", "16", "24", "32"};
 
+		String tmpResolution = MStudioEnvInfo.getInstance().getScreenSize();
+		boolean bResolution = false;
 		for (int i = 0; i < resolution.length; i++) {
 			sizeCombo.add(resolution[i].toString());
+			if (tmpResolution != null && tmpResolution.equals(resolution[i])){
+				sizeCombo.select(i);
+				bResolution = true;
+			}
 		}
 
-		//set the default value
-		sizeCombo.select(0);
+		if (!bResolution) {
+			//set the default value
+			sizeCombo.select(0);
+		}
 
+		String tmpColor = MStudioEnvInfo.getInstance().getScreenDepth();
+		boolean bColor = false;
 		for (int i = 0; i < colorDepth.length; i++) {
 			colorCombo.add(colorDepth[i].toString());
+			if (tmpColor != null && tmpColor.equals(colorDepth[i])){
+				colorCombo.select(i);
+				bColor = true;
+			}
 		}
 
-		colorCombo.select(0);
+		if (!bColor) {
+			colorCombo.select(0);
+		}
 	}
 
 	public void update() {
