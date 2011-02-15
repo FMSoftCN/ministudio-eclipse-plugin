@@ -536,7 +536,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
 		final String hostName = "Host";
 		final String locateInclude = "../include/";
-		
 		List<String> depLibList = new ArrayList<String> ();
 		String[] pkgs = new MStudioProject(project).getDepPkgs();
 		if (pkgs != null) {
@@ -554,7 +553,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String[] pcLibPath        = { einfo.getPCLibraryPath()};
 		String[] crossIncludePath = { einfo.getCrossIncludePath(), locateInclude };
 		String[] crossLibPath     = { einfo.getCrossLibraryPath() };
-		
 		IManagedProject managedProj = ManagedBuildManager.getBuildInfo(project).getManagedProject();
 		IConfiguration[] cur_cfgs = managedProj.getConfigurations();
 		for (int i = 0; i < cur_cfgs.length; i++) {
@@ -652,7 +650,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
 		ILaunchConfigurationWorkingCopy wc = null;
-		
 		try {
 			if (configs.length <= 0) {
 				LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
@@ -663,7 +660,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			} else {
 				wc = configs[0].getWorkingCopy();
 			}		
-			wc.rename("Run/Debug - " + project.getName());
+			wc.rename("Debug - " + project.getName());
 			wc.setMappedResources(new IResource[] {project});
 			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
 			//FIXME ....
