@@ -326,7 +326,11 @@ public class MStudioDeployWizard extends Wizard{
 		
 		if (!iniFile.save()) 
 			return false;
-		return createMginitCfg();
+		
+		if (MStudioEnvInfo.MiniGUIRunMode.process.equals(einfo.getMgRunMode()))
+			return createMginitCfg();
+		
+		return true;
 	}
 
 	private boolean createMginitCfg(){
@@ -337,7 +341,8 @@ public class MStudioDeployWizard extends Wizard{
 
 		if(!copyFile(oldFilePath, newFilePath))
 		{
-			MessageDialog.openError(getShell(), "error", "the mginit.cfg file is not exist, please reset up the SOC pakage or check the file");
+			MessageDialog.openError(getShell(), "error", 
+					"the mginit.cfg file is not exist, please reset up the SOC pakage or check the file");
 			return false;
 		}
 		targetCfgFile = new MStudioParserIniFile(newFilePath);
