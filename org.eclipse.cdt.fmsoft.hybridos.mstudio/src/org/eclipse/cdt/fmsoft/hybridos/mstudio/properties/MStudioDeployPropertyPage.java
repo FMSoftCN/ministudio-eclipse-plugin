@@ -224,7 +224,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		}
 		else{
 //			set the default values
-			resText.setText(RES_LOCATION + ((IProject)getElement()).getName() + "/res");
+			resText.setText(RES_LOCATION + ((IProject)getElement()).getName());
 			binText.setText(BIN_LOCATION);
 			libText.setText(LIB_LOCATION);
 			customFileText.setText(CUSTOM_FILE_LOCATION);
