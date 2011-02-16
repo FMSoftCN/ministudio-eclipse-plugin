@@ -18,7 +18,6 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -788,7 +787,7 @@ public class MStudioDeployWizard extends Wizard{
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
 		if (paths.length == 4) {
-			return paths[0];
+			return paths[0] + "/res";
 		}
 		else
 			return DEF_RES_LOCATION + project.getName().trim() + "/res";
