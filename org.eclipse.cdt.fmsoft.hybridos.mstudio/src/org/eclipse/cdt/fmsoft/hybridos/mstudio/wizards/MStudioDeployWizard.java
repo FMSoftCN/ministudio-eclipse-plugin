@@ -327,7 +327,7 @@ public class MStudioDeployWizard extends Wizard{
 		if (!iniFile.save()) 
 			return false;
 		
-		if (MStudioEnvInfo.MiniGUIRunMode.process.equals(einfo.getMgRunMode()))
+		if (MStudioEnvInfo.MiniGUIRunMode.process.name().equals(einfo.getMgRunMode()))
 			return createMginitCfg();
 		
 		return true;
