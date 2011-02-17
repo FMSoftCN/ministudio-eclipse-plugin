@@ -227,7 +227,7 @@ public class MStudioDeployWizard extends Wizard{
 		return false;
 	}
 	
-	public boolean runScript() {
+	public boolean runScript(){
 		CommandLauncher launcher = new CommandLauncher();
 		launcher.showCommand(true);
 		StringBuffer cmd = new StringBuffer(ROOTFS_NAME);
@@ -239,29 +239,25 @@ public class MStudioDeployWizard extends Wizard{
 
 		if (binPath == null)
 			return false;
-		
-		String command = "/usr/bin/gksu";
-		String arg = null;
+		Path editCommand = null;
+
+		if (binPath == null || binPath.equals(MSMS_EMPTY_STR)) {
+			editCommand = new Path (cmd.toString());
+		} else {
+        	editCommand = new Path (binPath + File.separatorChar +cmd.toString());
+        }
         
 		List<String> args = new ArrayList<String>();
-		if (binPath == null || binPath.equals(MSMS_EMPTY_STR)) {
-			arg = cmd.toString();
-		} else {
-			arg = binPath + File.separatorChar + cmd.toString();
-        }
-		Path editCommand = new Path(command.toString());
-		
-		arg += " -f ";
-		arg += DEPLOY_INI_PATH + DEPLOY_INI_NAME;
-		arg += " -p ";
-		arg += this.getDeployExecuteableWizardPage().getDeployLocation();
-		args.add(arg);
+		args.add("-f");
+		args.add(DEPLOY_INI_PATH + DEPLOY_INI_NAME);
+		args.add("-p");
+		args.add(this.getDeployExecuteableWizardPage().getDeployLocation());
 
 		IPath workingDir = new Path(binPath);
 		Properties envProps = EnvironmentReader.getEnvVars();
 
 		envProps.setProperty("CWD", workingDir.toOSString());
-		envProps.setProperty("PWD", workingDir.toOSString());
+		envProps.setProperty("PWD", workingDir.toOSString());	        
 
 		/*Process root = */launcher.execute(editCommand, 
 				(String[])args.toArray(new String[args.size()]), 
