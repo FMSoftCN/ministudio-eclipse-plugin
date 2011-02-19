@@ -528,7 +528,7 @@ public class MStudioEnvInfo {
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
 		
 		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (!dxwxh.matches("\\d{1,4}x\\d{1,4}-\\d{1,2}bpp")) 
+		if (null == dxwxh || !dxwxh.matches("\\d{1,4}x\\d{1,4}-\\d{1,2}bpp")) 
 			return null;
 		
 		return dxwxh.substring(0, dxwxh.lastIndexOf('-'));
@@ -546,7 +546,7 @@ public class MStudioEnvInfo {
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
 		
 		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (!dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp")) 
+		if (null == dxwxh || !dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp")) 
 			return null;
 		
 		return dxwxh.substring(dxwxh.lastIndexOf('-') + 1, dxwxh.lastIndexOf("bpp"));
