@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -65,6 +66,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		MStudioMessages.getString("MStudioDeployPreferencePage.pathTip");
 	private final static String MSDPP_DPLY_LOCAL = 
 		MStudioMessages.getString("MStudioDeployPreferencePage.deployLocation");
+	private final static String MSDPP_GAL_INVALID =  
+		MStudioMessages.getString("MStudioDeployPreferencePage.galEngine_selectValid");
+	private final static String MSDPP_IAL_INVALID =  
+		MStudioMessages.getString("MStudioDeployPreferencePage.ialEngine_selectValid");
 	private final static String MSDPP_GAL_ENGINE = 
 		MStudioMessages.getString("MStudioDeployPreferencePage.galEngine");
 	private final static String MSDPP_IAL_ENGINE = 
@@ -111,29 +116,40 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	public void locationChanged() {
-
 		String l = locationPath.getStringValue();
 		File file = new File(l);
-
-		if (!file.exists()) {
+		boolean isValid = false;
+		if (!file.exists())
 			updateTipMessage(MSDPP_PATH_INVALID);
-			setValid(false);
-		} else {
+		else{
 			updateTipMessage(MSDPP_EMPTY_STR);
-			setValid(true);
+			isValid &= true;
 		}
+		
+		if(galCom.getSelectionIndex() >= 0 && galCom.getItemCount() > 0)
+			updateTipMessage(MSDPP_GAL_INVALID);
+		else
+			updateTipMessage(MSDPP_EMPTY_STR);
+		if(ialCom.getSelectionIndex() >= 0 && ialCom.getItemCount() > 0)
+			updateTipMessage(MSDPP_IAL_INVALID);
+		else
+			updateTipMessage(MSDPP_EMPTY_STR);
+			/*
+			isValid &= true;
+		setValid(isValid);
+		*/
 	}
 
 	private void initializeByStoreData() {
-
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 
 		String locationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
 		locationPath.setStringValue(locationValue);
 
 		File locationFile = new File(locationValue);
-		if (!locationFile.exists()) {
+		if (!locationFile.exists() || locationValue == null || locationValue == "") {
 			updateTipMessage(MSDPP_PATH_INVALID);
+		//	setValid(false);
 		}
 			
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
@@ -147,8 +163,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
-		if (file == null)
+		if (file == null){
+			//setValid(false);
 			return; 
+		}
 		
 		selectedGalEngine = file.getStringProperty("system", "gal_engine");
 		if (selectedGalEngine != null) {
@@ -160,6 +178,8 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				}
 			}
 		}
+		//else
+			//setValid(false);
 		
 		selectedIalEngine = file.getStringProperty("system", "ial_engine");
 		if (selectedIalEngine != null) {
@@ -171,17 +191,18 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				}
 			}
 		}
+		//else
+			//setValid(false);
 	}
 
-	private void saveToStoreData() {
-
+	private boolean saveToStoreData() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		String locationToStore = getChangedDeployLocation();
 
-		if (locationToStore != null) {
-			store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, locationToStore);
-		}
-
+		if (locationToStore == null) 
+			return false;
+		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, locationToStore);
+		
 		String servToStore = new String();
 
 		for (Iterator<String> it = selServList.iterator(); it.hasNext(); ) {
@@ -193,16 +214,16 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
 		if (file == null)
-			return; 
+			return false; 
 		
-		if (selectedGalEngine != null) {
-			file.setStringProperty("system", "gal_engine", selectedGalEngine, null);
-		}
-		if (selectedIalEngine != null) {
-			file.setStringProperty("system", "ial_engine", selectedIalEngine, null);
-		}
+		if (selectedGalEngine == null) 
+			return false;
+		file.setStringProperty("system", "gal_engine", selectedGalEngine, null);
 		
-		file.save();
+		if (selectedIalEngine == null)
+			return false;
+		file.setStringProperty("system", "ial_engine", selectedIalEngine, null);
+		return file.save();
 	}
 
 	protected Control createContents(Composite parent) {
@@ -361,7 +382,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	protected void performDefaults() {
-		
 		locationPath.setStringValue("");
 		galCom.deselectAll();
 		ialCom.deselectAll();
@@ -371,8 +391,8 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	public boolean performOk() {
-		saveToStoreData();
-		return true;
+		return saveToStoreData();
+		//return true;
 	}
 	
 	public static String[] systemServices(){
