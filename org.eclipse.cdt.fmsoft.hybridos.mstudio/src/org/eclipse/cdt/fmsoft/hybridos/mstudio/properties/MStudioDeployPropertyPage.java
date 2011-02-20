@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -129,6 +130,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		Composite col2 = new Composite(com2,SWT.NONE);
 		col2.setLayout(new GridLayout());
 		col2.setLayoutData(new GridData(GridData.FILL));
+		
 		Composite col3 = new Composite(com2,SWT.NONE);
 		col3.setLayout(new GridLayout());
 		col3.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -137,7 +139,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		topLabel1.setLayoutData(new GridData(GridData.FILL));
 		topLabel1.setText(MStudioMessages.getString("MStudioDeployPropertyPage.srcListTitle"));
 		srcList = new List(col1,SWT.V_SCROLL|SWT.MULTI|SWT.BORDER);
-		srcList.setLayoutData(new GridData(GridData.FILL_BOTH));
+		srcList.setLayoutData(new GridData(200,200));
 		srcList.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -145,9 +147,9 @@ public class MStudioDeployPropertyPage extends PropertyPage
 				deployButton.setEnabled(true);
 			}
 		});
-		deployButton = new Button(col2,SWT.FILL_WINDING);
+		deployButton = new Button(col2,SWT.NONE);
 		deployButton.setText(MStudioMessages.getString("MStudioDeployPropertyPage.deployButtonText"));
-		deployButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		deployButton.setLayoutData(new GridData(80,32));
 		deployButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -163,9 +165,9 @@ public class MStudioDeployPropertyPage extends PropertyPage
 					deployButton.setEnabled(false);
 			}
 		});
-		removeButton = new Button(col2,SWT.FILL_WINDING);
+		removeButton = new Button(col2,SWT.NONE);
 		removeButton.setText(MStudioMessages.getString("MStudioDeployPropertyPage.removeButtonText"));
-		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		removeButton.setLayoutData(new GridData(80,32));
 		removeButton.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
 			}
@@ -186,7 +188,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		topLabel2.setLayoutData(new GridData(GridData.FILL));
 		topLabel2.setText(MStudioMessages.getString("MStudioDeployPropertyPage.destListTitle"));
 		destList = new List(col3,SWT.V_SCROLL | SWT.MULTI | SWT.BORDER);
-		destList.setLayoutData(new GridData(GridData.FILL_BOTH));
+		destList.setLayoutData(new GridData(200,200));
 		destList.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e){
 			}
@@ -196,7 +198,6 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		});
 		initControls();
 		loadPersistentSettings();
-		
 		return composite;
 	}
 

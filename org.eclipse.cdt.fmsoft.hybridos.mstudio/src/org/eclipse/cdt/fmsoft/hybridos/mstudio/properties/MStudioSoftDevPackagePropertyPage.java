@@ -127,12 +127,11 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		composite2.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		table = new Table(composite2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
-		table.setLayoutData(new GridData(GridData.FILL_BOTH));
-		table.setSize(200, 100);
+		table.setLayoutData(new GridData(250,350));
 
 		contentDes = new Label(composite2, SWT.WRAP);
 		contentDes.setText(EMPTY_STR);
-		GridData gdx = new GridData(GridData.FILL_BOTH);
+		GridData gdx = new GridData(250,350);
 		gdx.verticalAlignment = SWT.TOP;
 		contentDes.setLayoutData(gdx);
 
