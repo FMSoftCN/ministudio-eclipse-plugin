@@ -151,7 +151,7 @@ public class MStudioEnvInfo {
 
 		return (new File(path).exists()) ? path : null;
 	}
-	
+
 
 	public List<String> getServices() {
 		if (iniFile == null)
@@ -210,6 +210,11 @@ public class MStudioEnvInfo {
 		return ret;
 	}
 
+	public void clearAllSoftPkgs() {
+		if (null != allSoftPkgs)
+			allSoftPkgs.clear();
+	}
+
 	//get all soft packages name and description.
 	public Map<String, String> getAllSoftPkgs() {
 
@@ -265,7 +270,7 @@ public class MStudioEnvInfo {
 			return EMPTY_STR;
 		return SOC_PATH_PREFIX + SoCName + "/pc_symmetry/lib/";
 	}
-	
+
 	public String getPCBinPath() {
 		if (null == SoCName)
 			return EMPTY_STR;
@@ -284,10 +289,10 @@ public class MStudioEnvInfo {
 		return SOC_PATH_PREFIX + SoCName + "/cross/lib/";
 	}
 
-	public String getRootfsPath(){
+	public String getRootfsPath() {
 		return SOC_PATH_PREFIX + SoCName + "/rootfs";
 	}
-	
+
 	public String getCrossMgCfgFileName() {
 		if (null == SoCName)
 			return EMPTY_STR;
@@ -299,15 +304,15 @@ public class MStudioEnvInfo {
 			return EMPTY_STR;
 		return SOC_PATH_PREFIX + SoCName + "/cross/etc/mgncs.cfg";
 	}
-	public String getSocMginitCfgFile(){
+	public String getSocMginitCfgFile() {
 		if (iniFile == null || SoCName == null || !mgRunMode.equals(MiniGUIRunMode.process))
 			return EMPTY_STR;
 
 		return SOC_PATH_PREFIX + SoCName + File.separator + "cross/etc/mginit.cfg";
 	}
 
-	public String getSOCBinPath(){
-		if(null == SoCName)
+	public String getSOCBinPath() {
+		if (null == SoCName)
 			return EMPTY_STR;
 		return SOC_PATH_PREFIX +SoCName +"/cross/bin/";
 	}
@@ -426,6 +431,10 @@ public class MStudioEnvInfo {
 		return mgRunMode == MiniGUIRunMode.process;
 	}
 
+	public void setSoCNameNull() {
+		SoCName = null;
+	}
+
 	//get the SoC used by current workspace. If still not set, return null.
 	public String getCurSoCName() {
 		return SoCName;
@@ -494,7 +503,7 @@ public class MStudioEnvInfo {
 	public IProject[] getMStudioProjects() {
 
 		IProject[] allProjects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		if(null == allProjects)
+		if (null == allProjects)
 			return null;
 
 		List<IProject> msProjects = new ArrayList<IProject>();
@@ -511,44 +520,44 @@ public class MStudioEnvInfo {
 
 		return (IProject[])msProjects.toArray(new IProject[msProjects.size()]);
 	}
-	
-	public String getWorkSpaceMetadataPath(){
+
+	public String getWorkSpaceMetadataPath() {
 		return Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 	}
-	
-	public String getScreenSize(){
+
+	public String getScreenSize() {
 		String PC_XVFB_SECTION = "pc_xvfb";
 		String DEFAULT_MODE_PROPERTY = "defaultmode";
-		
+
 		String cfgF = getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
 		if (f == null)
 			return null;
-		
+
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
-		
-		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (null == dxwxh || !dxwxh.matches("\\d{1,4}x\\d{1,4}-\\d{1,2}bpp")) 
+
+		// Check the string is "WWWxHHH-DDbpp" or not.
+		if (null == dxwxh || !dxwxh.matches("\\d{1,4}x\\d{1,4}-\\d{1,2}bpp"))
 			return null;
-		
+
 		return dxwxh.substring(0, dxwxh.lastIndexOf('-'));
 	}
-	
-	public String getScreenDepth(){
+
+	public String getScreenDepth() {
 		String PC_XVFB_SECTION = "pc_xvfb";
 		String DEFAULT_MODE_PROPERTY = "defaultmode";
-		
+
 		String cfgF = getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
 		if (f == null)
 			return null;
-		
+
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
-		
-		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (null == dxwxh || !dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp")) 
+
+		// Check the string is "WWWxHHH-DDbpp" or not.
+		if (null == dxwxh || !dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp"))
 			return null;
-		
+
 		return dxwxh.substring(dxwxh.lastIndexOf('-') + 1, dxwxh.lastIndexOf("bpp"));
 	}
 }

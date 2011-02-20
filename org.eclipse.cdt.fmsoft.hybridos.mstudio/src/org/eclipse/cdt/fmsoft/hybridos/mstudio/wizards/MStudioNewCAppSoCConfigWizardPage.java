@@ -91,8 +91,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private MStudioWizardHandler handler = null;
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private String socName = null;
-	private String defaultSocName = null;
-	
+
 	private class PakckageSorter extends ViewerSorter {
 		 public int compare(Viewer viewer, Object e1, Object e2) {
 			 String n1 = ((PackageItem)e1).getName();
@@ -107,7 +106,6 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		handler = wh;
 		setWizard(wh.getWizard());
 		socName = msEnvInfo.getCurSoCName();
-		defaultSocName = socName;
 	}
 
 	public CfgHolder[] getCfgItems(boolean getDefault) {
@@ -130,7 +128,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		String[] socType = msEnvInfo.getSoCPaths();
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
-		if (null != socName) {
+		if (null != socName && !socName.equals("null")) {
 			combo.setText(socName);
 			combo.setEnabled(false);
 		} else {
@@ -140,6 +138,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					MStudioSoCPreferencePage.setCurrentSoC(socName);
 					msEnvInfo.updateSoCName();
 					setCheckboxTableViewerData();
+					packageDesc.setText("No Select Package.");
 					setPageComplete(isCustomPageComplete());
 					update();
 				}
@@ -166,8 +165,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		table.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
 		packageDesc = new Label(cmpstPkgDesc, SWT.WRAP | SWT.BORDER);
-		packageDesc.setText("No Select Package.");
-		packageDesc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+		// packageDesc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		packageDesc.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		ctv = new CheckboxTableViewer(table);
@@ -175,8 +173,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			public Object[] getElements(Object inputElement) {
 				return (Object[])inputElement;
 			}
-			public void dispose(){}
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+			public void dispose() { }
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
 		});
 		ctv.setLabelProvider(new LabelProvider() {
 			public String getText(Object element) {
@@ -204,7 +202,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				update();
 			}
 		});
-		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
+		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				Object obj = ((IStructuredSelection)(ctv.getSelection())).getFirstElement();
 				PackageItem pck = (PackageItem) obj;
@@ -275,7 +273,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			message = errorMessage;
 			return false;
 		}
-		
+
 		errorMessage = null;
 		message = MESSAGE;
 		return true;
@@ -292,7 +290,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		if (visible) {
 			msSocParent.getParent().layout(true, true);
-			if (!ctvHasInitialized){
+			if (!ctvHasInitialized) {
 				setCheckboxTableViewerData();
 				ctvHasInitialized = true;
 			}
@@ -325,7 +323,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		return null;
 	}
 
-	public String[] getSelectedPackages() {	
+	public String[] getSelectedPackages() {
 		return selectedPackages.toArray(new String[selectedPackages.size()]);
 	}
 
@@ -463,6 +461,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		ctv.setInput(pkgs.toArray());
 	}
 
+	private void clearCheckboxTableViewerData() {
+		msEnvInfo.clearAllSoftPkgs();
+		ctv.remove(pkgs.toArray());
+		pkgs.clear();
+	}
+
 	private void addAllselectedPackages() {
 		selectedPackages.clear();
 		for (int i = 0; i < pkgs.size(); i++) {
@@ -483,13 +487,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	public boolean doCancel() {
-		
-		if(null == defaultSocName && socName != null) {
+
+		if (socName != null) {
 			MStudioSoCPreferencePage.setCurrentSoC("null");
-		} else if (socName != null && socName.equals(defaultSocName)) {
-			MStudioSoCPreferencePage.setCurrentSoC(defaultSocName);
+			// ctv.remove(pkgs.toArray());
+			clearCheckboxTableViewerData();
+			socName = null;
+			ctv = null;
+			msEnvInfo.setSoCNameNull();
 		}
-				
+
 		return true;
 	}
 }
