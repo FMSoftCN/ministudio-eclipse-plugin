@@ -73,6 +73,7 @@ public class MStudioEnvInfo {
 
 	private final static String EMPTY_STR = "";
 	private final static String MSE_SPACE = " ";
+	private final static String RESOLUTION_REGEX_STRING = "[1-9]+[0-9]*\\s*[*×]\\s*[0-9]+[1-9]*\\s*-\\s*[1-9]+bpp";
 
 	//the ini file object which pointer to SoC used by current workspace
 	public enum MiniGUIRunMode {
@@ -167,7 +168,6 @@ public class MStudioEnvInfo {
 		for (int i = 0; i < srvCount; i++) {
 			srvList.add(iniFile.getStringProperty(SOC_CFG_SECTION_SERVICES, "service" + i));
 		}
-
 		return srvList;
 	}
 
@@ -441,17 +441,14 @@ public class MStudioEnvInfo {
 	}
 
 	public IProject[] getExecutableProjects() {
-
 		IProject[] msProjects = getMStudioProjects();
 		List<IProject> exeProj = new ArrayList<IProject>();
-
 		for (int i = 0; i < msProjects.length ; i++) {
 			MStudioProject mpr = new MStudioProject(msProjects[i]);
 			if (mpr.isExeTmplType()) {
 				exeProj.add(msProjects[i]);
 			}
 		}
-
 		return (IProject[])exeProj.toArray(new IProject[exeProj.size()]);
 	}
 
@@ -524,23 +521,27 @@ public class MStudioEnvInfo {
 	public String getWorkSpaceMetadataPath() {
 		return Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 	}
-
-	public String getScreenSize() {
-		String PC_XVFB_SECTION = "pc_xvfb";
-		String DEFAULT_MODE_PROPERTY = "defaultmode";
-
-		String cfgF = getWorkSpaceMetadataPath() + "MiniGUI.cfg";
-		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
-		if (f == null)
+	
+	public List<String> getResolutions(){
+		String section = "resolutions";
+		String param = "num";
+		String cfgFile = MStudioEnvInfo.getCurSoCConfFileName();
+		MStudioParserIniFile f = new MStudioParserIniFile(cfgFile);
+		if(f == null)
 			return null;
-
-		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
-
-		// Check the string is "WWWxHHH-DDbpp" or not.
-		if (null == dxwxh || !dxwxh.matches("\\d{1,4}x\\d{1,4}-\\d{1,2}bpp"))
+		int num = f.getIntegerProperty(section, param);
+		if(num <= 0)
 			return null;
-
-		return dxwxh.substring(0, dxwxh.lastIndexOf('-'));
+		List<String> resolutionList = new ArrayList<String>();
+		for(int i = 0; i < num; i++)
+		{
+			String s = f.getStringProperty(section, "resolution" + i);
+			if(!s.matches(RESOLUTION_REGEX_STRING))
+				continue;
+			else
+				resolutionList.add(s);	
+		}
+		return resolutionList;
 	}
 
 	public String getScreenDepth() {
@@ -551,14 +552,11 @@ public class MStudioEnvInfo {
 		MStudioParserIniFile f = new MStudioParserIniFile(cfgF);
 		if (f == null)
 			return null;
-
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
-
-		// Check the string is "WWWxHHH-DDbpp" or not.
-		if (null == dxwxh || !dxwxh.matches("\\d{1,3}x\\d{1,3}-\\d{1,2}bpp"))
+		// Check the string is "WWWxHHH-DDbpp" or not. 
+		if (!dxwxh.matches(RESOLUTION_REGEX_STRING)) 
 			return null;
-
-		return dxwxh.substring(dxwxh.lastIndexOf('-') + 1, dxwxh.lastIndexOf("bpp"));
+		return dxwxh;
 	}
 }
 
