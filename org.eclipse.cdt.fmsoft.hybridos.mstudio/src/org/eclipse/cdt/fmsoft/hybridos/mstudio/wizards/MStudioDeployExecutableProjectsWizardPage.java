@@ -47,13 +47,14 @@ import org.eclipse.core.resources.IProject;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
 
 
 public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private Combo sizeCombo = null;
-	private Combo colorCombo = null;
+	//private Combo colorCombo = null;
 	private Combo gal = null;
 	private Combo ial = null;
 	private Composite bottomPanel = null;
@@ -96,7 +97,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 		chooseTable = new Table(bottomPanel1,
 				SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.IMAGE_BMP);
-		chooseTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+		chooseTable.setLayoutData(new GridData(500, 200));
 		ctv = new CheckboxTableViewer(chooseTable);
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
@@ -141,8 +142,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
 		sizeCombo = new Combo(bottomPanel3, SWT.READ_ONLY/*SWT.NONE*/);// TODO it later
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
-		sizeCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		sizeCombo.setLayoutData(new GridData(300, 25));
 		sizeCombo.addKeyListener(new ComboKeyListener());
+		/*
 		Label colorLabel = new Label(bottomPanel3, SWT.NONE);
 		colorLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.colorLabel"));
@@ -150,6 +152,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		colorCombo.addSelectionListener(new SelectedChangeListener());
 		colorCombo.addKeyListener(new ComboKeyListener());
 		colorCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		*/
 		initSizeAndColor();
 
 		bottomPanel = new Composite(topPanel, SWT.NONE);
@@ -217,9 +220,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private void initSizeAndColor() {
 
-		String[] resolution = new String[]{"240x320", "320x240", "480x272", "640x480", "800x480", "800x600"};
-		String[] colorDepth = new String[]{"8", "16", "24", "32"};
-
+		//String[] resolution = new String[]{"240x320", "320x240", "480x272", "640x480", "800x480", "800x600"};
+		//String[] colorDepth = new String[]{"8", "16", "24", "32"};
+		List<String> li = new ArrayList<String>();
+		li = MStudioPlugin.getDefault().getMStudioEnvInfo().getResolutions();
+		String[] resolution = li.toArray(new String[li.size()]);
 		String tmpResolution = MStudioEnvInfo.getInstance().getScreenSize();
 		boolean bResolution = false;
 		for (int i = 0; i < resolution.length; i++) {
@@ -234,7 +239,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			//set the default value
 			sizeCombo.select(0);
 		}
-
+/*
 		String tmpColor = MStudioEnvInfo.getInstance().getScreenDepth();
 		boolean bColor = false;
 		for (int i = 0; i < colorDepth.length; i++) {
@@ -248,6 +253,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if (!bColor) {
 			colorCombo.select(0);
 		}
+*/
 	}
 
 	public void update() {
@@ -303,24 +309,22 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*[*xX][1-9]+[0-9]*";
-		return Pattern.matches(regexString, resolution);
+		String regexString = "[1-9]+[0-9]*\\s*[×*]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
+		//return Pattern.matches(regexString, resolution);
+		return resolution.matches(regexString);
 	}
+	/*
 	private boolean validateColorDepth(String colorDepth){
 		String regexString = "[1-9]+[0-9]*";
 		return Pattern.matches(regexString, colorDepth);
 	}
-
+*/
 	protected boolean validatePage() {
-
-		if (sizeCombo == null || colorCombo == null) {
+		if (sizeCombo == null/* || colorCombo == null*/) {
 			setPageComplete(false);
 			return false;
 		}
-		
-		if(!locationChanged()
-				|| (sizeCombo.getText().trim() == "" || !validateResolution(sizeCombo.getText().trim()))
-				|| (colorCombo.getText().trim() == "" || !validateColorDepth(colorCombo.getText().trim()))){
+		if(!locationChanged() || (sizeCombo.getText().trim() == "" || !validateResolution(sizeCombo.getText().trim()))){
 			setPageComplete(false);
 			return false;
 		}
@@ -364,7 +368,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return locationPath.getStringValue().trim();
 //		return filePath.getStringValue();
 	}
-
+/*
 	public String getColorDepth() {
 //		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
 		String color = colorCombo.getText().trim();
@@ -372,14 +376,14 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return color;
 		return null;
 	}
-
-	//resolution format: 320x240
+*/
+	//resolution format: 320x240-16bpp
+	
 	public String getResolution() {
-	//	String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
-		String resolution =sizeCombo.getText().trim();
+		String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
+		//String resolution = sizeCombo.getText().trim();
 		if (validateResolution(resolution))
 			return resolution;
-
 		return null;
 	}
 
