@@ -544,7 +544,7 @@ public class MStudioEnvInfo {
 		return resolutionList;
 	}
 
-	public String getScreenDepth() {
+	public String getScreenSize() {
 		String PC_XVFB_SECTION = "pc_xvfb";
 		String DEFAULT_MODE_PROPERTY = "defaultmode";
 
@@ -554,7 +554,7 @@ public class MStudioEnvInfo {
 			return null;
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
 		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (!dxwxh.matches(RESOLUTION_REGEX_STRING)) 
+		if (!dxwxh.matches(RESOLUTION_REGEX_STRING) || dxwxh == null) 
 			return null;
 		return dxwxh;
 	}
