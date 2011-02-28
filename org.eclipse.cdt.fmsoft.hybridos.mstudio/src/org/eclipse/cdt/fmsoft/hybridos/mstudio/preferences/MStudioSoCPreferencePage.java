@@ -16,6 +16,8 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
@@ -65,12 +67,12 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private CheckboxTableViewer socCtv = null;
 	private TableViewer infoTv = null;
 	private Combo resolutionCombo = null;
-	private Combo colorCombo = null;
+	//private Combo colorCombo = null;
 	private Button skinBtn = null;
 	private String[] socType = null;
 	private String[] socInfo = null;
-	private String[] resolution = null;
-	private String[] colorDepth = null;
+//	private String[] resolution = null;
+//	private String[] colorDepth = null;
 	private Label skinNameLabel = null;
 	private int socTypeCheckedPos = -1;
 	private final static String SOC_PATH_PREFIX = "/opt/hybridos/";
@@ -164,8 +166,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		// create resolution combo
 		resolutionCombo = new Combo(screenCom, SWT.READ_ONLY/*SWT.NONE*/); // TODO it later
 		resolutionCombo.addSelectionListener(new SelectedChangeListener());
-		resolutionCombo.setLayoutData(new GridData(110, 25));
-
+		resolutionCombo.setLayoutData(new GridData(210, 25));
+/*
 		Label colorLabel = new Label(screenCom, SWT.NONE);
 		colorLabel.setText(MStudioMessages
 				.getString("MStudioSoCPreferencePage.colorDepthLabel"));
@@ -174,7 +176,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		colorCombo = new Combo(screenCom, SWT.NONE);
 		colorCombo.addSelectionListener(new SelectedChangeListener());
 		colorCombo.setLayoutData(new GridData(60, 25));
-
+*/
 		// create skin settings
 		Composite skinCom = new Composite(composite, SWT.NONE);
 		skinCom.setLayout(new GridLayout(2, false));
@@ -247,15 +249,18 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "^\\d{1,4}x\\d{1,4}$";
-		return Pattern.matches(regexString, resolution);
+		if(resolution == null)
+			return false;
+		String regexResolution = "[1-9]+[0-9]*\\s*[*×]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
+		return resolution.matches(regexResolution);
+		
 	}
-
+/*
 	private boolean validateColorDepth(String colorDepth) {
 		String regexString = "^(([1-9])|((1|2)[0-9])|30|31|32)$";
 		return Pattern.matches(regexString, colorDepth);
 	}
-
+*/
 	private boolean initSocTable() {
 
 		socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
@@ -334,45 +339,35 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		return true;
 	}
 
-	private String[] getResolutionData() {
-		return new String[] { "240x320", "320x240", "480x272", "640x480", "800x480", "800x600" };// TODO it later
-	}
-
-	private String[] getColorDepthData() {
-		//TODO
-		return new String[] { "8", "16", "24", "32" };
-	}
-
 	private boolean initResolutionCombo() {
-		int selIndex = 0;
 		String defaultSize = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenSize();
-		if (defaultSize == null)
-			defaultSize = "800x600";
-
-		resolution = getResolutionData();
-		if (null == resolution) {
-			resolutionCombo.add(defaultSize);
-			selIndex = 0;
-		} else {
-			int i;
+		List<String> rl = new ArrayList<String>();
+		
+		rl = MStudioPlugin.getDefault().getMStudioEnvInfo().getResolutions();
+		if (null == rl) {
+			if(null == defaultSize)
+				return false;
+			else{
+				resolutionCombo.add(defaultSize);
+				resolutionCombo.select(0);
+			}
+		} 
+		else {
 			boolean find = false;
-			for (i = 0; i < resolution.length; i++) {
-				resolutionCombo.add(resolution[i]);
-				if (resolution[i].equals(defaultSize)){
-					selIndex = i;
+			for(int i = 0; i < rl.size(); i++){
+				String temp = rl.get(i).toString();
+				resolutionCombo.add(temp);
+				if(temp.equals(defaultSize)){
+					resolutionCombo.select(i);
 					find = true;
 				}
 			}
-			if (!find) {
-				resolutionCombo.add(defaultSize);
-				selIndex = i;
-			}
+			if(!find)
+				resolutionCombo.select(0);
 		}
-		resolutionCombo.select(selIndex);
-
 		return true;
 	}
-
+/*
 	private boolean initColorCombo() {
 		int selIndex = 0;
 		String defaultDepth = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenDepth();
@@ -404,7 +399,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		return true;
 	}
-
+*/
 	private boolean initSkinNameLabel() {
 		String MINIGUI_CFG_FILE_NAME = 
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
@@ -452,7 +447,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			//return false;
 			initOk &= false;
 		}
-
+/*
 		if (!initColorCombo()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
@@ -460,6 +455,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			//return false;
 			initOk &= false;
 		}
+		*/
 		initSkinNameLabel();
 		return initOk;
 	}
@@ -615,7 +611,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.resolutionSetting"));
 			return false;
 		}
-
+/*
 		String colorDepthSelected = colorCombo.getText();
 		if (null == colorDepthSelected
 				|| !validateColorDepth(colorDepthSelected)) {
@@ -624,7 +620,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.colorDepthSetting"));
 			return false;
 		}
-
+*/
 		if (null == skinNameLabel.getText()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
@@ -672,7 +668,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		// update MiniGUI.cfg.target file
 		// set resolution and color depth
-		String temp = resolutionSelected + "-" + colorDepthSelected + "bpp";
+		String temp = resolutionSelected /*+ "-" + colorDepthSelected + "bpp"*/;
 		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		
 		String engineProperty = cfgTargetFile.getStringProperty(SYSTEM_SECTION, GAL_ENGINE_PROPERTY);
@@ -712,7 +708,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		socCtv.setItemCount(0);
 		infoTv.setItemCount(0);
-		colorCombo.removeAll();
+		//colorCombo.removeAll();
 		resolutionCombo.removeAll();
 		skinNameLabel.setText("");
 
