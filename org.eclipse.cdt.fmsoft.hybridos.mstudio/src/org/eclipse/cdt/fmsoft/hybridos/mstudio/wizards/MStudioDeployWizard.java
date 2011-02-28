@@ -384,8 +384,8 @@ public class MStudioDeployWizard extends Wizard{
 			targetCfgFile.setStringProperty(SYSTEM_SECTION, IAL_PROPERTY,
 					exeProjectPage.getIALEngine(), null);
 			targetCfgFile.setStringProperty(exeProjectPage.getGALEngine(),
-					DEFAULT_MODE_PROPERTY, exeProjectPage.getResolution() + "-"
-					+ exeProjectPage.getColorDepth() + "bpp", null);
+					DEFAULT_MODE_PROPERTY, exeProjectPage.getResolution()/* + "-"
+					+ exeProjectPage.getColorDepth() + "bpp"*/, null);
 			return targetCfgFile.save();
 		} else {
 			MStudioParserIniFile hostCfgFile = new MStudioParserIniFile(miniguiCfgNewPath);
@@ -394,10 +394,10 @@ public class MStudioDeployWizard extends Wizard{
 			String value = hostCfgFile.getStringProperty(SYSTEM_SECTION, GAL_PROPERTY);
 			if (value != null) {
 				hostCfgFile.setStringProperty(value, DEFAULT_MODE_PROPERTY,
-						exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
+						exeProjectPage.getResolution()/* + "-" + exeProjectPage.getColorDepth() + "bpp"*/, null);
 			}
 			hostCfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, 
-					exeProjectPage.getResolution() + "-" + exeProjectPage.getColorDepth() + "bpp", null);
+					exeProjectPage.getResolution()/* + "-" + exeProjectPage.getColorDepth() + "bpp"*/, null);
 			return hostCfgFile.save();
 		}		
 	}
