@@ -66,12 +66,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private CheckboxTableViewer socCtv = null;
 	private TableViewer infoTv = null;
 	private Combo resolutionCombo = null;
-	//private Combo colorCombo = null;
 	private Button skinBtn = null;
 	private String[] socType = null;
 	private String[] socInfo = null;
 //	private String[] resolution = null;
-//	private String[] colorDepth = null;
 	private Label skinNameLabel = null;
 	private int socTypeCheckedPos = -1;
 	private final static String SOC_PATH_PREFIX = "/opt/hybridos/";
@@ -105,7 +103,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	@Override
 	protected Control createContents(Composite parent) {
-
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -119,7 +116,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		GridData typeGd = new GridData();
 		typeGd.horizontalSpan = 2;
 		titleType.setLayoutData(typeGd);
-
 		// create socTable
 		socTable = new Table(typeCom, SWT.BORDER 
 				| SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
@@ -138,44 +134,29 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				showSocInfo();
 			}
 		});
-
 		// create system info list
 		infoTable = new Table(typeCom, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData infoGd = new GridData(200, 100);
 		infoTable.setLayoutData(infoGd);
 		infoTv = new TableViewer(infoTable);
-
 		// create screen settings
 		Composite screenCom = new Composite(composite, SWT.NONE);
 		screenCom.setLayout(new GridLayout(4, false));
 		screenCom.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label titleScreen = new Label(screenCom, SWT.FILL);
-		titleScreen.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.screenSettingsLabel"));
+		titleScreen.setText(MStudioMessages.getString("MStudioSoCPreferencePage.screenSettingsLabel"));
 		GridData screenGd = new GridData();
 		screenGd.horizontalAlignment = GridData.FILL;
 		screenGd.horizontalSpan = 4;
 		titleScreen.setLayoutData(screenGd);
 
 		Label resolutionLabel = new Label(screenCom, SWT.NONE);
-		resolutionLabel.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.resolutionLabel"));
-
+		resolutionLabel.setText(MStudioMessages.getString("MStudioSoCPreferencePage.resolutionLabel"));
 		// create resolution combo
 		resolutionCombo = new Combo(screenCom, SWT.READ_ONLY/*SWT.NONE*/); // TODO it later
 		resolutionCombo.addSelectionListener(new SelectedChangeListener());
 		resolutionCombo.setLayoutData(new GridData(210, 25));
-/*
-		Label colorLabel = new Label(screenCom, SWT.NONE);
-		colorLabel.setText(MStudioMessages
-				.getString("MStudioSoCPreferencePage.colorDepthLabel"));
-
-		// create colordepth combo
-		colorCombo = new Combo(screenCom, SWT.NONE);
-		colorCombo.addSelectionListener(new SelectedChangeListener());
-		colorCombo.setLayoutData(new GridData(60, 25));
-*/
 		// create skin settings
 		Composite skinCom = new Composite(composite, SWT.NONE);
 		skinCom.setLayout(new GridLayout(2, false));
@@ -214,12 +195,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		});
 //		skinBtn.setEnabled(false); // TODO it later
-
-		if (!initWidgetValues()) {
-			//MessageDialog.openError(getShell(),
-				//	MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					//MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
-		}
+		initWidgetValues();
 		return composite;
 	}
 
@@ -230,7 +206,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	public static String getCurrentSoC() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
+		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME) || store == null)
 			return null;
 		return store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
 	}
@@ -252,21 +228,12 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			return false;
 		String regexResolution = "[1-9]+[0-9]*\\s*[*×]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
 		return resolution.matches(regexResolution);
-		
 	}
-/*
-	private boolean validateColorDepth(String colorDepth) {
-		String regexString = "^(([1-9])|((1|2)[0-9])|30|31|32)$";
-		return Pattern.matches(regexString, colorDepth);
-	}
-*/
+
 	private boolean initSocTable() {
-
 		socType = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
-		if (null == socType) {
+		if (null == socType)
 			return false;
-		}
-
 		socTypeCheckedPos = -1;
 		socCtv.add(socType);
 		String currentSoc = getCurrentSoC();
@@ -282,7 +249,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean initInfoTable() {
-
 		if (null == socType)
 			return false;
 		socInfo = new String[socType.length];
@@ -292,7 +258,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			MStudioParserIniFile iniFile = new MStudioParserIniFile(path);
 			if (null == iniFile)
 				return false;
-
 			socInfo[i] = "";
 			// add soc section info
 			String[] socSectionProperties = iniFile.getPropertyNames(SOC_SECTION);
@@ -302,7 +267,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 							+ iniFile.getStringProperty(SOC_SECTION, socSectionProperties[j]) + "\n";
 				}
 			}
-
 			// add minigui section info
 			String[] miniguiSectionProperties = iniFile.getPropertyNames(MINIGUI_SECTION);
 			if (null != miniguiSectionProperties) {
@@ -311,7 +275,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 							+ iniFile.getStringProperty(MINIGUI_SECTION, miniguiSectionProperties[j]) + "\n";
 				}
 			}
-
 			// add kernel section info
 			String[] kernelSectionProperties = iniFile.getPropertyNames(KERNEL_SECTION);
 			if (null != kernelSectionProperties) {
@@ -320,7 +283,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 							+ iniFile.getStringProperty(KERNEL_SECTION, kernelSectionProperties[j]) + "\n";
 				}
 			}
-
 			// add toolchain section info
 			String[] toolchainSectionProperties = iniFile.getPropertyNames(TOOLCHAIN_SECTION);
 			if (null != toolchainSectionProperties) {
@@ -330,7 +292,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				}
 			}
 		}
-
 		if (socTypeCheckedPos >= 0 && socTypeCheckedPos < socType.length) {
 			infoTv.setItemCount(0);
 			infoTv.add(socInfo[socTypeCheckedPos]);
@@ -339,12 +300,13 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	private boolean initResolutionCombo() {
-		String defaultSize = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenSize();
-		List<String> rl = new ArrayList<String>();
 		
+		String defaultSize = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenSize();
+		defaultSize = (defaultSize == null)? "" : defaultSize;
+		List<String> rl = new ArrayList<String>();
 		rl = MStudioPlugin.getDefault().getMStudioEnvInfo().getResolutions();
 		if (null == rl) {
-			if(null == defaultSize)
+			if("" == defaultSize)
 				return false;
 			else{
 				resolutionCombo.add(defaultSize);
@@ -361,44 +323,12 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					find = true;
 				}
 			}
-			if(!find)
+			if(!find && resolutionCombo.getItemCount() > 0)
 				resolutionCombo.select(0);
 		}
 		return true;
 	}
-/*
-	private boolean initColorCombo() {
-		int selIndex = 0;
-		String defaultDepth = MStudioPlugin.getDefault().getMStudioEnvInfo().getScreenDepth();
-		if (defaultDepth == null)
-			defaultDepth = "16";
-		
-		colorDepth = getColorDepthData();
 
-		if (null == colorDepth) {
-			colorCombo.add(defaultDepth);
-			selIndex = 0;
-		} else {
-			int i;
-			boolean find = false;
-			for (i = 0; i < colorDepth.length; i++) {
-				colorCombo.add(colorDepth[i]);
-				if (colorDepth[i].equals(defaultDepth)){
-					selIndex = i;
-					find = true;
-				}
-			}
-			if (!find) {
-				colorCombo.add(defaultDepth);
-				selIndex = i;
-			}
-		}
-
-		colorCombo.select(selIndex);
-
-		return true;
-	}
-*/
 	private boolean initSkinNameLabel() {
 		String MINIGUI_CFG_FILE_NAME = 
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
@@ -420,43 +350,11 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	// according to MiniGUI.cfg, get resolution, gvfb skin setting, etc.
 	private boolean initWidgetValues() {
-
-		//if(initSocTable() && initInfoTable() && initResolutionCombo() && )
-		boolean initOk = true;
-		if (!initSocTable()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocTypeTable"));
-			//return false;
-			initOk &= false;
-		}
-
-		if (!initInfoTable()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocInfoTable"));
-			//return false;
-			initOk &= false;
-		}
-
-		if (!initResolutionCombo()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.initResolutionCombo"));
-			//return false;
-			initOk &= false;
-		}
-/*
-		if (!initColorCombo()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.initColorDepthCombo"));
-			//return false;
-			initOk &= false;
-		}
-		*/
-		initSkinNameLabel();
-		return initOk;
+		boolean err = true;
+		err = (initSocTable() && initInfoTable() && initResolutionCombo() && initSkinNameLabel());
+		if(!err)
+			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
+		return true;
 	}
 
 	private void showSocInfo() {
@@ -465,7 +363,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		if (null == items) {
 			return;
 		}
-
 		infoTv.setItemCount(0);
 		for (int i = 0; i < items.length; i++) {
 			if (socTable.isSelected(i)) {
@@ -582,9 +479,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		return true;
 	}
 
-	private boolean modifyOldProjectsSetting(String oldSocName,
-			String newSocName) {
-
+	private boolean modifyOldProjectsSetting(String oldSocName, String newSocName) {
 		// search the whole projects
 		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
 		for (int i = 0; i < projects.length; i++) {
@@ -602,110 +497,84 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		String MINIGUI_TARGET_CFG_FILE_NAME = 
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 
+		String errStr = "";
+		
 		String resolutionSelected = resolutionCombo.getText();
-		if (null == resolutionSelected
-				|| !validateResolution(resolutionSelected)) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.resolutionSetting"));
-			return false;
-		}
-/*
-		String colorDepthSelected = colorCombo.getText();
-		if (null == colorDepthSelected
-				|| !validateColorDepth(colorDepthSelected)) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.colorDepthSetting"));
-			return false;
-		}
-*/
-		MStudioParserIniFile cfgTargetFile = new MStudioParserIniFile(
-				MINIGUI_TARGET_CFG_FILE_NAME);
-		if (null == cfgTargetFile) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgTargetFile"));
-			return false;
-		}
-
-		MStudioParserIniFile cfgFile = new MStudioParserIniFile(MINIGUI_CFG_FILE_NAME);
-		if (null == cfgFile) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgFile"));
-			return false;
-		}
-
-		// save current soc
-		Object[] selectedItems = socCtv.getCheckedElements();
-		if (null == selectedItems || selectedItems.length <= 0) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.selectSocType"));
-			return false;
-		}
-
-		String oldSoc = getCurrentSoC();
-		String newSoc = (String) selectedItems[0];
-		if (!newSoc.equals(oldSoc)) {
-			setCurrentSoC(newSoc);
-			if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
-				MessageDialog.openError(getShell(),
-						MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-						MStudioMessages.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting"));
-				return false;
+		do{
+			if (null == resolutionSelected || resolutionSelected == "" || !validateResolution(resolutionSelected)){
+				errStr += MStudioMessages.getString("MStudioSoCPreferencePage.error.resolutionSetting");
+				break;
 			}
+			if (null == skinNameLabel.getText()){
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.skinSetting");
+				break;
+			}
+			MStudioParserIniFile cfgTargetFile = new MStudioParserIniFile(MINIGUI_TARGET_CFG_FILE_NAME);
+			if (null == cfgTargetFile){
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgTargetFile");
+				break;
+			}
+			MStudioParserIniFile cfgFile = new MStudioParserIniFile(MINIGUI_CFG_FILE_NAME);
+			if (null == cfgFile){
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.getCfgFile");
+				break;
+			}
+			// save current soc
+			Object[] selectedItems = socCtv.getCheckedElements();
+			if (null == selectedItems || selectedItems.length <= 0) {
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.selectSocType");
+				break;
+			}
+	
+			String oldSoc = getCurrentSoC();
+			String newSoc = (String) selectedItems[0];
+			if (!newSoc.equals(oldSoc)) {
+				setCurrentSoC(newSoc);
+				if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
+					errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting");
+					break;
+				}
+			}
+	
+			// update MiniGUI.cfg.target file
+			// set resolution and color depth
+			cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+			String engineProperty = cfgTargetFile.getStringProperty(SYSTEM_SECTION, GAL_ENGINE_PROPERTY);
+			cfgTargetFile.setStringProperty(engineProperty == null ? FBCON_SECTION : engineProperty, 
+					DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+			// set skin info
+			if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
+				cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+						SKIN_PROPERTY, skinNameLabel.getText(), null);
+			}
+			if (!cfgTargetFile.save()) {
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgTargetFile");
+				break;
+			}
+			// update MiniGUI.cfg file
+			// set resolution and color depth
+			cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+			cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+			// set skin info
+			if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
+				cfgFile.setStringProperty(PC_XVFB_SECTION, 
+						SKIN_PROPERTY, skinNameLabel.getText(), null);
+			}
+			if (!cfgFile.save()) {
+				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgFile");
+				break;
+			}
+		}while(false);
+		if(errStr != ""){
+			MessageDialog.openError(getShell(), MStudioMessages.getString("MStudioSoCPreferencePage.error.title"), errStr);
+			return false;
 		}
-
-		// update MiniGUI.cfg.target file
-		// set resolution and color depth
-		String temp = resolutionSelected /*+ "-" + colorDepthSelected + "bpp"*/;
-		cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-		
-		String engineProperty = cfgTargetFile.getStringProperty(SYSTEM_SECTION, GAL_ENGINE_PROPERTY);
-		cfgTargetFile.setStringProperty(engineProperty == null ? FBCON_SECTION : engineProperty, 
-				DEFAULT_MODE_PROPERTY, temp, null);
-		
-		// set skin info
-		String skinName = skinNameLabel.getText();
-		if (null != skinName && skinName.endsWith(".skin")) {
-			skinName = MStudioSelectSkinDialog.SKIN_PATH + skinNameLabel.getText();
-		} else {
-			skinName = "";
-		}
-		
-		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
-				SKIN_PROPERTY, skinName, null);
-			
-		if (!cfgTargetFile.save()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgTargetFile"));
-		}
-
-		// update MiniGUI.cfg file
-		// set resolution and color depth
-		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
-		// set skin info
-		cfgFile.setStringProperty(PC_XVFB_SECTION, 
-				SKIN_PROPERTY, skinName, null);
-		
-		if (!cfgFile.save()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgFile"));
-		}
-
 		return true;
 	}
 
 	protected void performDefaults() {
-
 		socCtv.setItemCount(0);
 		infoTv.setItemCount(0);
-		//colorCombo.removeAll();
 		resolutionCombo.removeAll();
 		skinNameLabel.setText("");
 
@@ -714,11 +583,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	}
 
 	public boolean performOk() {
-
-		if (!saveWidgetValues()) {
-			return false;
-		}
-		
-		return true;
+		return saveWidgetValues();
 	}
 }
