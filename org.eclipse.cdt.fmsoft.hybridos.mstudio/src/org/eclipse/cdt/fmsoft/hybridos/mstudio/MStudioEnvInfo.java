@@ -530,7 +530,7 @@ public class MStudioEnvInfo {
 		if(f == null)
 			return null;
 		int num = f.getIntegerProperty(section, param);
-		if(num <= 0 || num == null)
+		if(num <= 0)
 			return null;
 		List<String> resolutionList = new ArrayList<String>();
 		for(int i = 0; i < num; i++)
