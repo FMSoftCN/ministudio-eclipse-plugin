@@ -526,10 +526,13 @@ public class MStudioEnvInfo {
 		String section = "resolutions";
 		String param = "num";
 		String cfgFile = MStudioEnvInfo.getCurSoCConfFileName();
+		if(cfgFile == null)
+			return null;
 		MStudioParserIniFile f = new MStudioParserIniFile(cfgFile);
 		if(f == null)
 			return null;
-		int num = f.getIntegerProperty(section, param);
+		Integer numI = f.getIntegerProperty(section, param);
+		int num = (numI == null)? 0 : numI;
 		if(num <= 0)
 			return null;
 		List<String> resolutionList = new ArrayList<String>();
@@ -553,10 +556,13 @@ public class MStudioEnvInfo {
 		if (f == null)
 			return null;
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
+		if(dxwxh == null)
+			return null;
 		// Check the string is "WWWxHHH-DDbpp" or not. 
-		if (!dxwxh.matches(RESOLUTION_REGEX_STRING) || dxwxh == null) 
+		if (!dxwxh.matches(RESOLUTION_REGEX_STRING)) 
 			return null;
 		return dxwxh;
+		
 	}
 }
 
