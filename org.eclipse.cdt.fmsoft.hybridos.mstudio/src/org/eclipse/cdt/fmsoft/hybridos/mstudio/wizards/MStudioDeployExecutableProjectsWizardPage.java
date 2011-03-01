@@ -88,7 +88,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		//tipText = new Label (topPanel, SWT.NONE);
 		//init the Graphic
 		//bottomPanel1
 		Composite bottomPanel1 = new Composite(topPanel, SWT.NONE);
@@ -102,14 +101,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
-//				MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
-//				if (wizard != null) {
-					// ArrList<String> autobootProject = wizard.getDeployAutobootWizardPage();
-//				}
 				validatePage();
 			}});
-
-		initExeProjects();
 
 		//bottomPanel2
 		Composite bottomPanel2 = new Composite(topPanel, SWT.NONE);
@@ -144,17 +137,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
 		sizeCombo.setLayoutData(new GridData(300, 25));
 		sizeCombo.addKeyListener(new ComboKeyListener());
-		/*
-		Label colorLabel = new Label(bottomPanel3, SWT.NONE);
-		colorLabel.setText(MStudioMessages
-				.getString("MStudioDeployWizardPage.selectExeProjects.colorLabel"));
-		colorCombo = new Combo(bottomPanel3, SWT.NONE);
-		colorCombo.addSelectionListener(new SelectedChangeListener());
-		colorCombo.addKeyListener(new ComboKeyListener());
-		colorCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		*/
-		initSizeAndColor();
-
+		
 		bottomPanel = new Composite(topPanel, SWT.NONE);
 		bottomPanel.setLayout(new GridLayout(4, false));
 		bottomPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -170,6 +153,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		ial = new Combo(bottomPanel, SWT.READ_ONLY);
 		ial.addSelectionListener(new SelectedChangeListener());
 
+		initExeProjects();
+		initSizeAndColor();
 		initGALAndIAL();
 
 		setControl(topPanel);
@@ -191,19 +176,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		String selectedIalEngine = null;
 		String[] galP = MStudioEnvInfo.getInstance().getGalOptions();
 		String[] ialP = MStudioEnvInfo.getInstance().getIalOptions();
-		
-		if(galP == null || ialP == null){
-			System.out.println("[MStudioDeployExecutableProjectsWizardPage]: Get GAL/IAL items Error.");
+		if(galP == null || ialP == null)
 			return;
-		}
-		
 		String tagetMgconfigureFile = MStudioEnvInfo.getInstance().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
-		if (file != null){
-			selectedGalEngine = file.getStringProperty("system", "gal_engine");
-			selectedIalEngine = file.getStringProperty("system", "ial_engine");			
-		}
-		
+		if(file == null)
+			return;
+		selectedGalEngine = file.getStringProperty("system", "gal_engine");
+		selectedIalEngine = file.getStringProperty("system", "ial_engine");	
+		if(selectedGalEngine == null || selectedIalEngine == null)
+			return;
 		for(int i = 0; i < galP.length; i++){
 			gal.add(galP[i]);
 			if (selectedGalEngine != null && selectedGalEngine.equals(galP[i])){
@@ -219,13 +201,14 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private void initSizeAndColor() {
-
-		//String[] resolution = new String[]{"240x320", "320x240", "480x272", "640x480", "800x480", "800x600"};
-		//String[] colorDepth = new String[]{"8", "16", "24", "32"};
 		List<String> li = new ArrayList<String>();
 		li = MStudioPlugin.getDefault().getMStudioEnvInfo().getResolutions();
+		if(li == null)
+			return;
 		String[] resolution = li.toArray(new String[li.size()]);
 		String tmpResolution = MStudioEnvInfo.getInstance().getScreenSize();
+		if(tmpResolution == null)
+			return;
 		boolean bResolution = false;
 		for (int i = 0; i < resolution.length; i++) {
 			sizeCombo.add(resolution[i].toString());
@@ -234,26 +217,9 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 				bResolution = true;
 			}
 		}
-
 		if (!bResolution) {
-			//set the default value
 			sizeCombo.select(0);
 		}
-/*
-		String tmpColor = MStudioEnvInfo.getInstance().getScreenDepth();
-		boolean bColor = false;
-		for (int i = 0; i < colorDepth.length; i++) {
-			colorCombo.add(colorDepth[i].toString());
-			if (tmpColor != null && tmpColor.equals(colorDepth[i])){
-				colorCombo.select(i);
-				bColor = true;
-			}
-		}
-
-		if (!bColor) {
-			colorCombo.select(0);
-		}
-*/
 	}
 
 	public void update() {
@@ -304,7 +270,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		for (int i = 0; i < projects.length; i++) {
 			list.add(projects[i].getName());
 		}
-
 		ctv.add(list.toArray(new String[projects.length]));
 	}
 
