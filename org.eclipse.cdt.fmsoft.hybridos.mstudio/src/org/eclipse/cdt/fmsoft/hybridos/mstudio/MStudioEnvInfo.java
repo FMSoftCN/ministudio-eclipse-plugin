@@ -536,7 +536,7 @@ public class MStudioEnvInfo {
 		for(int i = 0; i < num; i++)
 		{
 			String s = f.getStringProperty(section, "resolution" + i);
-			if(!s.matches(RESOLUTION_REGEX_STRING))
+			if(!s.matches(RESOLUTION_REGEX_STRING) || s == null)
 				continue;
 			else
 				resolutionList.add(s);	
