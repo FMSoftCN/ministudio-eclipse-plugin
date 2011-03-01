@@ -511,7 +511,7 @@ public class MStudioEnvInfo {
 					msProjects.add(allProjects[i]);
 			} catch (CoreException ex) {
 				ex.printStackTrace();
-				System.out.println(ex.toString());
+//				System.out.println(ex.toString());
 			}
 		}
 
@@ -530,7 +530,7 @@ public class MStudioEnvInfo {
 		if(f == null)
 			return null;
 		int num = f.getIntegerProperty(section, param);
-		if(num <= 0)
+		if(num <= 0 || num == null)
 			return null;
 		List<String> resolutionList = new ArrayList<String>();
 		for(int i = 0; i < num; i++)
