@@ -142,19 +142,19 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 	private void initializeByStoreData() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-
+		if(null == store)
+			return;
 		String locationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
 		locationPath.setStringValue(locationValue);
-
 		File locationFile = new File(locationValue);
-		if (!locationFile.exists() || locationValue == null || locationValue == "") {
+		if (!locationFile.exists() || locationValue == null || locationValue == "")
 			updateTipMessage(MSDPP_PATH_INVALID);
 		//	setValid(false);
-		}
 			
 		String storeServ = store.getString(MStudioPreferenceConstants.MSTUDIO_DEFAULT_SERVICES);
-		String[] defaultSelServ = storeServ.split(MSDPP_SPLIT);
-
+		String[] defaultSelServ = (storeServ == null)? null : storeServ.split(MSDPP_SPLIT);
+		if(defaultSelServ == null)
+			return;
 		selServList.clear();
 		for (int i = 0; i < defaultSelServ.length; i++) {
 			selServList.add(defaultSelServ[i]);
@@ -163,11 +163,8 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
-		if (file == null){
-			//setValid(false);
+		if (file == null)
 			return; 
-		}
-		
 		selectedGalEngine = file.getStringProperty("system", "gal_engine");
 		if (selectedGalEngine != null) {
 			String[] galItems = galCom.getItems();
@@ -178,8 +175,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				}
 			}
 		}
-		//else
-			//setValid(false);
 		
 		selectedIalEngine = file.getStringProperty("system", "ial_engine");
 		if (selectedIalEngine != null) {
@@ -191,8 +186,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				}
 			}
 		}
-		//else
-			//setValid(false);
 	}
 
 	private boolean saveToStoreData() {
@@ -261,7 +254,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		sc.setLayoutData(new GridData(GridData.FILL_BOTH));
 		createServicesContent(sc);
 
-		final Button checkSelAll = new Button(composite, SWT.None);
+		Button checkSelAll = new Button(composite, SWT.None);
 		checkSelAll.setText(MStudioMessages.getString("MStudioDeployPreferencePage.checkSelAll"));
 		checkSelAll.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
