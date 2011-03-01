@@ -296,25 +296,23 @@ public class MStudioToolsPreferencePage extends PreferencePage
 	private void updateItems() {
 
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		if (!store.contains(MStudioPreferenceConstants.MSVERSION_COUNT))
+		if (!store.contains(MStudioPreferenceConstants.MSVERSION_COUNT) || store == null)
 			return;
 
 		int defaultVersionIndex = 0;
 		String defaultVersionName = store.getString(MStudioPreferenceConstants.MSVERSION_DEFAULT);
+		if(defaultVersionName == null)
+			return;
 		int count = store.getInt(MStudioPreferenceConstants.MSVERSION_COUNT);
-
 		for (int i = 0; i < count; ++i) {
-
 			String nameKey = MStudioPreferenceConstants.MSVERSION_NAME + MSTPP_PIONT + Integer.toString(i);
 			String binpathKey = MStudioPreferenceConstants.MSVERSION_BINPATH + MSTPP_PIONT + Integer.toString(i);
 			String name = MSTPP_EMPTY;
 			String binpath = MSTPP_EMPTY;
-
 			if (store.contains(nameKey))
 				name = store.getString(nameKey);
 			if (store.contains(binpathKey))
 				binpath = store.getString(binpathKey);
-
 			addItem(name, binpath);
 
 			if (name.equals(defaultVersionName))
@@ -334,9 +332,7 @@ public class MStudioToolsPreferencePage extends PreferencePage
 	}
 
 	private void setDefaultIndex(int index) {
-
 		for (int i = 0; i < table.getItemCount(); ++i) {
-
 			TableItem item = table.getItem(i); 
 			Font fnt = item.getFont();
 			FontData fntdata = fnt.getFontData()[0];
