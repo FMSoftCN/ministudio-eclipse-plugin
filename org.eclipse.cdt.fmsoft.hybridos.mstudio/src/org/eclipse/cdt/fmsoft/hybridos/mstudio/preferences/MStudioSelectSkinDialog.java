@@ -47,20 +47,27 @@ class SkinFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
 		File skinFile = new File(file.getPath() + File.separator + fname);
-		return (skinFile.isFile() && fname.toLowerCase().endsWith(
-				MStudioSelectSkinDialog.IMAGE_SUFFIX_NAME));
+		if (skinFile.isFile() && fname.toLowerCase().endsWith(
+				MStudioSelectSkinDialog.SKIN_SUFFIX_NAME)) {
+			File pngFile = new File(file.getPath() + File.separator 
+					+ fname.substring(0, fname.length() - MStudioSelectSkinDialog.SKIN_SUFFIX_NAME.length())
+					+ MStudioSelectSkinDialog.IMAGE_SUFFIX_NAME);
+			return pngFile.isFile();
+		}
+
+		return false;
 	}
 }
 
 public class MStudioSelectSkinDialog extends Dialog {
 
 	public static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
-	private static String SKIN_SUFFIX_NAME = ".skin";
+	protected static String SKIN_SUFFIX_NAME = ".skin";
 	protected static String IMAGE_SUFFIX_NAME = ".png";
 	private Shell shell = null;
 	private Button cancelBtn = null;
 	private Button okBtn = null;
-	private String skinName = null;
+	private String selectedSkinName = null;
 	private Table skinTable = null;
 	private CheckboxTableViewer ctv = null;
 	private Label imgLabel = null;
@@ -80,8 +87,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setSize(420, 320);
-		shell.setText(MStudioMessages
-				.getString("MStudioSelectSkinDialog.selectSkinTitle"));
+		shell.setText(MStudioMessages.getString("MStudioSelectSkinDialog.selectSkinTitle"));
 		shell.setLayout(new GridLayout());
 		shell.setLayoutData(new GridData());
 
@@ -125,8 +131,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		// create ok button
 		okBtn = new Button(btnCom, SWT.NONE);
 		okBtn.setLayoutData(new GridData(90, 30));
-		okBtn.setText(MStudioMessages
-				.getString("MStudioSelectSkinDialog.okButtonLabel"));
+		okBtn.setText(MStudioMessages.getString("MStudioSelectSkinDialog.okButtonLabel"));
 		okBtn.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -145,8 +150,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		// create cancel button
 		cancelBtn = new Button(btnCom, SWT.NONE);
 		cancelBtn.setLayoutData(new GridData(90, 30));
-		cancelBtn.setText(MStudioMessages
-				.getString("MStudioSelectSkinDialog.cancelButtonLabel"));
+		cancelBtn.setText(MStudioMessages.getString("MStudioSelectSkinDialog.cancelButtonLabel"));
 		cancelBtn.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -171,37 +175,29 @@ public class MStudioSelectSkinDialog extends Dialog {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
-		return skinName;
+		return selectedSkinName;
 	}
 
 	// get all valid skin file
 	private String[] getSkinFile() {
 		File skinFile = new File(SKIN_PATH);
-		String[] skinNames = skinFile.list(new SkinFilter());
-		if (null == skinNames) {
+		String[] names = skinFile.list(new SkinFilter());
+		if (null == names) {
 			return null;
 		}
-		for (int i = 0; i < skinNames.length; i++) {
-			if (skinNames[i].length() > IMAGE_SUFFIX_NAME.length())
-				skinNames[i] = skinNames[i].substring(0, skinNames[i].length()
-						- IMAGE_SUFFIX_NAME.length());
+		for (int i = 0; i < names.length; i++) {
+			if (names[i].length() > SKIN_SUFFIX_NAME.length())
+				names[i] = names[i].substring(0, names[i].length() - SKIN_SUFFIX_NAME.length());
 		}
-		return skinNames;
+		return names;
 	}
 
 	private void initSkinTable() {
 		
-		String[] imageNames = getSkinFile();
-		if (null != imageNames && imageNames.length > 0) {
-			ctv.add(imageNames);
+		String[] shortSkinNames = getSkinFile();
+		if (null != shortSkinNames && shortSkinNames.length > 0) {
+			ctv.add(shortSkinNames);
 		} else {
-//			MessageDialog
-//					.openError(
-//							shell,
-//							MStudioMessages
-//									.getString("MStudioSelectSkinDialog.error.title"),
-//							MStudioMessages
-//									.getString("MStudioSelectSkinDialog.error.initSkinTable"));
 			return;
 		}
 
@@ -210,15 +206,16 @@ public class MStudioSelectSkinDialog extends Dialog {
 				|| skinDefaultName.length() < SKIN_SUFFIX_NAME.length()) {
 			return;
 		}
-		String skinDefaultImg = skinDefaultName.substring(0, skinDefaultName
-				.length()
+		
+		String skinDefaultImg = skinDefaultName.substring(0, skinDefaultName.length()
 				- SKIN_SUFFIX_NAME.length());
 		if (null == skinDefaultImg) {
 			return;
 		}
-		for (int i = 0; i < imageNames.length; i++) {
-			if (imageNames[i].equals(skinDefaultImg)) {
-				ctv.setChecked(imageNames[i], true);
+		
+		for (int i = 0; i < shortSkinNames.length; i++) {
+			if (shortSkinNames[i].equals(skinDefaultImg)) {
+				ctv.setChecked(shortSkinNames[i], true);
 				skinTable.setSelection(i);
 				break;
 			}
@@ -236,78 +233,69 @@ public class MStudioSelectSkinDialog extends Dialog {
 		try {
 			File file = new File(name);
 			URL url = file.toURI().toURL();
-			ImageDescriptor imageDescriptor = ImageDescriptor
-					.createFromURL(url);
+			ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(url);
 			Image img = imageDescriptor.createImage();
 			imgLabel.setImage(img);
 
-			ImageDescriptor autofitImageDescriptor = ImageDescriptor
-					.createFromImageData(img.getImageData().scaledTo(
-							imageWidth, imageHeight));
+			ImageDescriptor autofitImageDescriptor = ImageDescriptor.createFromImageData(
+					img.getImageData().scaledTo(imageWidth, imageHeight));
 			Image autofitImg = autofitImageDescriptor.createImage();
 
 			imgLabel.setImage(autofitImg);
 		} catch (Exception e) {
-			MessageDialog.openError(shell, MStudioMessages
-					.getString("MStudioSelectSkinDialog.error.title"), e
-					.getMessage());
+			MessageDialog.openError(shell,
+					MStudioMessages.getString("MStudioSelectSkinDialog.error.title"),
+					e.getMessage());
 		}
 	}
 
 	private boolean setSkinName() {
 
 		TableItem[] items = skinTable.getItems();
-		if (null == items || items.length <= 0) {
-			MessageDialog
-					.openError(
-							shell,
-							MStudioMessages
-									.getString("MStudioSelectSkinDialog.error.title"),
-							MStudioMessages
-									.getString("MStudioSelectSkinDialog.error.skinName"));
+		if (null == items) {
+			MessageDialog.openError(shell,
+					MStudioMessages.getString("MStudioSelectSkinDialog.error.title"),
+					MStudioMessages.getString("MStudioSelectSkinDialog.error.selectSkinName"));
 			return false;
 		}
 
+		selectedSkinName = "";
 		for (int i = 0; i < items.length; i++) {
-			if (items[i].getChecked()) {
-				skinName = items[i].getText() + SKIN_SUFFIX_NAME;
-				return true;
+			if (null != items[i] && items[i].getChecked()) {
+				selectedSkinName = items[i].getText() + SKIN_SUFFIX_NAME;
+				break;
 			}
 		}
-		MessageDialog
-				.openError(
-						shell,
-						MStudioMessages
-								.getString("MStudioSelectSkinDialog.error.title"),
-						MStudioMessages
-								.getString("MStudioSelectSkinDialog.error.selectSkinNameTip"));
-		return false;
-
+		return true;
 	}
 
 	private void previewSkin(SelectionChangedEvent event) {
 
-		String name = SKIN_PATH
-				+ (String) ((IStructuredSelection) (event.getSelection()))
-						.getFirstElement() + IMAGE_SUFFIX_NAME;
-
+		String skinName = (String) ((IStructuredSelection) (event.getSelection())).getFirstElement();
+		if (null == skinName) {
+			return;
+		}
+		
+		String name = SKIN_PATH + skinName + IMAGE_SUFFIX_NAME;
 		try {
 			File file = new File(name);
+			if (!file.isFile()) {
+				MessageDialog.openError(shell, MStudioMessages.getString(
+						"MStudioSelectSkinDialog.error.title"),
+						MStudioMessages.getString("MStudioSelectSkinDialog.error.getSkinImg"));
+			}
 			URL url = file.toURI().toURL();
-			ImageDescriptor imageDescriptor = ImageDescriptor
-					.createFromURL(url);
+			ImageDescriptor imageDescriptor = ImageDescriptor.createFromURL(url);
 			Image img = imageDescriptor.createImage();
 
-			ImageDescriptor autofitImageDescriptor = ImageDescriptor
-					.createFromImageData(img.getImageData().scaledTo(
-							imageWidth, imageHeight));
+			ImageDescriptor autofitImageDescriptor = ImageDescriptor.createFromImageData(
+					img.getImageData().scaledTo(imageWidth, imageHeight));
 			Image autofitImg = autofitImageDescriptor.createImage();
 
 			imgLabel.setImage(autofitImg);
 		} catch (Exception e) {
-			MessageDialog.openError(shell, MStudioMessages
-					.getString("MStudioSelectSkinDialog.error.title"), e
-					.getMessage());
+			MessageDialog.openError(shell, MStudioMessages.getString(
+					"MStudioSelectSkinDialog.error.title"), e.getMessage());
 		}
 	}
 }
