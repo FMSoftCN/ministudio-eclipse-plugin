@@ -18,7 +18,6 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -214,7 +213,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				}
 			}
 		});
-		skinBtn.setEnabled(false); // TODO it later
+//		skinBtn.setEnabled(false); // TODO it later
 
 		if (!initWidgetValues()) {
 			//MessageDialog.openError(getShell(),
@@ -405,7 +404,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
 
 		MStudioParserIniFile iniFile = new MStudioParserIniFile(MINIGUI_CFG_FILE_NAME);
-		if (null == iniFile){
+		if (null == iniFile) {
 			return false;
 		}
 		String skinName = iniFile.getStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY);
@@ -621,13 +620,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			return false;
 		}
 */
-		if (null == skinNameLabel.getText()) {
-			MessageDialog.openError(getShell(),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-					MStudioMessages.getString("MStudioSoCPreferencePage.error.skinSetting"));
-			return false;
-		}
-
 		MStudioParserIniFile cfgTargetFile = new MStudioParserIniFile(
 				MINIGUI_TARGET_CFG_FILE_NAME);
 		if (null == cfgTargetFile) {
@@ -676,10 +668,16 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				DEFAULT_MODE_PROPERTY, temp, null);
 		
 		// set skin info
-		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
-			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
-					SKIN_PROPERTY, skinNameLabel.getText(), null);
+		String skinName = skinNameLabel.getText();
+		if (null != skinName && skinName.endsWith(".skin")) {
+			skinName = MStudioSelectSkinDialog.SKIN_PATH + skinNameLabel.getText();
+		} else {
+			skinName = "";
 		}
+		
+		cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
+				SKIN_PROPERTY, skinName, null);
+			
 		if (!cfgTargetFile.save()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
@@ -691,10 +689,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, temp, null);
 		// set skin info
-		if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
-			cfgFile.setStringProperty(PC_XVFB_SECTION, 
-					SKIN_PROPERTY, skinNameLabel.getText(), null);
-		}
+		cfgFile.setStringProperty(PC_XVFB_SECTION, 
+				SKIN_PROPERTY, skinName, null);
+		
 		if (!cfgFile.save()) {
 			MessageDialog.openError(getShell(),
 					MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
@@ -718,10 +715,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	public boolean performOk() {
 
-		if (!saveWidgetValues()){
-			//MessageDialog.openError(getShell(),
-			///		MStudioMessages.getString("MStudioSoCPreferencePage.error.title"),
-			//		MStudioMessages.getString("MStudioSoCPreferencePage.error.saveWidgetValues"));
+		if (!saveWidgetValues()) {
 			return false;
 		}
 		
