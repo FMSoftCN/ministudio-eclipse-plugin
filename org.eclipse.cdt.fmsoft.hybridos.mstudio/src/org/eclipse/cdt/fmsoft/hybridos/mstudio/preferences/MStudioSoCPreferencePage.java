@@ -61,6 +61,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 public class MStudioSoCPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
+	public static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
 	private Table socTable = null;
 	private Table infoTable = null;
 	private CheckboxTableViewer socCtv = null;
@@ -206,7 +207,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	public static String getCurrentSoC() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		if (!store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME) || store == null)
+		if (null == store || !store.contains(MStudioPreferenceConstants.MSTUDIO_SOC_NAME))
 			return null;
 		return store.getString(MStudioPreferenceConstants.MSTUDIO_SOC_NAME);
 	}
@@ -226,7 +227,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private boolean validateResolution(String resolution) {
 		if(resolution == null)
 			return false;
-		String regexResolution = "[1-9]+[0-9]*\\s*[*×]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
+		String regexResolution = "[1-9]+[0-9]*\\s*[*x]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
 		return resolution.matches(regexResolution);
 	}
 
@@ -498,9 +499,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 
 		String errStr = "";
-		
 		String resolutionSelected = resolutionCombo.getText();
-		do{
+		do {
 			if (null == resolutionSelected || resolutionSelected == "" || !validateResolution(resolutionSelected)){
 				errStr += MStudioMessages.getString("MStudioSoCPreferencePage.error.resolutionSetting");
 				break;
@@ -525,7 +525,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.selectSocType");
 				break;
 			}
-	
+
 			String oldSoc = getCurrentSoC();
 			String newSoc = (String) selectedItems[0];
 			if (!newSoc.equals(oldSoc)) {
@@ -535,31 +535,36 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					break;
 				}
 			}
-	
+
 			// update MiniGUI.cfg.target file
 			// set resolution and color depth
 			cfgTargetFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
 			String engineProperty = cfgTargetFile.getStringProperty(SYSTEM_SECTION, GAL_ENGINE_PROPERTY);
 			cfgTargetFile.setStringProperty(engineProperty == null ? FBCON_SECTION : engineProperty, 
 					DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+
 			// set skin info
-			if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
-				cfgTargetFile.setStringProperty(PC_XVFB_SECTION, 
-						SKIN_PROPERTY, skinNameLabel.getText(), null);
+			String skinName = skinNameLabel.getText();
+			if (null != skinName && skinName.endsWith(".skin")) {
+				skinName = SKIN_PATH + skinNameLabel.getText();
+			} else {
+				skinName = "";
 			}
+			cfgTargetFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY, skinNameLabel.getText(), null);
+
 			if (!cfgTargetFile.save()) {
 				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgTargetFile");
 				break;
 			}
+
 			// update MiniGUI.cfg file
 			// set resolution and color depth
 			cfgFile.setStringProperty(SYSTEM_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
 			cfgFile.setStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY, resolutionSelected, null);
+
 			// set skin info
-			if (skinNameLabel.getText() != null && skinNameLabel.getText().endsWith(".skin")){
-				cfgFile.setStringProperty(PC_XVFB_SECTION, 
-						SKIN_PROPERTY, skinNameLabel.getText(), null);
-			}
+			cfgFile.setStringProperty(PC_XVFB_SECTION, SKIN_PROPERTY, skinName, null);
+
 			if (!cfgFile.save()) {
 				errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.saveCfgFile");
 				break;
