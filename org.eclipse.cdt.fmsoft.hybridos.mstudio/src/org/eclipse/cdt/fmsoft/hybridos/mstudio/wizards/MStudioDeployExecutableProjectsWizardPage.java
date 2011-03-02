@@ -17,8 +17,6 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
-
 import java.io.File;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
@@ -274,7 +272,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*\\s*[×*]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
+		String regexString = "[1-9]+[0-9]*\\s*[x*]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
 		//return Pattern.matches(regexString, resolution);
 		return resolution.matches(regexString);
 	}
