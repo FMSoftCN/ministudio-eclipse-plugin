@@ -73,7 +73,7 @@ public class MStudioEnvInfo {
 
 	private final static String EMPTY_STR = "";
 	private final static String MSE_SPACE = " ";
-	private final static String RESOLUTION_REGEX_STRING = "[1-9]+[0-9]*\\s*[*×]\\s*[0-9]+[1-9]*\\s*-\\s*[1-9]+bpp";
+	private final static String RESOLUTION_REGEX_STRING = "[1-9]+[0-9]*\\s*[*x]\\s*[0-9]+[1-9]*\\s*-\\s*[1-9]+bpp";
 
 	//the ini file object which pointer to SoC used by current workspace
 	public enum MiniGUIRunMode {
