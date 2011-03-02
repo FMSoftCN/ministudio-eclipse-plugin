@@ -61,7 +61,6 @@ class SkinFilter implements FilenameFilter {
 
 public class MStudioSelectSkinDialog extends Dialog {
 
-	public static String SKIN_PATH = "/usr/local/share/gvfb/res/skin/";
 	protected static String SKIN_SUFFIX_NAME = ".skin";
 	protected static String IMAGE_SUFFIX_NAME = ".png";
 	private Shell shell = null;
@@ -180,7 +179,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 
 	// get all valid skin file
 	private String[] getSkinFile() {
-		File skinFile = new File(SKIN_PATH);
+		File skinFile = new File(MStudioSoCPreferencePage.SKIN_PATH);
 		String[] names = skinFile.list(new SkinFilter());
 		if (null == names) {
 			return null;
@@ -228,7 +227,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 		if (null == imageNames || imageNames.length <= 0) {
 			return;
 		}
-		String name = SKIN_PATH + imageNames[0] + IMAGE_SUFFIX_NAME;
+		String name = MStudioSoCPreferencePage.SKIN_PATH + imageNames[0] + IMAGE_SUFFIX_NAME;
 
 		try {
 			File file = new File(name);
@@ -276,7 +275,7 @@ public class MStudioSelectSkinDialog extends Dialog {
 			return;
 		}
 		
-		String name = SKIN_PATH + skinName + IMAGE_SUFFIX_NAME;
+		String name = MStudioSoCPreferencePage.SKIN_PATH + skinName + IMAGE_SUFFIX_NAME;
 		try {
 			File file = new File(name);
 			if (!file.isFile()) {
