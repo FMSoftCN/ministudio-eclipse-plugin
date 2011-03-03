@@ -85,6 +85,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String SKIN_PROPERTY = "skin";
 	private final static String GAL_ENGINE_PROPERTY = "gal_engine";
 	private final static String FBCON_SECTION = "fbcon";
+	private String defaultSoc = null;
 
 	public MStudioSoCPreferencePage() {
 	}
@@ -128,6 +129,14 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				socCtv.setAllChecked(false);
 				socCtv.setChecked(event.getElement(), event.getChecked());
+				
+				Object[] selectedItems = socCtv.getCheckedElements();
+				if (null != selectedItems && selectedItems.length > 0) {
+					String tmpSoc = (String) selectedItems[0];
+					setCurrentSoC(tmpSoc);
+					resolutionCombo.removeAll();
+					initResolutionCombo();
+				}
 			}
 		});
 		socCtv.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -196,6 +205,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		});
 //		skinBtn.setEnabled(false); // TODO it later
+		defaultSoc = getCurrentSoC();
 		initWidgetValues();
 		return composite;
 	}
@@ -203,6 +213,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	public static void setCurrentSoC(String name) {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, name);
+		MStudioPlugin.getDefault().getMStudioEnvInfo().updateSoCName();
 	}
 
 	public static String getCurrentSoC() {
@@ -352,6 +363,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	// according to MiniGUI.cfg, get resolution, gvfb skin setting, etc.
 	private boolean initWidgetValues() {
 		boolean err = true;
+		setCurrentSoC(defaultSoc);
 		err = (initSocTable() && initInfoTable() && initResolutionCombo() && initSkinNameLabel());
 		if(!err)
 			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
@@ -526,11 +538,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				break;
 			}
 
-			String oldSoc = getCurrentSoC();
 			String newSoc = (String) selectedItems[0];
-			if (!newSoc.equals(oldSoc)) {
+			if (!newSoc.equals(defaultSoc)) {
 				setCurrentSoC(newSoc);
-				if (!modifyOldProjectsSetting(oldSoc, newSoc)) {
+				if (!modifyOldProjectsSetting(defaultSoc, newSoc)) {
 					errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting");
 					break;
 				}
