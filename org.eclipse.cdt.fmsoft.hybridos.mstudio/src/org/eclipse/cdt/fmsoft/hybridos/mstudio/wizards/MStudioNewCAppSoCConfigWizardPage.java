@@ -85,6 +85,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private Composite msSocParent = null;
 	private CheckboxTableViewer ctv = null;
 	private boolean ctvHasInitialized = false;
+	private boolean socCancelOnlyOne = false;
 	private String errorMessage = null;
 	private String message = MESSAGE;
 
@@ -129,6 +130,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
 		if (null != socName && !socName.equals("null")) {
+			socCancelOnlyOne = false;
 			combo.setText(socName);
 			combo.setEnabled(false);
 		} else {
@@ -136,6 +138,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				public void widgetSelected(SelectionEvent e) {
 					socName = combo.getText();
 					MStudioSoCPreferencePage.setCurrentSoC(socName);
+					socCancelOnlyOne = true;
 					msEnvInfo.updateSoCName();
 					setCheckboxTableViewerData();
 					packageDesc.setText("No Select Package.");
@@ -488,9 +491,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public boolean doCancel() {
 
-		if (socName != null) {
+		if (socCancelOnlyOne && socName != null) {
 			MStudioSoCPreferencePage.setCurrentSoC("null");
-			// ctv.remove(pkgs.toArray());
 			clearCheckboxTableViewerData();
 			socName = null;
 			ctv = null;
