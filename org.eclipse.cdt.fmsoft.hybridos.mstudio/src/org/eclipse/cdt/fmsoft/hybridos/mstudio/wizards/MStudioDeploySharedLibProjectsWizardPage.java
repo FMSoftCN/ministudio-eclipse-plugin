@@ -124,10 +124,16 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		if(libProjects == null)
 			return;
 		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> checkedList = new ArrayList<String>();
 		for(int i=0; i<libProjects.length; i++){
 			list.add(libProjects[i].getName());
+			boolean bDeployable = new MStudioProject(libProjects[i]).getDefaultDeployable();
+			if (bDeployable) {
+				checkedList.add(libProjects[i].getName());
+			}
 		}		
 		ctvLabraries.add(list.toArray(new String[libProjects.length]));
+		ctvLabraries.setCheckedElements(checkedList.toArray(new String[checkedList.size()]));
 	}
 	
 	private void initIALTable(){
