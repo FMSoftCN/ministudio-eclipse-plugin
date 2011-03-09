@@ -23,7 +23,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -216,21 +215,25 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		//check .{projectname}_res.cfg file exists
 		//PRIFIX...load from the file
 		//paths is not null,the min length of paths is 0
+		//	set the default values
+		resText.setText(RES_LOCATION + ((IProject)getElement()).getName());
+		binText.setText(BIN_LOCATION);
+		libText.setText(LIB_LOCATION);
+		customFileText.setText(CUSTOM_FILE_LOCATION);
 		String[] paths = mStudioProject.getDeployPathInfo();
-		if(paths.length == 4 ){
-			resText.setText(paths[0]);
-			binText.setText(paths[1]);
-			libText.setText(paths[2]);
-			customFileText.setText(paths[3]);
+		if(paths.length == 4) {
+			if (null != paths[0])
+				resText.setText(paths[0]);
+			if (null != paths[1])
+				binText.setText(paths[1]);
+		   if (null != paths[2])
+			   libText.setText(paths[2]);
+		   if (null != paths[3])
+			   customFileText.setText(paths[3]);
 		}
-		else{
-//			set the default values
-			resText.setText(RES_LOCATION + ((IProject)getElement()).getName());
-			binText.setText(BIN_LOCATION);
-			libText.setText(LIB_LOCATION);
-			customFileText.setText(CUSTOM_FILE_LOCATION);
-		}
+
 		//load the files form project
+		filesName.clear();
 		listProjectFiles(mStudioProject.getProject().getLocation().toOSString());
 		String[] files = mStudioProject.getDeployCustomFiles();
 		ArrayList<String> tempFiles = new ArrayList<String>();
@@ -242,6 +245,8 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		files = null;
 		//delete the item from srcList which the destList contains
 		filesName.removeAll(tempFiles);
+		srcList.removeAll();
+		destList.removeAll();
 		//add the filesName to the control
 		for(int i = 0;i < filesName.size(); i++)
 			srcList.add(filesName.get(i));
@@ -317,6 +322,10 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		return true;
 	}
 	
+	protected void performDefaults() {
+		loadPersistentSettings();
+		super.performDefaults();
+	}
 }
 
 class FileFilter implements FilenameFilter{
