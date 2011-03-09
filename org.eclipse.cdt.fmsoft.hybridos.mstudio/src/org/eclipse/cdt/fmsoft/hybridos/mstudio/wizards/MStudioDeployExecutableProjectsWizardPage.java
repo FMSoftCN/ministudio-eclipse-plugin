@@ -47,6 +47,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 
 
 public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
@@ -74,10 +75,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private void init() {
-		setTitle(MStudioMessages
-				.getString("MStudioDeployWizardPage.selectExeProjects.pageTitle"));
-		setDescription(MStudioMessages.
-				getString("MStudioDeployWizardPage.selectExeProjects.desc"));
+		setTitle(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.pageTitle"));
+		setDescription(MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.desc"));
 	}
 
 	public void createControl(Composite parent) {
@@ -264,11 +263,17 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return;
 
 		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> checkedList = new ArrayList<String>();
 
 		for (int i = 0; i < projects.length; i++) {
 			list.add(projects[i].getName());
+			boolean bDeployable = new MStudioProject(projects[i]).getDefaultDeployable();
+			if (bDeployable) {
+				checkedList.add(projects[i].getName());
+			}
 		}
 		ctv.add(list.toArray(new String[projects.length]));
+		ctv.setCheckedElements(checkedList.toArray(new String[checkedList.size()]));
 	}
 
 	private boolean validateResolution(String resolution) {
