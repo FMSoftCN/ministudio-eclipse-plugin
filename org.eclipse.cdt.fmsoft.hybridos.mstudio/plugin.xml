@@ -12,7 +12,6 @@
             <run class="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>  
         </runtime> 
     </extension>
-
     <extension point="org.eclipse.ui.newWizards">
         <category
             name="%MStudioNewWizardsCategory.name"
@@ -329,6 +328,23 @@
                 name="path">
             </simple>
         </processType>
+    </extension>
+    <extension
+          point="org.eclipse.ui.importWizards">
+       <category
+             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.sampleCategory"
+             name="HybridOS">
+       </category>
+       <wizard
+             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.sampleCategory"
+             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
+             icon="icons/sample.gif"
+             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
+             name="HybridOS Project">
+          <description>
+             Import a extenal project from the local file system into the workspace.
+          </description>
+       </wizard>
     </extension>
 
 
