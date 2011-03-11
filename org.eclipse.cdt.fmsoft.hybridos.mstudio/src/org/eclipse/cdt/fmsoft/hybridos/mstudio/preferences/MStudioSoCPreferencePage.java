@@ -57,6 +57,7 @@ import org.eclipse.core.resources.IProject;
 
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 
 public class MStudioSoCPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -503,7 +504,16 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		return true;
 	}
-
+	
+	private void setProjectsSoC(String soc) {
+		// 轮询修改各个工程的soc.name
+		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
+		for (int i = 0; i < projects.length; i++) {
+			MStudioProject prj = new MStudioProject(projects[i]);
+			prj.setProjectSocName(soc);
+		}
+	}
+	
 	private boolean saveWidgetValues() {
 		String MINIGUI_CFG_FILE_NAME = 
 			MStudioPlugin.getDefault().getMStudioEnvInfo().getWorkSpaceMetadataPath() + "MiniGUI.cfg";
@@ -545,6 +555,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					errStr += "\n" + MStudioMessages.getString("MStudioSoCPreferencePage.error.changeOldProjectsSetting");
 					break;
 				}
+				setProjectsSoC(newSoc);
 			}
 
 			// update MiniGUI.cfg.target file
