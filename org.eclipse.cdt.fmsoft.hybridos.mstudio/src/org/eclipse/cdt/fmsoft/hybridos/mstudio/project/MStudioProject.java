@@ -25,29 +25,15 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
-
 import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioToolsPreferencePage;
 
-
 public class MStudioProject {
 
-	private final static String MSTUDIO_VERSION = "org.eclipse.cdt.fmsoft.hybridos.mstudio.version";
-	private final static String MSTUDIO_DEPPKGS = "org.eclipse.cdt.feynman.hybridos.mstudio.deppkgs";
-	private final static String MSTUDIO_TMPLTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.tmpltype";
-	private final static String MSTUDIO_ENTRYTYPE = "org.eclipse.cdt.feynman.hybridos.mstudio.entrytype";
-	private final static String MSTUDIO_DEPLOYABLE = "org.eclipse.cdt.feynman.hybridos.mstudio.deployable";
-	//format: respath;binpath;libpath;custompath
-	private final static String MSTUDIO_DEPLOY_PATHINFO = "org.eclipse.cdt.feynman.hybridos.mstudio.deploy.pathinfo";
-	//format(file using relative project path): file1;file2;file3;...
-	private final static String MSTUDIO_DEPLOY_CUSTOMFILES = "org.eclipse.cdt.feynman.hybridos.mstudio.deploy.customfiles";
-
-//	private final static String SPLIT_SEMICOLON = ";";
-	private final static String DEPLOY_SPLIT_CHAR=":";
-	private final static String EMPTY_STR = "";
 	private final static String APP_CFG_PATH = "_res.cfg";
+	private IProject wrapped = null;
+	private MStudioProjectProperties properties = null;
 
 	public enum MStudioProjectTemplateType {
 		exe,
@@ -66,137 +52,100 @@ public class MStudioProject {
 		no
 	};
 
-	private IProject wrapped = null;
-
 	public MStudioProject(IProject wrappedProject) {
 		wrapped = wrappedProject;
+		properties = new MStudioProjectProperties(wrapped.getLocation().toOSString());
 	}
 
 	public IProject getProject() {
 		return wrapped;
 	}
 
-	public void initProjectTypeInfo(boolean isMgEntry, MStudioProjectTemplateType type) {
+	public void initProjectTypeInfo(boolean isMgEntry,
+			MStudioProjectTemplateType type) {
 
 		if (isMgEntry) {
-			setPersistentEntryType (MStudioProjectEntryType.minigui);
+			setProjectEntryType(MStudioProjectEntryType.minigui);
 		} else {
-			setPersistentEntryType (MStudioProjectEntryType.common);
+			setProjectEntryType(MStudioProjectEntryType.common);
 		}
 
-		setPersistentTmplType(type);
-	}
-
-	private boolean setPersistentSettings(String name, String value) {
-
-		try {
-			wrapped.setPersistentProperty(new QualifiedName(EMPTY_STR, name), value);
-		} catch (CoreException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
-	}
-
-	private String getPersistentSettings(String name) {
-
-		try {
-			return wrapped.getPersistentProperty(new QualifiedName(EMPTY_STR, name));
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	private boolean setPersistentTmplType(MStudioProjectTemplateType type) {
-		return setPersistentSettings(MSTUDIO_TMPLTYPE, type.name());
-	}
-
-	private boolean setPersistentEntryType(MStudioProjectEntryType type) {
-		return setPersistentSettings(MSTUDIO_ENTRYTYPE, type.name());
-	}
-
-	private String getPersistentEntryType() {
-		return getPersistentSettings(MSTUDIO_ENTRYTYPE);
+		setProjectTmplType(type);
 	}
 
 	public boolean setDepPkgs(String[] depPkgs) {
-		if (depPkgs.length <= 0)
-			return false;
-
-		String tmp = semicolonMerger(depPkgs);
-
-		return setPersistentSettings(MSTUDIO_DEPPKGS, tmp);
+		return properties.setDepPkgs(depPkgs);
 	}
 
 	public String[] getDepPkgs() {
-		String pkgs = getPersistentSettings(MSTUDIO_DEPPKGS);
-
-		if (pkgs != null)
-			return pkgs.split(DEPLOY_SPLIT_CHAR);
-
-		return new String[0];
+		return properties.getDepPkgs();
 	}
 
 	public boolean setDefaultDeployable(boolean deployable) {
-		return setPersistentSettings(MSTUDIO_DEPLOYABLE,
-				deployable ? MStudioProjectDefaultDeployable.yes.name()
-							: MStudioProjectDefaultDeployable.no.name());
+		String isDeploy = null;
+		if (deployable) {
+			isDeploy = MStudioProjectDefaultDeployable.yes.name();
+		} else {
+			isDeploy = MStudioProjectDefaultDeployable.no.name();
+		}
+		return properties.setDefaultDeployable(isDeploy);
 	}
 
 	public boolean getDefaultDeployable() {
-		String bool = getPersistentSettings(MSTUDIO_DEPLOYABLE);
-		return MStudioProjectDefaultDeployable.yes.name().equals(bool);
+		String isDeploy = properties.getDefaultDeployable();
+		return MStudioProjectDefaultDeployable.yes.name().equals(isDeploy);
 	}
 
 	public boolean isExeTmplType() {
-		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
+		String tmplType = properties.getProjectTmplType();
 		return MStudioProjectTemplateType.exe.name().equals(tmplType);
 	}
 
 	public boolean isIALTmplType() {
-		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
+		String tmplType = properties.getProjectTmplType();
 		return MStudioProjectTemplateType.dlcustom.name().equals(tmplType);
 	}
 
 	public boolean isMginitModuleTmplType() {
-		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
+		String tmplType = properties.getProjectTmplType();
 		return MStudioProjectTemplateType.mginitmodule.name().equals(tmplType);
 	}
 
 	public boolean isNormalLibTmplType() {
-		String tmplType = getPersistentSettings(MSTUDIO_TMPLTYPE);
+		String tmplType = properties.getProjectTmplType();
 		return MStudioProjectTemplateType.normallib.name().equals(tmplType);
 	}
 
 	public boolean isMiniGUIEntryType() {
-		String tmplType = getPersistentEntryType();
-		return MStudioProjectEntryType.minigui.name().equals(tmplType);
+		String type = properties.getProjectEntryType();
+		return MStudioProjectEntryType.minigui.name().equals(type);
+	}
+
+	private boolean setProjectTmplType(MStudioProjectTemplateType type) {
+		return properties.setProjectTmplType(type.name());
+	}
+
+	private boolean setProjectEntryType(MStudioProjectEntryType type) {
+		return properties.setProjectEntryType(type.name());
 	}
 
 	public String getMStudioBinPath() {
-		String version = getPersistentSettings(MSTUDIO_VERSION);
+		String version = getMStudioVersion();
 		return MStudioToolsPreferencePage.getMStudioBinPath(version);
 	}
 
 	public String getMStudioVersion() {
-		return getPersistentSettings(MSTUDIO_VERSION);
+		return properties.getProjectHybridVersion();
 	}
 
 	public boolean setMStudioVersion(String version) {
 		String oldBinPath = getMStudioBinPath();
-		boolean result = setPersistentSettings(MSTUDIO_VERSION, version);
-
-		if (result)
-			updateMStudioDir(oldBinPath);
-
-		return result;
+		properties.setProjectHybridVersion(version);
+		updateMStudioDir(oldBinPath);
+		return true;
 	}
 
 	public void updateMStudioDir(String oldBinPath) {
-
 		try {
 			if (!wrapped.hasNature(CProjectNature.C_NATURE_ID))
 				return;
@@ -207,7 +156,7 @@ public class MStudioProject {
 			if (msBinPath == null)
 				return;
 
-			//TODO , set to the ui-builder start ....
+			// TODO , set to the ui-builder start ....
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -270,64 +219,48 @@ public class MStudioProject {
 		description.setNatureIds(newNatures);
 		wrapped.setDescription(description, monitor);
 	}
-	
-	public String[] getDeployPathInfo(){
-		String deployPath = getPersistentSettings(MSTUDIO_DEPLOY_PATHINFO);
-		if (deployPath != null)
-			return deployPath.split(DEPLOY_SPLIT_CHAR);
-		return new String[0];
-	}
-	
-	public boolean setDeployPathInfo(String[] paths){
-		if(paths.length != 4)
-			return false;
-		else{
-			String deployPath = semicolonMerger(paths);
-			return setPersistentSettings(MSTUDIO_DEPLOY_PATHINFO,deployPath);
-		}
-	}
-	
-	public String[] getDeployCustomFiles(){
-		String deployFile = getPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES);
-		if (deployFile != null && deployFile != "")
-			return deployFile.split(DEPLOY_SPLIT_CHAR);
-		return new String[0];
+
+	public String[] getDeployPathInfo() {
+		return properties.getDeployPathInfo();
 	}
 
-	public boolean setDeployCustomFiles(String[] files){
-		String tempStr = "";
-		if(files != null){		
-			if(files.length > 0)
-				tempStr = semicolonMerger(files);
-		}
-		return setPersistentSettings(MSTUDIO_DEPLOY_CUSTOMFILES, tempStr);
+	public boolean setDeployPathInfo(String[] paths) {
+		return properties.setDeployPathInfo(paths);
 	}
-	
-	private String semicolonMerger(String[] sm) {
-		if (sm.length <= 0)
-			return null;
-		String deploy = sm[0];
-		for (int i = 1; i < sm.length; i++) {
-			if (null != sm[i] && ! sm[i].isEmpty())
-				deploy += DEPLOY_SPLIT_CHAR + sm[i];
-		}
 
-		return deploy;
+	public String[] getDeployCustomFiles() {
+		return properties.getDeployCustomFiles();
 	}
-	
-	public String getProgramCfgFile(){
+
+	public boolean setDeployCustomFiles(String[] files) {
+		return properties.setDeployCustomFiles(files);
+	}
+
+	public String getProgramCfgFile() {
 		if (isMiniGUIEntryType()) {
-			return wrapped.getLocation().toOSString() 
-						+ "/." + wrapped.getName().trim() + APP_CFG_PATH;
+			return wrapped.getLocation().toOSString() + "/."
+					+ wrapped.getName().trim() + APP_CFG_PATH;
 		}
 		return null;
 	}
-	
+
 	public boolean isProgramCfgFileExist() {
 		if (!isMiniGUIEntryType()) {
 			return false;
 		}
 		return new File(getProgramCfgFile()).exists();
 	}
-}
 
+	public String getProjectCfgFileName() {
+		return properties.getProjectCfgFileName();
+	}
+
+	public String getProjectSocName() {
+		return properties.getProjectSocName();
+	}
+
+	public void setProjectSocName(String soc) {
+		properties.setProjectSocName(soc);
+	}
+	
+}
