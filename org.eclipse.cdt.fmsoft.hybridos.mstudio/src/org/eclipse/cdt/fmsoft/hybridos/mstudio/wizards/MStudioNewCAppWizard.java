@@ -37,7 +37,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -238,6 +237,9 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			copyMgncsCFGTarget();
 		}
 		
+		MStudioProject prj = new MStudioProject(newProject);
+		prj.setProjectSocName(msEnvInfo.getCurSoCName());
+
 		return true;
 	}
 
