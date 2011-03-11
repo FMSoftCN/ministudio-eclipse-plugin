@@ -15,10 +15,12 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.project;
 
+import java.io.File;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 
 public class MStudioProjectProperties {
-	private final static String PROJECT_CFG = "/.hproject";
+	private final static String PROJECT_CFG = ".hproject";
 	private MStudioParserIniFile file = null;
 	private final static String SYSTEM_SECTION = "project_info";
 	private final static String SOCNAME_PROPERTY = "socName";
@@ -37,7 +39,12 @@ public class MStudioProjectProperties {
 	private String cfgName = null;
 
 	public MStudioProjectProperties(String path) {
-		cfgName = path + PROJECT_CFG;
+		if(path != null && path.endsWith(PROJECT_CFG))
+			cfgName = path;
+		else if(path.endsWith(File.separatorChar + ""))
+			cfgName = path + PROJECT_CFG;
+		else
+			cfgName = path + File.separatorChar + PROJECT_CFG;
 		file = new MStudioParserIniFile(cfgName);
 	}
 
