@@ -27,7 +27,6 @@ import java.util.zip.ZipFile;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioExtenalImportProjectWizardPage.ProjectRecord;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectProperties;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -48,7 +47,6 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.PixelConverter;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -85,17 +83,17 @@ import org.eclipse.ui.dialogs.WorkingSetGroup;
 import org.eclipse.ui.internal.ide.IDEWorkbenchMessages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.StatusUtil;
-import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.DataTransferMessages;
-import org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.TarEntry;
-import org.eclipse.ui.internal.wizards.datatransfer.TarException;
-import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
-import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.ILeveledImportStructureProvider;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.ArchiveFileManipulations;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.TarEntry;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.TarException;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.TarFile;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.TarLeveledStructureProvider;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
-import org.eclipse.ui.wizards.datatransfer.FileSystemStructureProvider;
-import org.eclipse.ui.wizards.datatransfer.ImportOperation;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.FileSystemStructureProvider;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.datatransfer.ImportOperation;
 
 /**
  * The MStudioExtenalImportProjectWizardPage is the page that allows the user to import
@@ -111,7 +109,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	/**
 	 * The import structure provider.
 	 */
-	@SuppressWarnings("restriction")
 	private ILeveledImportStructureProvider structureProvider;
 	
 	// dialog store id constants
@@ -196,7 +193,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 		/**
 		 * Set the name of the project based on the projectFile.
 		 */
-		@SuppressWarnings("restriction")
 		private void setProjectName() {
 			try {
 				if (projectArchiveFile != null) {
@@ -272,12 +268,12 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 		 * @return String the label
 		 * @since 3.4
 		 */
-		@SuppressWarnings("restriction")
 		public String getProjectLabel() {
 			if (description == null)
 				return projectName;
 			String path = projectSystemFile == null ? structureProvider.getLabel(parent) : projectSystemFile.getParent();
-			return NLS.bind(DataTransferMessages.WizardProjectsImportPage_projectLabel,	projectName, path);
+			return NLS.bind(DataTransferMessages.WizardProjectsImportPage_projectLabel,
+					projectName, path);
 		}
 		
 		/**
@@ -389,8 +385,8 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 
 		projectsList = new CheckboxTreeViewer(listComposite, SWT.BORDER);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.widthHint = new PixelConverter(projectsList.getControl()).convertWidthInCharsToPixels(25);
-		gridData.heightHint = new PixelConverter(projectsList.getControl()).convertHeightInCharsToPixels(10);
+		//gridData.widthHint = new PixelConverter(projectsList.getControl()).convertWidthInCharsToPixels(25);
+		//gridData.heightHint = new PixelConverter(projectsList.getControl()).convertHeightInCharsToPixels(10);
 		projectsList.getControl().setLayoutData(gridData);
 		projectsList.setContentProvider(new ITreeContentProvider() {
 			public Object[] getChildren(Object parentElement) {
@@ -499,7 +495,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 		this.directoryPathField = new Text(projectGroup, SWT.BORDER);
 
 		GridData directoryPathData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-		directoryPathData.widthHint = new PixelConverter(directoryPathField).convertWidthInCharsToPixels(25);
+		//directoryPathData.widthHint = new PixelConverter(directoryPathField).convertWidthInCharsToPixels(25);
 		directoryPathField.setLayoutData(directoryPathData);
 		
 		// browse button
@@ -514,7 +510,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 		archivePathField = new Text(projectGroup, SWT.BORDER);
 
 		GridData archivePathData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-		archivePathData.widthHint = new PixelConverter(archivePathField).convertWidthInCharsToPixels(25);
+		//archivePathData.widthHint = new PixelConverter(archivePathField).convertWidthInCharsToPixels(25);
 		archivePathField.setLayoutData(archivePathData); // browse button
 		browseArchivesButton = new Button(projectGroup, SWT.PUSH);
 		browseArchivesButton.setText(MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.browseButtonText"));
@@ -609,7 +605,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 		}
 	}
 
-	@SuppressWarnings("restriction")
 	public void updateProjectsList(final String path) {
 		// on an empty path empty selectedProjects
 		if (path == null || path.length() == 0) {
@@ -758,7 +753,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * Answer a handle to the zip file currently specified as being the source.
 	 * Return null if this file does not exist or is not of valid format.
 	 */
-	@SuppressWarnings("restriction")
 	private TarFile getSpecifiedTarSourceFile(String fileName) {
 		if (fileName.length() == 0) {
 			return null;
@@ -783,14 +777,13 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * 		the error message
 	 */
 	protected void displayErrorDialog(String message) {
-		MessageDialog.open(MessageDialog.ERROR, getContainer().getShell(),
-				getErrorDialogTitle(), message, SWT.SHEET);
+		MessageDialog.openError(getContainer().getShell(),
+				getErrorDialogTitle(), message);
 	}
 
 	/**
 	 * Get the title for an error dialog. Subclasses should override.
 	 */
-	@SuppressWarnings("restriction")
 	protected String getErrorDialogTitle() {
 		return IDEWorkbenchMessages.WizardExportPage_internalErrorTitle;
 	}
@@ -889,7 +882,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * 		The monitor to report to
 	 * @return boolean <code>true</code> if the operation was completed.
 	 */
-	@SuppressWarnings({ "rawtypes", "restriction", "unchecked" })
+	@SuppressWarnings("unchecked")
 	private boolean collectProjectFilesFromProvider(Collection files,
 			Object entry, int level, IProgressMonitor monitor) {
 
@@ -925,11 +918,9 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	/**
 	 * The browse button has been selected. Select the location.
 	 */
-	@SuppressWarnings("restriction")
 	protected void handleLocationDirectoryButtonPressed() {
 
-		DirectoryDialog dialog = new DirectoryDialog(directoryPathField
-				.getShell(), SWT.SHEET);
+		DirectoryDialog dialog = new DirectoryDialog(directoryPathField.getShell());
 		dialog.setMessage(MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.SelectDialogTitle"));
 
 		String dirName = directoryPathField.getText().trim();
@@ -959,9 +950,8 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	/**
 	 * The browse button has been selected. Select the location.
 	 */
-	@SuppressWarnings("restriction")
 	protected void handleLocationArchiveButtonPressed() {
-		FileDialog dialog = new FileDialog(archivePathField.getShell(), SWT.SHEET);
+		FileDialog dialog = new FileDialog(archivePathField.getShell());
 		dialog.setFilterExtensions(FILE_IMPORT_MASK);
 		dialog.setText(MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.SelectArchiveDialogTitle"));
 
@@ -995,7 +985,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * @return boolean <code>true</code> if all project creations were
 	 * 	successful.
 	 */
-	@SuppressWarnings("restriction")
 	public boolean createProjects() {
 		saveWidgetValues();
 		
@@ -1063,7 +1052,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	/**
 	 * Performs clean-up if the user cancels the wizard without doing anything
 	 */
-	@SuppressWarnings("restriction")
 	public void performCancel() {
 		ArchiveFileManipulations.closeStructureProvider(structureProvider, getShell());
 	}
@@ -1075,7 +1063,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * @return boolean <code>true</code> if successful
 	 * @throws InterruptedException
 	 */
-	@SuppressWarnings("restriction")
 	private boolean createExistingProject(final ProjectRecord record, IProgressMonitor monitor) throws InvocationTargetException,InterruptedException {
 		String projectName = record.getProjectName();
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -1103,6 +1090,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 			ImportOperation operation = new ImportOperation(project
 					.getFullPath(), structureProvider.getRoot(),
 					structureProvider, this, fileSystemObjects);
+			
 			operation.setContext(getShell());
 			operation.run(monitor);
 			return true;
@@ -1165,7 +1153,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * @return the user's reply: one of <code>"YES"</code>, <code>"NO"</code>,
 	 * 	<code>"ALL"</code>, or <code>"CANCEL"</code>
 	 */
-	@SuppressWarnings("restriction")
 	public String queryOverwrite(String pathString) {
 
 		Path path = new Path(pathString);
@@ -1189,7 +1176,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 						IDialogConstants.NO_TO_ALL_LABEL,
 						IDialogConstants.CANCEL_LABEL }, 0) {
 			protected int getShellStyle() {
-				return super.getShellStyle() | SWT.SHEET;
+				return super.getShellStyle();
 			}
 		};
 		String[] response = new String[] { YES, ALL, NO, NO_ALL, CANCEL };
@@ -1227,7 +1214,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardPage implements
 	 * 
 	 * @return IProject[] array of IProject in the current workspace
 	 */
-	@SuppressWarnings("restriction")
 	private IProject[] getProjectsInWorkspace() {
 		if (wsProjects == null) {
 			wsProjects = IDEWorkbenchPlugin.getPluginWorkspace().getRoot()
