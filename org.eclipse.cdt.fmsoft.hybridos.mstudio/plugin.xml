@@ -332,11 +332,11 @@
     <extension
           point="org.eclipse.ui.importWizards">
        <category
-             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.sampleCategory"
+             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.category"
              name="HybridOS">
        </category>
        <wizard
-             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.sampleCategory"
+             category="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.category"
              class="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
              icon="icons/sample.gif"
              id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
