@@ -102,8 +102,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	@Override
 	public void init(IWorkbench workbench) {
 		setTitle(MStudioMessages.getString("MStudioDeployPreferencePage.title"));
-
-		allServList = envInfo.getServices();
+		
+		List<String> s = envInfo.getServices();
+		if (envInfo.getMgRunMode() != "process" && s.contains("mginit")){
+			s.remove("mginit");
+		}
+		allServList = s;
 	}
 
 	private String getChangedDeployLocation() {

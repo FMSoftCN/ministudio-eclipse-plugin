@@ -20,8 +20,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -36,11 +36,15 @@ public class MStudioCommonPreferencePage extends PreferencePage
 	implements IWorkbenchPreferencePage {
 
 	private final static String MSCPP_HYBRIDOS_LOGO = "icons/hybridos-logo.png";
+	private final static String LSP = System.getProperty("line.separator");
 	private final static String MSCPP_HYBRIDOS_INTRO =
-		"HybridOS is an operating system dedicated to embedded device. " +
-		"It is based on Linux kernel, stable open source software (e.g. Gtk+, SDL, SQLite, and so on), " +
-		"and FMSoft's mature embedded software technologies, like embedded windowing system (MiniGUI), " +
-		"embedded web browser (mDolphin), and embedded J2SE solution.";
+		"HybridOS is an operating system dedicated to " + LSP
+		+ "embedded device. It is based on Linux kernel, " + LSP
+		+ "stable open source software (e.g. Gtk+, SDL, " + LSP
+		+ "SQLite, and so on),and FMSoft's mature embedded " + LSP
+		+ "software technologies, like embedded windowing " + LSP
+		+ "system (MiniGUI), embedded web browser (mDolphin)," + LSP
+		+ " and embedded J2SE solution.";
 
 	public MStudioCommonPreferencePage() {
 		noDefaultAndApplyButton();
@@ -57,13 +61,13 @@ public class MStudioCommonPreferencePage extends PreferencePage
 	}
 
 	public void init(IWorkbench workbench) {
+		//setSize(new Point (200, 400));
 	}
 
 	protected Control createContents(Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.NULL);
-		composite.setLayout(new GridLayout());
-		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+		composite.setLayout(new FillLayout(SWT.VERTICAL));
 
 		Label imgLabel = new Label(composite, SWT.NONE);
 		if (null != imgLabel) {
@@ -76,7 +80,7 @@ public class MStudioCommonPreferencePage extends PreferencePage
 		if (null != intro) {
 			intro.setFont(parent.getFont());
 			intro.setText(MSCPP_HYBRIDOS_INTRO);
-			intro.setLayoutData(new GridData(320, 200));
+			intro.setSize(200, 200);
 		}
 
 		return composite;

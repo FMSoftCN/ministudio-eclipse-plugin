@@ -33,8 +33,18 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
+import org.eclipse.jface.action.CoolBarManager;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.internal.provisional.action.ToolBarContributionItem2;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.internal.Workbench;
+import org.eclipse.ui.internal.WorkbenchWindow;
+import org.eclipse.ui.menus.CommandContributionItem;
 
 
+@SuppressWarnings("restriction")
 class DirFilter implements FilenameFilter {
 
 	public boolean accept(File file, String fname) {
@@ -366,7 +376,6 @@ public class MStudioEnvInfo {
 		if (null == iniFile)
 			return;
 
-//		System.out.println(iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE));
 		String runMode = iniFile.getStringProperty(SOC_CFG_SECTION_MINIGUI, SOC_CFG_SECTION_RUNMODE);
 		if (null != runMode) {
 			try {
@@ -379,6 +388,8 @@ public class MStudioEnvInfo {
 		else {
 			mgRunMode = MiniGUIRunMode.thread;
 		}
+		
+		updateMginitMemus ();
 
 		File socDir = new File(SOC_PATH_PREFIX + SoCName);
 		if (!socDir.exists())
@@ -561,8 +572,52 @@ public class MStudioEnvInfo {
 		// Check the string is "WWWxHHH-DDbpp" or not. 
 		if (!dxwxh.matches(RESOLUTION_REGEX_STRING)) 
 			return null;
-		return dxwxh;
 		
+		return dxwxh;
+	}
+	
+	@SuppressWarnings("restriction")
+	public void updateMginitMemus () {
+		
+		boolean beShow = MiniGUIRunMode.process.equals(mgRunMode);
+		IWorkbenchWindow window = Workbench.getInstance().getActiveWorkbenchWindow();
+		
+		if(window instanceof WorkbenchWindow) {
+		    
+		    MenuManager menuManager = ((WorkbenchWindow)window).getMenuManager();
+		    if (menuManager != null){
+			    String menuId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.menu";
+			    IContributionItem menu = menuManager.find(menuId);
+			    
+			    if (menu != null && menu instanceof MenuManager){
+			    	MenuManager hybridMenu = (MenuManager)menu;
+			    	String mginitId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.mginitservice";
+			    	IContributionItem itm = hybridMenu.find (mginitId);
+			    	if (itm instanceof CommandContributionItem) {
+			    		CommandContributionItem cci = (CommandContributionItem)itm;
+			    		cci.setVisible(beShow);
+			    		hybridMenu.update(true);
+			    	}
+			    }
+		    }
+		    CoolBarManager cbManager = ((WorkbenchWindow)window).getCoolBarManager();
+		    if (cbManager != null){
+			    String toolId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar";
+			    IContributionItem toolBar = cbManager.find(toolId);
+			    if (toolBar != null && toolBar instanceof ToolBarContributionItem2) {
+			    	ToolBarContributionItem2 tci = (ToolBarContributionItem2)toolBar;
+			    	IToolBarManager tbm = tci.getToolBarManager();
+			    	if (tbm != null){
+			    		String mginitId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.toolbar.mginit";
+			    		IContributionItem itm = tbm.find(mginitId);
+			    		if (itm != null) {
+			    			itm.setVisible(beShow);
+			    			cbManager.update(true);
+			    		}
+			    	}
+			    }
+		    }
+		}
 	}
 }
 

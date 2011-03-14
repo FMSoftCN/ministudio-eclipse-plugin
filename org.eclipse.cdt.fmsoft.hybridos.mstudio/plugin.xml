@@ -231,6 +231,11 @@
                     label="%MStudioMenu.mginitService.label"
                     style="push"
                     tooltip="%MStudioMenu.mginitService.tooltip">
+                    <visibleWhen  checkEnabled="false"> 
+                    	<iterate ifEmpty="false"> 
+                        	<instanceof value="null"/>                
+				 		</iterate> 
+               		</visibleWhen>
                 </command>
                 <command
                     commandId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy"
@@ -252,6 +257,11 @@
                     label="%MStudioMenu.mginitService.label"
                     style="push"
                     tooltip="%MStudioMenu.mginitService.tooltip">
+           			<visibleWhen  checkEnabled="false"> 
+                    	<iterate ifEmpty="false"> 
+                        	<instanceof value="java.lang.null"/>                
+				 		</iterate> 
+               		</visibleWhen>
                 </command>
             </toolbar>
         </menuContribution>

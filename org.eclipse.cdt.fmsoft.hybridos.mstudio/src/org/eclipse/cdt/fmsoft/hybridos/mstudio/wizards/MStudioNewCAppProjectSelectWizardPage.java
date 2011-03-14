@@ -58,6 +58,7 @@ import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.template.MStudioNewWizardTemplate;
 import org.eclipse.cdt.internal.ui.CPluginImages;
@@ -267,14 +268,24 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		// If there is a EntryDescriptor which is default for category, make
 		// sure it is in the front of the list.
 		for (int i = 0; i < items.size(); ++i) {
-			EntryDescriptor ed = items.get(i);
+			EntryDescriptor ed = items.get(i);	
+			
 			if (ed.isCategory()) {
 				items.remove(i);
 				items.add(0, ed);
 				break;
 			}
 		}
-		;
+		
+		for (int i = 0; i < items.size(); ++i) {
+			EntryDescriptor ed = items.get(i);	
+			if (ed.getName().equals("mginit Module Project") && 
+					MStudioEnvInfo.getInstance().getMgRunMode() != "process"){
+				items.remove(i);
+				break;
+			}
+		}
+		
 		// bug # 211935 : allow items filtering.
 		if (ls != null) // NULL means call from prefs
 			items = ls.filterItems(items);

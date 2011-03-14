@@ -55,7 +55,6 @@ import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
-import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
@@ -65,17 +64,17 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 
 public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	implements IWorkbenchPropertyPage {
-
-	private static final Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	
+	private static final String MS_DEP_ICON = "icons/hybrid_devp.gif";
 	private static final String TITLE = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.titleLable");
-	private static final String SHOW_SELECT =
-										MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showSelect");
-	private final static String SHOW_DESELECT =
-										MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showDeselect");
+	private static final String SHOW_SELECT =MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showSelect");
+	private final static String SHOW_DESELECT =MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.showDeselect");
 	private static final String AFFECTED = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.affected");
 	private static final String DEPEND = MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.depend");
 	private static final String MSP_SPACE = " ";
 	private static final String EMPTY_STR = "";
+
+	private static final Image treeIcon = MStudioPlugin.getImageDescriptor(MS_DEP_ICON).createImage();
 
 	private Label title = null;
 	private Label description = null;
@@ -153,7 +152,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 			}
 
 			public Image getImage(Object element) {
-				return IMG;
+				return treeIcon;
 			}
 		});
 		ctv.addCheckStateListener(new ICheckStateListener() {

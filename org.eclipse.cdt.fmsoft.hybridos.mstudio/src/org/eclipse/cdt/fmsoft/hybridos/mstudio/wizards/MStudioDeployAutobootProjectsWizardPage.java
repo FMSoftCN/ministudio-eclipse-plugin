@@ -87,9 +87,11 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 		table.setLayout(new GridLayout());
 		table.setLayoutData(dg);
 		table.addListener(SWT.Selection,new TableListener());
+		
 		TableColumn col1 = new TableColumn(table,SWT.NONE);
 		col1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.tableCol0Title"));
 		col1.setWidth(50);
+		
 		TableColumn col2 = new TableColumn(table,SWT.NONE); 	
 		col2.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectAutobootProjects.tableCol1Title"));
 		col2.setWidth(100);
@@ -291,7 +293,7 @@ public class MStudioDeployAutobootProjectsWizardPage extends WizardPage {
 	public class TableListener implements Listener{
 		public void handleEvent(Event event) {
 			if(event.detail == SWT.CHECK){
-				if(MStudioEnvInfo.getInstance().getMgRunMode() == MiniGUIRunMode.thread.name()){
+				if(MStudioEnvInfo.getInstance().getMgRunMode() != MiniGUIRunMode.process.name()){
 					//thread mode
 					TableItem[] items = table.getItems();
 					for(int i=0;i<items.length;i++){

@@ -908,7 +908,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 			try {
 				CoreModel.getDefault().setProjectDescription(newProject, prjd);
 			} catch (CoreException e) {
-				System.out.println("CoreModel.getDefault().setProjectDescription(newProject, prjd);");
+				//System.out.println("CoreModel.getDefault().setProjectDescription(newProject, prjd);");
 			}
 		}
 	}

@@ -18,6 +18,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
@@ -83,7 +84,7 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 					setPageComplete(false);
 				else
 					setPageComplete(true);
-					*/
+				*/
 			}
 		});
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
@@ -94,14 +95,13 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		setControl(topPanel);
 		setPageComplete(true);
 	}
-	/*
-	public void update(){
-		//ctv.setItemCount(0);
-		//initServiceTable();
-	}
-	*/
+
 	private void initServiceTable(){
-		List<String> s = MStudioPlugin.getDefault().getMStudioEnvInfo().getServices();
+		MStudioEnvInfo info = MStudioPlugin.getDefault().getMStudioEnvInfo();
+		List<String> s = info.getServices();
+		if (info.getMgRunMode() != "process" && s.contains("mginit")){
+			s.remove("mginit");
+		}
 		if(null != s){
 			String[] serv = (String[])s.toArray(new String[s.size()]);
 			if(serv.length > 0){

@@ -64,7 +64,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 	public final static String PAGE_ID = "org.eclipse.cdt.fmsoft.hybridos.mstudio.wizard.MGConfigWizardPage";
 
-	private final static Image IMG = ManagedBuilderUIImages.get(ManagedBuilderUIImages.IMG_BUILD_CONFIG);
+	private static final String MS_DEP_ICON = "icons/hybrid_devp.gif";
 	private final static String TITLE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.0");
 	private final static String MESSAGE = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.1");
 	private final static String SHOW_SELECT_ALL = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.14");
@@ -73,6 +73,8 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private final static String DEPEND = MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.depend");
 	private final static String EMPTY_STR = "";
 	private final static String MSW_SPACE = " ";
+	
+	private static final Image treeIcon = MStudioPlugin.getImageDescriptor(MS_DEP_ICON).createImage();
 
 	public boolean isVisible = false;
 	public boolean pagesLoaded = false;
@@ -185,7 +187,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 
 			public Image getImage(Object element) {
-				return IMG;
+				return treeIcon;
 			}
 		});
 		ctv.addCheckStateListener(new ICheckStateListener() {

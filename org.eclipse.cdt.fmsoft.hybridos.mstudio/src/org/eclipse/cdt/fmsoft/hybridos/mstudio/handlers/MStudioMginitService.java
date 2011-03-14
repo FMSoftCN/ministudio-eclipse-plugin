@@ -15,11 +15,7 @@
 
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.handlers;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -40,7 +36,6 @@ import org.eclipse.ui.menus.UIElement;
 import org.eclipse.cdt.core.CommandLauncher;
 import org.eclipse.cdt.utils.spawner.EnvironmentReader;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
-import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 
 
@@ -58,7 +53,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 
 		File file = new File(MSMS_MGINIT_TEMP_FILE);
 
-//		FIXME, for windows ...
+//		TODO, for windows ...
 //		if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
 //			......
 //        }
@@ -72,6 +67,10 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 	}
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
+		
+		if (MStudioEnvInfo.getInstance().getMgRunMode() != "process"){
+			return null;
+		}
 
 		ICommandService commandService =
 			(ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
@@ -117,7 +116,7 @@ public class MStudioMginitService extends AbstractHandler implements IElementUpd
 				launcher.showCommand(true);
 				StringBuffer cmd = new StringBuffer("mginit");
 
-//				FIXME, for windows .....
+//				TODO, for windows .....
 //				if (System.getProperty("os.name").toLowerCase().indexOf("window") >= 0) {
 //					cmd.append(".exe");
 //				}
