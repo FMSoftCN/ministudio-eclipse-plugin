@@ -508,6 +508,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private void setProjectsSoC(String soc) {
 		// 轮询修改各个工程的soc.name
 		IProject[] projects = MStudioPlugin.getDefault().getMStudioEnvInfo().getMStudioProjects();
+		if (null == projects) {
+			return;
+		}
 		for (int i = 0; i < projects.length; i++) {
 			MStudioProject prj = new MStudioProject(projects[i]);
 			prj.setProjectSocName(soc);
