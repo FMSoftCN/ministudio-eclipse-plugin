@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -28,6 +27,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -106,6 +106,8 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		List<String> s = envInfo.getServices();
 		if (envInfo.getMgRunMode() != "process" && s.contains("mginit")){
 			s.remove("mginit");
+		} else {
+			selServList.add("mginit");
 		}
 		allServList = s;
 	}
@@ -164,6 +166,13 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			selServList.add(defaultSelServ[i]);
 		}
 		ctv.setCheckedElements(defaultSelServ);
+			
+		if (envInfo.getMgRunMode() == "process" 
+			&& allServList.contains("mginit")){
+			Object mginitEle = ctv.getElementAt(allServList.indexOf("mginit"));
+			//ctv.setGrayed(mginitEle, true);
+			ctv.setChecked(mginitEle, true);
+		}
 
 		String tagetMgconfigureFile = envInfo.getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
@@ -350,7 +359,8 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			public void dispose(){}
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
 		});
-		ctv.setLabelProvider(new LabelProvider() {
+		
+		class ctvProvider extends LabelProvider implements IColorProvider{
 			public String getText(Object element) {
 				return element == null ? "" : (String)element;
 			}
@@ -358,9 +368,29 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			public Image getImage(Object element) {
 				return null;
 			}
-		});
+
+			public Color getBackground(Object element) {
+				return null;
+			}
+
+			public Color getForeground(Object element) {
+				if (((String)element).equals("mginit")
+						&& envInfo.getMgRunMode() == "process")
+					return Display.getCurrent() .getSystemColor(SWT.COLOR_DARK_GRAY);
+				else 
+					return null;
+			}
+		}
+		
+		ctv.setLabelProvider(new ctvProvider());
+		
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
+				if (((String)event.getElement()).equals("mginit")
+						&& envInfo.getMgRunMode() == "process"){
+						ctv.setChecked(event.getElement(), true);
+					return;
+				}
 				if (event.getChecked()) {
 					selServList.add((String)event.getElement());
 				} else {

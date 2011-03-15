@@ -27,14 +27,19 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
@@ -67,30 +72,54 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
 		
-		
 		Label label1 = new Label(topPanel,SWT.NONE);
 		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectServices.title"));
 		
-		serviceTable = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL );
+		serviceTable = new Table(topPanel, 
+				SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		serviceTable.setLayoutData(gd);
 		
-		ctv = new CheckboxTableViewer(serviceTable);		
+		ctv = new CheckboxTableViewer(serviceTable);
 		
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
-				/*
-				if(ctv.getCheckedElements().length<=0)
-					setPageComplete(false);
-				else
-					setPageComplete(true);
-				*/
+				if (((String)event.getElement()).equals("mginit")
+						&& MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode() == "process"){
+						ctv.setChecked(event.getElement(), true);
+					return;
+				}
 			}
 		});
+		
 		ctv.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent event) {				
 			}
 		});
+		class ctvProvider extends LabelProvider implements IColorProvider{
+			public String getText(Object element) {
+				return element == null ? "" : (String)element;
+			}
+
+			public Image getImage(Object element) {
+				return null;
+			}
+
+			public Color getBackground(Object element) {
+				return null;
+			}
+
+			public Color getForeground(Object element) {
+				if (((String)element).equals("mginit")
+						&& MStudioPlugin.getDefault().getMStudioEnvInfo().getMgRunMode() == "process")
+					return Display.getCurrent() .getSystemColor(SWT.COLOR_DARK_GRAY);
+				else 
+					return null;
+			}
+		}
+		
+		ctv.setLabelProvider(new ctvProvider());
+		
 		initServiceTable();		
 		setControl(topPanel);
 		setPageComplete(true);
@@ -112,6 +141,9 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 				if (defaultSelServ.length > 0){
 					ctv.setCheckedElements(defaultSelServ);
 				}
+				if (info.getMgRunMode() == "process"){
+					ctv.setChecked("mginit", true);
+				}
 			}
 		}
 	}
@@ -120,10 +152,14 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 		Object[] obj=ctv.getCheckedElements();
 		if(obj == null)
 			return null;
-		ArrayList<String> lists=new ArrayList<String>();
-		for(int i=0; i<obj.length; i++){
-			lists.add(obj[i].toString());
+		
+		ArrayList<String> lists = new ArrayList<String>();
+		
+		for(int i = 0; i < obj.length; i++){
+			if (!lists.contains(obj[i].toString()))
+				lists.add(obj[i].toString());
 		}
+		
 		return (String[])lists.toArray(new String[obj.length]);
 	}	
 	
