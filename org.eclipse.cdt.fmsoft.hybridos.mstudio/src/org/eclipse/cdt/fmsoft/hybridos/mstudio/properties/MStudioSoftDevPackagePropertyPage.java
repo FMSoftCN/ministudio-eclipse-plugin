@@ -437,7 +437,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 	private void setDefaultDepPkg() {
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
-		String[] ddps = mStudioProject.getDepPkgs();
+		String[] ddps = mStudioProject.getDefaultDepPkgs();
 
 		if (null != ddps)
 			ctv.setCheckedElements(ddps);
@@ -445,7 +445,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 	private boolean isDefaultDepPkg(String name) {
 		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
-		String[] ddps = mStudioProject.getDepPkgs();
+		String[] ddps = mStudioProject.getDefaultDepPkgs();
 
 		for (int i = 0; i < ddps.length; i++) {
 			if (name.equals(ddps[i]))

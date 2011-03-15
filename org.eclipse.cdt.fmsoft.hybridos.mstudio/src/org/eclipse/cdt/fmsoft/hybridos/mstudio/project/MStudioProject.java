@@ -73,6 +73,14 @@ public class MStudioProject {
 		setProjectTmplType(type);
 	}
 
+	public boolean setDefaultDepPkgs(String[] defaultDepPkgs) {
+		return properties.setDefaultDepPkgs(defaultDepPkgs);
+	}
+
+	public String[] getDefaultDepPkgs() {
+		return properties.getDefaultDepPkgs();
+	}
+
 	public boolean setDepPkgs(String[] depPkgs) {
 		return properties.setDepPkgs(depPkgs);
 	}

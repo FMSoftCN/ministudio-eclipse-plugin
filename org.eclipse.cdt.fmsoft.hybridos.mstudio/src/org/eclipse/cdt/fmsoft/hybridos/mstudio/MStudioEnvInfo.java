@@ -108,6 +108,7 @@ public class MStudioEnvInfo {
 	//lib: 
 	private String projectTypeName = null;
 	private Map<String, List<String>> defaultLibs = null;
+	private List<String> defaultKeyLib = new ArrayList<String>();
 	private List<String> defaultDepPkgs = new ArrayList<String>();
 
 	private MStudioParserIniFile iniFile = null;
@@ -682,7 +683,7 @@ public class MStudioEnvInfo {
 		if (fIniFile == null)
 			return;
 
-		defaultDepPkgs.clear();
+		defaultKeyLib.clear();
 		String keyLib = null;
 		if (MSEI_MINIGUI_PROJECT.equals(section)) {
 			if (mgRunMode == MiniGUIRunMode.process) {
@@ -696,15 +697,29 @@ public class MStudioEnvInfo {
 			keyLib = fIniFile.getStringProperty(section, "key_lib");
 		}
 		if (null != keyLib)
-			defaultDepPkgs.add(keyLib);
+			defaultKeyLib.add(keyLib);
+	}
+
+	public String[] getDefaultKeyLibrary() {
+		return defaultKeyLib.toArray(new String[defaultKeyLib.size()]);
+	}
+
+	public String getProjectTypeName() {
+		return projectTypeName;
 	}
 
 	public String[] getDefaultDepPackages() {
 		return defaultDepPkgs.toArray(new String[defaultDepPkgs.size()]);
 	}
 
-	public String getProjectTypeName() {
-		return projectTypeName;
+	public void setDefaultDepPackages(String[] defaultDepPkg) {
+		if (defaultDepPkg == null || 0 == defaultDepPkg.length)
+			return;
+
+		defaultDepPkgs.clear();
+		for (int i = 0; i < defaultDepPkg.length; i++) {
+			defaultDepPkgs.add(defaultDepPkg[i]);
+		}
 	}
 }
 

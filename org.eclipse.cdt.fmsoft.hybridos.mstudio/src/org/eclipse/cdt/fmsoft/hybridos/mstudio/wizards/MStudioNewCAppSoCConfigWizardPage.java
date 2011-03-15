@@ -451,7 +451,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void getDefaultLibsName() {
-		String[] keylibs = msEnvInfo.getDefaultDepPackages();
+		String[] keylibs = msEnvInfo.getDefaultKeyLibrary();
 
 		if (null != keylibs && 0 != keylibs.length) {
 			String pkgsName = getDependPkgsName(keylibs[0]);
@@ -463,6 +463,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			getDependPkgsChecked(pkgsName, defaultPkgs);
 
 			defaultDepPkg = defaultPkgs.toArray(new String[defaultPkgs.size()]);
+			msEnvInfo.setDefaultDepPackages(defaultDepPkg);
 		}
 	}
 

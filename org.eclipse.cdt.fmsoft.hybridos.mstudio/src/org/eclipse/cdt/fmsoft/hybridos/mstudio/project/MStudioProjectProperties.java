@@ -26,6 +26,7 @@ public class MStudioProjectProperties {
 	private final static String SOCNAME_PROPERTY = "socName";
 	private final static String VERSION_PROPERTY = "studioVersion";
 	private final static String PACKAGES_PROPERTY = "depPkgs";
+	private final static String DEFAULT_PACKAGES_PROPERTY = "defaultDepPkgs";
 	private final static String IS_DEPLOY_PROPERTY = "deployable";
 	private final static String TMPL_TYPE_PROPERTY = "tmplType";
 	private final static String ENTRY_TYPE_PROPERTY = "entryType";
@@ -69,6 +70,20 @@ public class MStudioProjectProperties {
 	public boolean setProjectHybridVersion(String version) {
 		file.setStringProperty(SYSTEM_SECTION, VERSION_PROPERTY, 
 				null == version ? EMPTY_STR : version, null);
+		return file.save();
+	}
+
+	public String[] getDefaultDepPkgs() {
+		String pkgs = file.getStringProperty(SYSTEM_SECTION, DEFAULT_PACKAGES_PROPERTY);
+		if (pkgs != null)
+			return pkgs.split(DEPLOY_SPLIT_CHAR);
+		return new String[0];
+	}
+
+	public boolean setDefaultDepPkgs(String[] defaultDepPkgs) {
+		String value = semicolonMerger(defaultDepPkgs);
+		file.setStringProperty(SYSTEM_SECTION, DEFAULT_PACKAGES_PROPERTY, 
+				null == value ? EMPTY_STR : value, null);
 		return file.save();
 	}
 

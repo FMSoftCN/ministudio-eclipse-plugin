@@ -54,6 +54,7 @@ import org.eclipse.cdt.core.settings.model.ICProjectDescriptionManager;
 import org.eclipse.cdt.ui.CUIPlugin;
 import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -332,6 +333,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 	protected IProject continueCreation(IProject prj) {
 		try {
 			MStudioProject mprj = new MStudioProject(prj);
+			mprj.setDefaultDepPkgs(msEnvInfo.getDefaultDepPackages());
 			mprj.setDepPkgs(prjDepLibs);
 			mprj.addMStudioNature(new NullProgressMonitor());
 		} catch (CoreException e) {
