@@ -1,0 +1,26 @@
+[Empty Project]
+key_lib=freetype
+
+[MiniGUI Project]
+key_lib_pe=minigui_procs
+key_lib_se=minigui_ths
+key_lib_sa=minigui_sa
+
+[SDL Project]
+key_lib=SDL
+
+[Gtk+ Project]
+key_lib=
+
+[mginit Module Project]
+key_lib=minigui_procs
+
+[DICustom IAL Engine Project]
+key_lib=freetype
+
+[Empty C++ Project]
+key_lib=freetype
+
+[Android Project]
+key_lib=
+
