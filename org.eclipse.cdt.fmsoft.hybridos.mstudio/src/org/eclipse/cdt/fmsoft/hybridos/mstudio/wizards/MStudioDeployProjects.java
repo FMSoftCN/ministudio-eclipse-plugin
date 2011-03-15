@@ -42,7 +42,9 @@ public class MStudioDeployProjects extends AbstractHandler implements IHandler {
 		try{
 			dialog.create();
 		}catch(Exception e){
-			MessageDialog.openError(window.getShell(), MStudioMessages.getString("MStudioDeployProject.error.title"), MStudioMessages.getString("MStudioDeployProject.error.content") + e.toString());
+			MessageDialog.openError(window.getShell(), 
+					MStudioMessages.getString("MStudioDeployProject.error.title"), 
+					MStudioMessages.getString("MStudioDeployProject.error.content") + e.toString());
 		}
 		if (dialog.open() == WizardDialog.OK) {
 		}				

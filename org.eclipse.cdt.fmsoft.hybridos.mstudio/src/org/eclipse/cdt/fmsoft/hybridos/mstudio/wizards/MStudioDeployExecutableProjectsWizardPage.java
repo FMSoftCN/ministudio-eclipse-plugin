@@ -96,7 +96,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		chooseTable.setLayoutData(new GridData(500, 200));
 		ctv = new CheckboxTableViewer(chooseTable);
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				validatePage();
 			}});

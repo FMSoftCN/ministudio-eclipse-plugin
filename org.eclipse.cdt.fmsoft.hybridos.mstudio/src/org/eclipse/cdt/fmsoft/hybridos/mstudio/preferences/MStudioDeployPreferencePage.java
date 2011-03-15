@@ -122,28 +122,14 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	public void locationChanged() {
-		String l = locationPath.getStringValue();
-		File file = new File(l);
-		boolean isValid = false;
-		if (!file.exists())
+		if (!new File(locationPath.getStringValue()).exists())
 			updateTipMessage(MSDPP_PATH_INVALID);
-		else{
-			updateTipMessage(MSDPP_EMPTY_STR);
-			isValid &= true;
-		}
-		
-		if(galCom.getSelectionIndex() >= 0 && galCom.getItemCount() > 0)
+		else if(galCom.getSelectionIndex() < 0)
 			updateTipMessage(MSDPP_GAL_INVALID);
-		else
-			updateTipMessage(MSDPP_EMPTY_STR);
-		if(ialCom.getSelectionIndex() >= 0 && ialCom.getItemCount() > 0)
+		else if(ialCom.getSelectionIndex() < 0)
 			updateTipMessage(MSDPP_IAL_INVALID);
 		else
 			updateTipMessage(MSDPP_EMPTY_STR);
-			/*
-			isValid &= true;
-		setValid(isValid);
-		*/
 	}
 
 	private void initializeByStoreData() {
@@ -170,7 +156,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		if (envInfo.getMgRunMode() == "process" 
 			&& allServList.contains("mginit")){
 			Object mginitEle = ctv.getElementAt(allServList.indexOf("mginit"));
-			//ctv.setGrayed(mginitEle, true);
 			ctv.setChecked(mginitEle, true);
 		}
 
@@ -239,12 +224,9 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		new Label(composite, SWT.NULL);
-
 		Composite lc = new Composite(composite, SWT.NULL);
 		lc.setLayout(new GridLayout());
 		lc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		createLocationPathContent(lc);
 		tipText = createTipMsgContent(lc);
 
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
@@ -253,6 +235,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		
 		final Label seperator0 = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
 		seperator0.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		createLocationPathContent(lc);
 		
 		createEnginesContent(composite);
 		
@@ -288,12 +271,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 	private Label createTipMsgContent(Composite parent) {
 		Label t = new Label(parent, SWT.NULL);
+		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
+		t.setForeground(c);
 		return  t;
 	}
 
 	protected void updateTipMessage(String tip) {
-		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
-		tipText.setForeground(c);
 		tipText.setText(tip);
 	}
 
@@ -325,9 +308,11 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		galCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedGalEngine = galCom.getItem(galCom.getSelectionIndex());
-				//System.out.println("selected Gal Engine = " + selectedGalEngine);
-		}
+			}
 		});
+		if (galCom.getItemCount() > 0) {
+			galCom.select(0);
+		}
 		
 		Label ialT = new Label(engineC, SWT.NULL);
 		ialT.setText(MSDPP_IAL_ENGINE);
@@ -336,9 +321,11 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		ialCom.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e){
 				selectedIalEngine = ialCom.getItem(ialCom.getSelectionIndex());
-				//System.out.println("selected Ial Engine = " + selectedIalEngine);
 			}
 		});
+		if (ialCom.getItemCount() > 0) {
+			ialCom.select(0);
+		}
 	}
 
 	private Control createServicesContent(Composite parent) {
