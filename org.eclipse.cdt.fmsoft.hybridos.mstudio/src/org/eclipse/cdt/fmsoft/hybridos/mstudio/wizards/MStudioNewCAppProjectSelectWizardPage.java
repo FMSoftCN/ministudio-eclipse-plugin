@@ -58,10 +58,12 @@ import org.eclipse.cdt.ui.wizards.CWizardHandler;
 import org.eclipse.cdt.ui.wizards.EntryDescriptor;
 import org.eclipse.cdt.ui.wizards.IWizardItemsListListener;
 import org.eclipse.cdt.ui.wizards.IWizardWithMemory;
+import org.eclipse.cdt.internal.ui.CPluginImages;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.template.MStudioNewWizardTemplate;
-import org.eclipse.cdt.internal.ui.CPluginImages;
 
 @SuppressWarnings("restriction")
 public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreationPage
@@ -80,6 +82,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 	private Tree tree = null;
 	private Composite composite = null;
+	private MStudioEnvInfo mseInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 
 	public MStudioNewCAppProjectSelectWizardPage(String pageName) {
 		super(pageName);
@@ -92,6 +95,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		createDynamicGroup((Composite) getControl());
 		MStudioWizardHandler handler = updateData(tree, composite,
 						MStudioNewCAppProjectSelectWizardPage.this, getWizard());
+		setDefaultProjectType(tree);
 		switchTo(handler, getDescriptor(tree));
 
 		setErrorMessage(null);
@@ -117,6 +121,7 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 				TreeItem[] tis = tree.getSelection();
 				if (tis == null || tis.length == 0)
 					return;
+				mseInfo.setDefaultDepPackages(tis[0].getText());
 				switchTo((MStudioWizardHandler) tis[0].getData(),
 						(EntryDescriptor) tis[0].getData(DESC));
 				setPageComplete(validatePage());
@@ -226,6 +231,13 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		return true;
 	}
 
+	private void setDefaultProjectType(Tree tree) {
+		TreeItem[] tis = tree.getSelection();
+		if (tis == null || tis.length == 0)
+			return;
+		mseInfo.setDefaultDepPackages(tis[0].getText());
+	}
+
 	public static MStudioWizardHandler updateData(Tree tree, Composite compos,
 			IWizardItemsListListener ls, IWizard wizard) {
 		// remember selected item
@@ -269,7 +281,6 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 		// sure it is in the front of the list.
 		for (int i = 0; i < items.size(); ++i) {
 			EntryDescriptor ed = items.get(i);	
-			
 			if (ed.isCategory()) {
 				items.remove(i);
 				items.add(0, ed);

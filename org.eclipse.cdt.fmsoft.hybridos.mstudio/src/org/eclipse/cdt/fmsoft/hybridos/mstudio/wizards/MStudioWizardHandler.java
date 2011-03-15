@@ -40,6 +40,9 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.internal.core.LaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
 
 import org.eclipse.cdt.managedbuilder.buildproperties.IBuildPropertyValue;
 import org.eclipse.cdt.managedbuilder.core.BuildException;
@@ -87,9 +90,6 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject.MStudioProjectTemplateType;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.internal.core.LaunchManager;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
 
 
 public class MStudioWizardHandler extends CWizardHandler {
@@ -97,16 +97,18 @@ public class MStudioWizardHandler extends CWizardHandler {
 	public final static String ARTIFACT = "org.eclipse.cdt.build.core.buildArtefactType";
 	public final static String EMPTY_STR = "";
 
-	final String TEMPLATE_TYPE_EXE    = "MStudioExecutableCProject";
-	final String TEMPLATE_TYPE_LIB    = "MStudioSimpleSharedLibCProject";
-	final String TEMPLATE_TYPE_MGINIT = "MStudioMginitModuleCProject";
-	final String TEMPLATE_TYPE_IAL    = "MStudioCustomIALCProject";
+	final String TEMPLATE_TYPE_EXE     = "MStudioExecutableCProject";
+	final String TEMPLATE_TYPE_MINIGUI = "MStudioExecutableMiniGUIProject";
+	final String TEMPLATE_TYPE_LIB     = "MStudioSimpleSharedLibCProject";
+	final String TEMPLATE_TYPE_MGINIT  = "MStudioMginitModuleCProject";
+	final String TEMPLATE_TYPE_IAL     = "MStudioCustomIALCProject";
 
 	private IWizard wizard = null;
 	private IWizardPage startingPage = null;
 	private IProjectType pt = null;
 	private IToolChain[] savedToolChains = null;
 	private EntryInfo entryInfo = null;
+	private MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private String propertyId = null;
 	private List<String> preferredTCs = new ArrayList<String>();
 
@@ -530,7 +532,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 	@SuppressWarnings("restriction")
 	private void createTargetConfiguration(IProject project) {
 
-		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		String crossToolPrefix = einfo.getToolChainPrefix(); 
 		String socName = einfo.getCurSoCName();
 		String configSuffix = (socName != null && socName.length() > 0)? socName : "Target";
@@ -691,22 +692,27 @@ public class MStudioWizardHandler extends CWizardHandler {
 		boolean isMgProject = false;
 		MStudioProjectTemplateType MgType = MStudioProjectTemplateType.exe;
 		String[] pkgs = mprj.getDepPkgs();
-		
+
+/*
 		for (int i = 0; i < pkgs.length; i++){
 			if (pkgs[i].equals("minigui")){
 				isMgProject = true;
 				break;
 			}
 		}
-		
+*/
+
 		if (TEMPLATE_TYPE_EXE.equals(tempName)){
 			MgType = MStudioProjectTemplateType.exe;
+		} else if (TEMPLATE_TYPE_MINIGUI.equals(tempName)){
+			isMgProject = true;
+			MgType = MStudioProjectTemplateType.exe;
 		} else if (TEMPLATE_TYPE_LIB.equals(tempName)){
-			MgType =  MStudioProjectTemplateType.normallib;
+			MgType = MStudioProjectTemplateType.normallib;
 		} else if (TEMPLATE_TYPE_MGINIT.equals(tempName)){
-			MgType =  MStudioProjectTemplateType.mginitmodule;
+			MgType = MStudioProjectTemplateType.mginitmodule;
 		} else if (TEMPLATE_TYPE_IAL.equals(tempName)){
-			MgType =  MStudioProjectTemplateType.dlcustom;
+			MgType = MStudioProjectTemplateType.dlcustom;
 		} 
 
 		mprj.initProjectTypeInfo(isMgProject, MgType);
@@ -961,6 +967,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 		if (!entryInfo.canFinish(startingPage, getConfigPage()))
 			return false;
 
+		if (listener != null && listener.isCurrent())
+			return false;
+
 		if (customPages != null)
 			for (int i = 0; i < customPages.length; i++)
 				if (!customPages[i].isPageComplete())
@@ -977,7 +986,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 		if (null != fConfigPage)
 			return fConfigPage.getSelectedPackages();
 		else 
-			return new String[0];
+			return einfo.getDefaultDepPackages();
+			// return new String[0];
 	}
 	
 	public boolean doCancel(){

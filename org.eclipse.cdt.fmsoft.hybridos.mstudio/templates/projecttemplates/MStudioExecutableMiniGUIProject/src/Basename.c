@@ -22,7 +22,7 @@ extern GHANDLE ncsGetIncoreAppIniInfo(void);
 #endif
 
 
-int DlModuleInit(void)
+int MiniGUIMain(int argc, const char* argv[])
 {
 #ifdef ntStartWindowEx
 	MSG Msg;
@@ -35,14 +35,14 @@ int DlModuleInit(void)
 
 	hPackage = ncsLoadIncoreResPackage();
 #else
-	char res_path [MAX_PATH];
+	char res_path[MAX_PATH];
 	char f_package[MAX_PATH];
 
 	ncsSetAppIniInfo(ncsLoadAppIniInfo(basename(argv[0])));
 
 	ncsInitialize();
 
-	if (ETC_OK != ncsGetValueFromIniInfo (PATH_INFO_SECT, RES_PATH_KEY,
+	if (ETC_OK != ncsGetValueFromIniInfo(PATH_INFO_SECT, RES_PATH_KEY,
 				res_path, MAX_PATH)) {
 		fprintf(stderr, "Resource Path not found.\n");
 		return 1;
@@ -68,7 +68,7 @@ int DlModuleInit(void)
 
 	SetDefaultWindowElementRenderer(ncsGetString(hPackage, NCSRM_SYSSTR_DEFRDR));
 #ifdef _MGRM_PROCESSES
-	JoinLayer(NAME_DEF_LAYER, "$(projectName)", 0, 0);
+	JoinLayer(NAME_DEF_LAYER, argv[0], 0, 0);
 #endif
 
 	mWin = ntStartWindowEx(hPackage, HWND_DESKTOP, (HICON)0, (HMENU)0, (DWORD)0);
@@ -87,9 +87,5 @@ int DlModuleInit(void)
 #endif
 
 	return 0;
-}
-
-void DlModuleDeinit(void)
-{
 }
 

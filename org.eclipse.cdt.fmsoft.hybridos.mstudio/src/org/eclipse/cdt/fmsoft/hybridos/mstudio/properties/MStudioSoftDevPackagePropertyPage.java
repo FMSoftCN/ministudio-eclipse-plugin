@@ -55,6 +55,7 @@ import org.eclipse.cdt.managedbuilder.core.IManagedProject;
 import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
+import org.eclipse.cdt.managedbuilder.ui.properties.ManagedBuilderUIImages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
@@ -83,10 +84,11 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	private Button selectAll = null;
 	private Table table = null;
 	private CheckboxTableViewer ctv = null;
+
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private MStudioEnvInfo msEnvInfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 	private boolean hasInitializeTable = false;
-	
+
 	private class PakckageSorter extends ViewerSorter {
 		 public int compare(Viewer viewer, Object e1, Object e2) {
 			 String n1 = e1.toString();
@@ -126,11 +128,12 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		composite2.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		table = new Table(composite2, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL);
-		table.setLayoutData(new GridData(250,350));
+		table.setLayoutData(new GridData(250, 350));
 
 		contentDes = new Label(composite2, SWT.WRAP);
-		contentDes.setText(EMPTY_STR);
-		GridData gdx = new GridData(250,350);
+		// contentDes.setText(EMPTY_STR);
+		contentDes.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.keyPackages"));
+		GridData gdx = new GridData(250, 350);
 		gdx.verticalAlignment = SWT.TOP;
 		contentDes.setLayoutData(gdx);
 
@@ -162,6 +165,11 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 				Object pItem = event.getElement();
 
+				if (isDefaultDepPkg((String)pItem)) {
+					ctv.setChecked(pItem, true);
+					return;
+				}
+
 				if (!event.getChecked()) {
 					setAffectedPkgsChecked((String)pItem);
 				} else {
@@ -172,31 +180,38 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				String obj = (String)((IStructuredSelection)(event.getSelection())).getFirstElement();
+
+				if (isDefaultDepPkg(obj))
+					return;
+
 				if (obj != null)
 					contentDes.setText(msEnvInfo.getAllSoftPkgs().get(obj).toString());
 			}
 		});
 		ctv.setSorter(new PakckageSorter());
-		
+
 
 		selectAll = new Button(composite2, SWT.CHECK);
 		selectAll.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.selectAll"));
 		selectAll.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		selectAll.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (selectAll.getSelection())
+				if (selectAll.getSelection()) {
 					ctv.setAllChecked(true);
-				else
+					contentDes.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.allPackages"));
+				} else {
 					ctv.setAllChecked(false);
+					setDefaultDepPkg();
+					contentDes.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.keyPackages"));
+				}
 			}
 		});
 
-
 		return composite;
 	}
-	
-	public void setVisible(boolean visible){
-		if (visible && !hasInitializeTable ){
+
+	public void setVisible(boolean visible) {
+		if (visible && !hasInitializeTable ) {
 			getCheckboxTableViewerData();
 			loadPersistentSettings();
 			hasInitializeTable = true;
@@ -213,7 +228,9 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 	}
 
 	protected void performDefaults() {
-		loadPersistentSettings();
+		// loadPersistentSettings();
+		setPerformDefaultsDepPkg();
+		contentDes.setText(MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.keyPackages"));
 		super.performDefaults();
 	}
 
@@ -251,8 +268,8 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.error"),
 					 MStudioMessages.getString("MStudioSoftDevPackagePropertyPage.errorMessages"));
 			 return false;
-		} 
-		
+		}
+
 		return true;
 	}
 
@@ -376,7 +393,7 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 		for (int idx = 0; idx < obj.length; idx++) {
 			String[] libs = einfo.getPackageLibs(obj[idx].toString());
 			for (int c = 0; c < libs.length; c++) {
-				if (!depLibList.contains(libs[c])){
+				if (!depLibList.contains(libs[c])) {
 					depLibList.add(libs[c]);
 				}
 			}
@@ -403,6 +420,39 @@ public class MStudioSoftDevPackagePropertyPage extends PropertyPage
 
 		if (cur_cfgs.length > 0)
 			ManagedBuildManager.saveBuildInfo(project, false);
+	}
+
+	private void setPerformDefaultsDepPkg() {
+		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
+		String[] s = mStudioProject.getDepPkgs();
+		Object[] elements = msEnvInfo.getAllSoftPkgs().keySet().toArray();
+
+		if (elements.length == s.length && s != null && elements != null) {
+			selectAll.setSelection(true);
+		} else {
+			selectAll.setSelection(false);
+			ctv.setCheckedElements(s);
+		}
+	}
+
+	private void setDefaultDepPkg() {
+		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
+		String[] ddps = mStudioProject.getDepPkgs();
+
+		if (null != ddps)
+			ctv.setCheckedElements(ddps);
+	}
+
+	private boolean isDefaultDepPkg(String name) {
+		MStudioProject mStudioProject = new MStudioProject((IProject)getElement());
+		String[] ddps = mStudioProject.getDepPkgs();
+
+		for (int i = 0; i < ddps.length; i++) {
+			if (name.equals(ddps[i]))
+				return true;
+		}
+
+		return false;
 	}
 }
 

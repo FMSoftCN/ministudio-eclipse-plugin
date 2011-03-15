@@ -27,8 +27,10 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
@@ -81,6 +83,12 @@ public class MStudioEnvInfo {
 	private final static String SOC_CFG_SECTION_GAL = "gal";
 	private final static String SOC_CFG_SECTION_IAL = "ial";
 
+	// private final String MSEI_EMPTY_PROJECT               = "Empty Project";               // Key depend lib: gio
+	private final String MSEI_MINIGUI_PROJECT             = "MiniGUI Project";             // Key depend lib: minigui
+	// private final String MSEI_MGINIT_MODULE_PROJECT       = "mginit Module Project";       // Key depend lib: minigui
+	// private final String MSEI_DICUSTOM_IAL_ENGINE_PROJECT = "DICustom IAL Engine Project"; // Key depend lib: 
+	// private final String MSEI_EMPTY_CPLUSPLUS_PROJECT     = "Empty C++ Project";           // Key depend lib: gio
+
 	private final static String EMPTY_STR = "";
 	private final static String MSE_SPACE = " ";
 	private final static String RESOLUTION_REGEX_STRING = "[1-9]+[0-9]*\\s*[*x]\\s*[0-9]+[1-9]*\\s*-\\s*[1-9]+bpp";
@@ -96,6 +104,11 @@ public class MStudioEnvInfo {
 	private Map<String, List<String>> affectedPkgs = null;
 	private Map<String, List<String>> depPkgs = null;
 	private Map<String, MStudioParserIniFile> allSoftPkgs = null;
+
+	//lib: 
+	private String projectTypeName = null;
+	private Map<String, List<String>> defaultLibs = null;
+	private List<String> defaultDepPkgs = new ArrayList<String>();
 
 	private MStudioParserIniFile iniFile = null;
 	private MiniGUIRunMode mgRunMode = MiniGUIRunMode.thread;
@@ -246,6 +259,10 @@ public class MStudioEnvInfo {
 		return depPkgs;
 	}
 
+	public Map<String, List<String>> getDefaultLibs() {
+		return defaultLibs;
+	}
+
 	public Map<String, List<String>> getAffectedPkgs() {
 		return affectedPkgs;
 	}
@@ -359,6 +376,11 @@ public class MStudioEnvInfo {
 		else
 			depPkgs.clear();
 
+		if (null == defaultLibs)
+			defaultLibs = new HashMap<String, List<String>>();
+		else
+			defaultLibs.clear();
+
 		if (null == allSoftPkgs)
 			allSoftPkgs = new HashMap<String, MStudioParserIniFile>();
 		else
@@ -428,6 +450,14 @@ public class MStudioEnvInfo {
 				}
 				List<String> depList = Arrays.asList(dep);
 				depPkgs.put(pkgName, depList);
+			}
+
+			// libs and packages
+			String keyLibs = pfgFile.getStringProperty(sect, "lib");
+			if (null != keyLibs && !keyLibs.equals(EMPTY_STR)) {
+				String libs[] = keyLibs.split(MSE_SPACE);
+				List<String> keyList = Arrays.asList(libs);
+				defaultLibs.put(pkgName, keyList);
 			}
 		}
 	}
@@ -533,24 +563,24 @@ public class MStudioEnvInfo {
 		return Platform.getInstanceLocation().getURL().getPath() + ".metadata/";
 	}
 	
-	public List<String> getResolutions(){
+	public List<String> getResolutions() {
 		String section = "resolutions";
 		String param = "num";
 		String cfgFile = MStudioEnvInfo.getCurSoCConfFileName();
-		if(cfgFile == null)
+		if (cfgFile == null)
 			return null;
 		MStudioParserIniFile f = new MStudioParserIniFile(cfgFile);
-		if(f == null)
+		if (f == null)
 			return null;
 		Integer numI = f.getIntegerProperty(section, param);
 		int num = (numI == null)? 0 : numI;
-		if(num <= 0)
+		if (num <= 0)
 			return null;
 		List<String> resolutionList = new ArrayList<String>();
 		for(int i = 0; i < num; i++)
 		{
 			String s = f.getStringProperty(section, "resolution" + i);
-			if(!s.matches(RESOLUTION_REGEX_STRING) || s == null)
+			if (!s.matches(RESOLUTION_REGEX_STRING) || s == null)
 				continue;
 			else
 				resolutionList.add(s);	
@@ -567,7 +597,7 @@ public class MStudioEnvInfo {
 		if (f == null)
 			return null;
 		String dxwxh = f.getStringProperty(PC_XVFB_SECTION, DEFAULT_MODE_PROPERTY);
-		if(dxwxh == null)
+		if (dxwxh == null)
 			return null;
 		// Check the string is "WWWxHHH-DDbpp" or not. 
 		if (!dxwxh.matches(RESOLUTION_REGEX_STRING)) 
@@ -618,6 +648,63 @@ public class MStudioEnvInfo {
 			    }
 		    }
 		}
+	}
+
+	private String getDefaultDepPackagesFileName() {
+		String pluginRootPath = getPluginRoot(MStudioPlugin.PLUGIN_ID);
+		if (pluginRootPath == null)
+		 	return null;
+
+		return pluginRootPath + "project_library.ptkl";
+	}
+
+	private String getPluginRoot(String pluginID) {
+		String path = null;
+		try {
+			path = FileLocator.toFileURL(
+				Platform.getBundle(pluginID).getEntry("")).getPath();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return path;
+	}
+
+	public void setDefaultDepPackages(String section) {
+		if (section == null)
+			return;
+
+		projectTypeName = section;
+		String ddpFile = getDefaultDepPackagesFileName();
+		if (ddpFile == null)
+			return;
+
+		MStudioParserIniFile fIniFile = new MStudioParserIniFile(ddpFile);
+		if (fIniFile == null)
+			return;
+
+		defaultDepPkgs.clear();
+		String keyLib = null;
+		if (MSEI_MINIGUI_PROJECT.equals(section)) {
+			if (mgRunMode == MiniGUIRunMode.process) {
+				keyLib = fIniFile.getStringProperty(section, "key_lib_pe");
+			} else if (mgRunMode == MiniGUIRunMode.thread) {
+				keyLib = fIniFile.getStringProperty(section, "key_lib_se");
+			} else {
+				keyLib = fIniFile.getStringProperty(section, "key_lib_sa");
+			}
+		} else {
+			keyLib = fIniFile.getStringProperty(section, "key_lib");
+		}
+		if (null != keyLib)
+			defaultDepPkgs.add(keyLib);
+	}
+
+	public String[] getDefaultDepPackages() {
+		return defaultDepPkgs.toArray(new String[defaultDepPkgs.size()]);
+	}
+
+	public String getProjectTypeName() {
+		return projectTypeName;
 	}
 }
 

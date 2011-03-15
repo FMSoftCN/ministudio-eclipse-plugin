@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template
+	type="ProjTempl"
+	version="1.0"
+	supplier="feynman"
+	revision="2.0"
+	author="sylvia"
+	copyright="Copyright (c) 2010 Feynman Software. All rights reserved."
+	id="MStudioExecutableMiniGUIProject"
+	label="%MStudioExeMiniGUIProject.template.label"
+	description="%MStudioExeMiniGUIProject.template.description"
+	help="help.html">
+
+	<property-group
+		id="basics"
+		label="%Project.basics.label"
+		description="%Project.basics.description"
+		type="PAGES-ONLY"
+		help="help.html">
+
+		<property id="sourceDir"
+			label="%Project.sourceDir.label"
+			description="%Project.sourceDir.description"
+			type="input"
+			default="%Project.sourceDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+
+		<property id="incDir"
+			label="%Project.incDir.label"
+			description="%Project.incDir.description"
+			type="input"
+			default="%Project.incDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+
+		<property id="resourceDir"
+			label="%Project.resourceDir.label"
+			description="%Project.resourceDir.description"
+			type="input"
+			default="%Project.resourceDir.default"
+			pattern="[a-zA-Z0-9]+"
+			mandatory="false"
+			persist="false"
+			hidden="true"/>
+	</property-group>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.NewManagedProject">
+		<simple name="name" value="$(projectName)" /> 
+		<simple name="artifactExtension" value="exe" /> 
+		<simple name="isCProject" value="true" /> 
+	</process>
+
+	<process type="org.eclipse.cdt.managedbuilder.core.SetMBSStringListOptionValues">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="resourcePaths">
+			<element>
+				<simple name="id" value=".*c\.compiler\.option\.include\.paths"/>
+				<simple-array name="values">
+					<element value="../include/"/>
+				</simple-array>
+				<simple name="path" value=""/>
+			</element>
+		</complex-array>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name ="path" value="$(incDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.CreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name ="path" value="$(sourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.core.AddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+
+
+	<!--only for project based on mstudio--> 
+	<process type="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioCreateSourceFolder">
+		<simple name="projectName" value="$(projectName)"/>
+		<simple name ="path" value="$(resourceDir)"/>
+	</process>
+
+	<process type="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioAddFiles">
+		<simple name="projectName" value="$(projectName)"/>
+		<complex-array name="files">
+			<element>
+				<simple name="source" value="include/Basename.h"/>
+				<simple name="target" value="$(incDir)/ncs-windows.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="src/Basename.c"/>
+				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="src/base.project"/>
+				<simple name="target" value="res/res.project"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="include/resource.h"/>
+				<simple name="target" value="$(incDir)/resource.h"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+			<element>
+				<simple name="source" value="etc/prjcfg.base"/>
+				<simple name="target" value=".$(projectName)_res.cfg"/>
+				<simple name="replaceable" value="true"/>
+			</element>
+		</complex-array>
+	</process>
+
+</template>

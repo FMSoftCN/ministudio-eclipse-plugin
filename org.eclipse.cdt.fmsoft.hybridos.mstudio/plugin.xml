@@ -12,6 +12,7 @@
             <run class="org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature"/>  
         </runtime> 
     </extension>
+
     <extension point="org.eclipse.ui.newWizards">
         <category
             name="%MStudioNewWizardsCategory.name"
@@ -99,6 +100,12 @@
             filterPattern=".*"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioExecutableCProject"
             location="templates/projecttemplates/MStudioExecutableCProject/template.xml"
+            projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe">
+        </template>
+        <template
+            filterPattern=".*"
+            id="org.eclipse.cdt.fmsoft.hybridos.mstudio.templates.MStudioExecutableMiniGUIProject"
+            location="templates/projecttemplates/MStudioExecutableMiniGUIProject/template.xml"
             projectType="org.eclipse.cdt.fmsoft.hybridos.mstudio.buildArtefactType.c.exe">
         </template>
         <template

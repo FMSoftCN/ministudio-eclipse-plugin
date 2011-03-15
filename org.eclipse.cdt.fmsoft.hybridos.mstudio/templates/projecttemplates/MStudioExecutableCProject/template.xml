@@ -77,42 +77,5 @@ description="%MStudioExeCProject.template.description" help="help.html">
 		</complex-array>
 	</process>
 
-
-    <!--only for project based on mstudio--> 
-	<process type="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioCreateSourceFolder">
-		<simple name="projectName" value="$(projectName)"/>
-        <simple name ="path" value="$(resourceDir)"/>
-	</process>
-
-	<process type="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioAddFiles">
-		<simple name="projectName" value="$(projectName)"/>
-		<complex-array name="files">
-			<element>
-				<simple name="source" value="include/Basename.h"/>
-				<simple name="target" value="$(incDir)/ncs-windows.h"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
-				<simple name="source" value="src/Basename_mg.c"/>
-				<simple name="target" value="$(sourceDir)/$(projectName)_main.c"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
-				<simple name="source" value="src/base.project"/>
-				<simple name="target" value="res/res.project"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
-				<simple name="source" value="include/resource.h"/>
-				<simple name="target" value="$(incDir)/resource.h"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-			<element>
-				<simple name="source" value="etc/prjcfg.base"/>
-				<simple name="target" value=".$(projectName)_res.cfg"/>
-				<simple name="replaceable" value="true"/>
-			</element>
-		</complex-array>
-	</process>
-	
 </template>
+

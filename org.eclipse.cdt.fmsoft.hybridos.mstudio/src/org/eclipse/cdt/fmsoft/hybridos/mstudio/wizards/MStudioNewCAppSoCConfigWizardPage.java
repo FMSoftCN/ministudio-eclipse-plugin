@@ -82,12 +82,15 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	private List<PackageItem> pkgs = new ArrayList<PackageItem>();
 	private List<String> selectedPackages = new ArrayList<String>();
 
+	private String[] defaultDepPkg = null;
+
 	private Label packageDesc = null;
 	private Button buttonCheck = null;
 	private Composite msSocParent = null;
 	private CheckboxTableViewer ctv = null;
 	private boolean ctvHasInitialized = false;
 	private boolean socCancelOnlyOne = false;
+	private boolean isDispkayPackageDesc = false;
 	private String errorMessage = null;
 	private String message = MESSAGE;
 
@@ -131,8 +134,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		String[] socType = msEnvInfo.getSoCPaths();
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
+		isDispkayPackageDesc = false;
 		if (null != socName && !socName.equals("null")) {
 			socCancelOnlyOne = false;
+			isDispkayPackageDesc = true;
 			combo.setText(socName);
 			combo.setEnabled(false);
 		} else {
@@ -142,8 +147,11 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 					MStudioSoCPreferencePage.setCurrentSoC(socName);
 					socCancelOnlyOne = true;
 					msEnvInfo.updateSoCName();
+					msEnvInfo.setDefaultDepPackages(msEnvInfo.getProjectTypeName());
+					getDefaultLibsName();
 					setCheckboxTableViewerData();
-					packageDesc.setText("No Select Package.");
+					packageDesc.setText(MStudioMessages.getString(
+							"MStudioNewCAppSoCConfigWizardPage.keyPackages"));
 					setPageComplete(isCustomPageComplete());
 					update();
 				}
@@ -170,8 +178,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		table.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 
 		packageDesc = new Label(cmpstPkgDesc, SWT.WRAP | SWT.BORDER);
-		// packageDesc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 		packageDesc.setLayoutData(new GridData(GridData.FILL_BOTH));
+		if (isDispkayPackageDesc)
+			packageDesc.setText(MStudioMessages.getString(
+					"MStudioNewCAppSoCConfigWizardPage.keyPackages"));
 
 		ctv = new CheckboxTableViewer(table);
 		ctv.setContentProvider(new IStructuredContentProvider() {
@@ -192,10 +202,15 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		});
 		ctv.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
+				PackageItem itm = (PackageItem) event.getElement();
+
+				if (isDefaultDepPkg(itm.getName())) {
+					ctv.setChecked(itm, true);
+					return;
+				}
+
 				if (buttonCheck.getSelection())
 					buttonCheck.setSelection(false);
-
-				PackageItem itm = (PackageItem) event.getElement();
 
 				if (!event.getChecked()) {
 					setAffectedPkgsChecked(itm.getName());
@@ -210,14 +225,16 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				Object obj = ((IStructuredSelection)(ctv.getSelection())).getFirstElement();
-				PackageItem pck = (PackageItem) obj;
+				PackageItem pck = (PackageItem)obj;
+
+				if (isDefaultDepPkg(pck.getName()))
+					return;
+
 				if (pck != null && pck.getDescription() != null)
 					packageDesc.setText(pck.getDescription());
 			}
 		});
 		ctv.setSorter(new PakckageSorter());
-
-//		setCheckboxTableViewerData();
 
 		buttonCheck = new Button(cmpstPkgDesc, SWT.CHECK);
 		buttonCheck.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.7"));
@@ -227,11 +244,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				if (buttonCheck.getSelection()) {
 					ctv.setAllChecked(true);
 					addAllselectedPackages();
-					packageDesc.setText("Select All Package.");
+					packageDesc.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.allPackages"));
 				} else {
 					ctv.setAllChecked(false);
 					selectedPackages.clear();
-					packageDesc.setText("No Select Package.");
+					setDefaultDepPkg();
+					packageDesc.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.keyPackages"));
 				}
 				setPageComplete(isCustomPageComplete());
 				update();
@@ -295,9 +313,12 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 
 		if (visible) {
 			msSocParent.getParent().layout(true, true);
+			getDefaultLibsName();
 			if (!ctvHasInitialized) {
 				setCheckboxTableViewerData();
 				ctvHasInitialized = true;
+			} else {
+				setDefaultDepPkg();
 			}
 			update();
 		}
@@ -429,6 +450,36 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		selectedPackages.add(depPkgs);
 	}
 
+	private void getDefaultLibsName() {
+		String[] keylibs = msEnvInfo.getDefaultDepPackages();
+
+		if (null != keylibs && 0 != keylibs.length) {
+			String pkgsName = getDependPkgsName(keylibs[0]);
+			if (null == pkgsName)
+				return;
+
+			List<String> defaultPkgs = new ArrayList<String>();
+			defaultPkgs.add(pkgsName);
+			getDependPkgsChecked(pkgsName, defaultPkgs);
+
+			defaultDepPkg = defaultPkgs.toArray(new String[defaultPkgs.size()]);
+		}
+	}
+
+	private String getDependPkgsName(String libName) {
+		for (Map.Entry<String, List<String>> info : msEnvInfo.getDefaultLibs().entrySet()) {
+			List<String> lib = info.getValue();
+
+			for (int i = 0; i < lib.size(); i++) {
+				String libString = lib.get(i);
+				if (libString.equals(libName))
+					return info.getKey();
+			}
+		}
+
+		return null;
+	}
+
 	private void getDependPkgsChecked(String depName, List<String> depend) {
 
 		for (Map.Entry<String, List<String>> info : msEnvInfo.getDepPkgs().entrySet()) {
@@ -464,6 +515,32 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		}
 		ctv.remove(pkgs.toArray());
 		ctv.setInput(pkgs.toArray());
+		setDefaultDepPkg();
+	}
+
+	private void setDefaultDepPkg() {
+		if (null == defaultDepPkg)
+			return;
+
+		ctv.setAllChecked(false);
+		for (int i = 0; i < defaultDepPkg.length; i++) {
+			PackageItem pItem = getPackedItem(defaultDepPkg[i]);
+			if (null == pItem)
+				break;
+			ctv.setChecked(pItem, true);
+			if (selectedPackages.contains(defaultDepPkg[i]))
+				continue;
+			selectedPackages.add(defaultDepPkg[i]);
+		}
+	}
+
+	private boolean isDefaultDepPkg(String name) {
+		for (int i = 0; i < defaultDepPkg.length; i++) {
+			if (name.equals(defaultDepPkg[i]))
+				return true;
+		}
+
+		return false;
 	}
 
 	private void clearCheckboxTableViewerData() {
