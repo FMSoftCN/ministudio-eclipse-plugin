@@ -391,6 +391,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			if (affectedPkgs.equals(info.getKey())) {
 				List<String> affected = new ArrayList<String>(info.getValue());
 				getAffectedPkgsChecked(affectedPkgs, affected);
+				containsCheckedAffectedElements(affected);
 
 				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
 					return;
@@ -406,6 +407,32 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			}
 		}
 		selectedPackages.remove(affectedPkgs);
+	}
+
+	private void containsCheckedAffectedElements(List<String> affected) {
+		Object[] elements = msEnvInfo.getAllSoftPkgs().keySet().toArray();
+		Object[] obj = ctv.getCheckedElements();
+		List<String> list = new ArrayList<String>();
+
+		list.clear();
+		for (int i = 0; i < elements.length; i++) {
+			list.add(elements[i].toString());
+		}
+		for (int i = 0; i < obj.length; i++) {
+			PackageItem pItem = (PackageItem)obj[i];
+			String name = pItem.getName();
+			if (list.contains(name))
+				list.remove(name);
+		}
+
+		for (int j = 0; j < list.size(); j++) {
+			String elem = list.get(j);
+			for (int i = 0; i < affected.size(); i++) {
+				String pkgName = affected.get(i);
+				if (elem.equals(pkgName))
+					affected.remove(pkgName);
+			}
+		}
 	}
 
 	private void getAffectedPkgsChecked(String affName, List<String> affected) {
@@ -431,6 +458,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 			if (depPkgs.equals(info.getKey())) {
 				List<String> dep = new ArrayList<String>(info.getValue());
 				getDependPkgsChecked(depPkgs, dep);
+				containsCheckedDependElements(dep);
 
 				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
 					return;
@@ -479,6 +507,19 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		}
 
 		return null;
+	}
+
+	private void containsCheckedDependElements(List<String> depend) {
+		Object[] obj = ctv.getCheckedElements();
+		for (int j = 0; j < obj.length; j++) {
+			PackageItem pItem = (PackageItem)obj[j];
+			String element = pItem.getName();
+			for (int i = 0; i < depend.size(); i++) {
+				String pkgName = depend.get(i);
+				if (element.equals(pkgName))
+					depend.remove(pkgName);
+			}
+		}
 	}
 
 	private void getDependPkgsChecked(String depName, List<String> depend) {
