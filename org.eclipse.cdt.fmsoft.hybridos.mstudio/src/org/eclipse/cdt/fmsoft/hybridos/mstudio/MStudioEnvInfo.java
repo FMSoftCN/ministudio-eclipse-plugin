@@ -607,7 +607,6 @@ public class MStudioEnvInfo {
 		return dxwxh;
 	}
 	
-	@SuppressWarnings("restriction")
 	public void updateMginitMemus () {
 		
 		boolean beShow = MiniGUIRunMode.process.equals(mgRunMode);
@@ -720,6 +719,13 @@ public class MStudioEnvInfo {
 		for (int i = 0; i < defaultDepPkg.length; i++) {
 			defaultDepPkgs.add(defaultDepPkg[i]);
 		}
+	}
+
+	public String getDefaultLocationPath(){
+		String socName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCurSoCName();
+		if(socName == null)
+			return null;
+		return System.getProperty("user.home") + "/fmsoft/" + socName + "/nfsroot/";
 	}
 }
 

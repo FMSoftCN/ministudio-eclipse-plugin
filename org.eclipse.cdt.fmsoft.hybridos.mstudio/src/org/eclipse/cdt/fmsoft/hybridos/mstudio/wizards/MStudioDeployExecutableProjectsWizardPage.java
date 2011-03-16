@@ -17,8 +17,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
-
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -42,6 +41,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Path;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -107,13 +107,20 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath = new DirectoryFieldEditor("filePath",
 				MStudioMessages.getString("MStudioDeployWizardPage.selectExeProjects.locationTitle"),
 				bottomPanel2);
+		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				if(checkIsDefaultLocation(locationPath.getStringValue())){
+					MessageDialog.openWarning(getShell(),
+							MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
+							MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
+							replace("${DIR}", locationPath.getStringValue()));
+				}
 				validatePage();
 				}});
 
+		//locationPath.getTextControl(parent).setLayoutData(new GridData(150,20));
 		//bottomPanel3
-		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		Composite bottomPanel3 = new Composite(topPanel, SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout(4, false));
 		bottomPanel3.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -157,16 +164,34 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		setPageComplete(false);
 	}
 
+	public boolean checkIsDefaultLocation(String path){
+		if(path == null)
+			return false;
+		return !MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath().equals(path);
+	}
+	
 	public boolean locationChanged() {
-
+		
 		String localPath = locationPath.getStringValue();
+		if(localPath == null || localPath=="")
+			return false;
+		if(!isValidPath(localPath)){
+			locationPath.setErrorMessage(MStudioMessages.
+					getString("MStudioDeployWizardPage.deployErrors.pathInValid"));
+			locationPath.showErrorMessage();
+			return false;
+		}
+		return true;
+		/*
 		File file = new File(localPath);
 
 		if (!file.exists())
 			return false;
 		else
 			return true;
+			*/
 	}
+	
 	private void initGALAndIAL(){
 		String selectedGalEngine = null;
 		String selectedIalEngine = null;
@@ -396,6 +421,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		public void keyReleased(KeyEvent e){
 			validatePage();
 		}
+	}
+
+	private boolean isValidPath(String path){
+		Path p = new Path(path);
+		if(p == null)
+			return false;
+		return p.isValidPath(path);
 	}
 }
 

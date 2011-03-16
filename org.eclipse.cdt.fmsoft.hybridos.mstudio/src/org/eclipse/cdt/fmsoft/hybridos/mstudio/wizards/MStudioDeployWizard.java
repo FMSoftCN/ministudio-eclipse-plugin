@@ -177,6 +177,8 @@ public class MStudioDeployWizard extends Wizard{
 	}
 	@Override
 	public boolean performFinish() {	
+		if(!checkDeloyLocation())
+			return false;
 		dialog=new MStudioDeployDialog(this.getShell());		
 		this.getShell().getDisplay().asyncExec(new Runnable(){
 			public void run(){				
@@ -827,5 +829,42 @@ public class MStudioDeployWizard extends Wizard{
 			return DEPLIBS_PROGRAM_DEPLOY;
 	}
 
+	private boolean checkDeloyLocation(){
+		String location = this.getDeployExecuteableWizardPage().getDeployLocation();
+		if(!isPathExists(location)){
+			if(MessageDialog.openConfirm(getShell(), 
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogTitle"), 
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogContent"))){
+				boolean isCreated = true;
+				try{
+					File folder = new File(location);
+					if(!folder.mkdirs())
+						isCreated = false;							
+				}catch(Exception ex){
+					isCreated = false;
+				}
+				if(!isCreated){
+					MessageDialog.openError(this.getShell(),
+							MStudioMessages.getString("MStudioDeployPreferencePage.createPath.errorTitle"),
+							MStudioMessages.getString("MStudioDeployPreferencePage.createPath.errorContent"));
+					return false;
+				}
+			}
+			else
+				return false;
+		}
+		return true;
+	}
+	private boolean isPathExists(String path){
+		try{
+			File f = new File(path);
+			if(f == null)
+				return false;
+			return f.exists();
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return false;
+	}
 }
 

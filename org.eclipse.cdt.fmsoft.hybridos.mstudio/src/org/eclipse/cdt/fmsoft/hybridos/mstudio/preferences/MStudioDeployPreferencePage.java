@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -56,6 +57,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
+import org.eclipse.core.runtime.Path;
 
 
 public class MStudioDeployPreferencePage extends PreferencePage
@@ -64,6 +66,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private final static String MSDPP_SPLIT = "\t";
 	private final static String MSDPP_PATH_INVALID =  
 		MStudioMessages.getString("MStudioDeployPreferencePage.pathTip");
+	
 	private final static String MSDPP_DPLY_LOCAL = 
 		MStudioMessages.getString("MStudioDeployPreferencePage.deployLocation");
 	private final static String MSDPP_GAL_INVALID =  
@@ -77,6 +80,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private final static String MSDPP_EMPTY_STR = "";
 
 	private Label tipText = null;
+	//private Label warnText = null;
 	private DirectoryFieldEditor locationPath = null;
 	private List<Button> btnList = new ArrayList<Button>();
 	private List<String> allServList = new ArrayList<String>();
@@ -112,6 +116,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		allServList = s;
 	}
 
+	/*
 	private String getChangedDeployLocation() {
 		String l = locationPath.getStringValue();
 		File file = new File(l);
@@ -120,26 +125,42 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		}
 		return l;
 	}
-
+*/
 	public void locationChanged() {
-		if (!new File(locationPath.getStringValue()).exists())
+		if(!isValidPath(locationPath.getStringValue())){
 			updateTipMessage(MSDPP_PATH_INVALID);
-		else if(galCom.getSelectionIndex() < 0)
+			return;
+		}	
+		if(galCom.getSelectionIndex() < 0)
 			updateTipMessage(MSDPP_GAL_INVALID);
 		else if(ialCom.getSelectionIndex() < 0)
 			updateTipMessage(MSDPP_IAL_INVALID);
 		else
 			updateTipMessage(MSDPP_EMPTY_STR);
+		if(isChangedLocation(locationPath.getStringValue())){
+			MessageDialog.openWarning(this.getShell(),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
+					replace("${DIR}", locationPath.getStringValue()));
+		}
 	}
 
 	private void initializeByStoreData() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		if(null == store)
 			return;
-		String locationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
-		locationPath.setStringValue(locationValue);
-		File locationFile = new File(locationValue);
-		if (!locationFile.exists() || locationValue == null || locationValue == "")
+		String prefLocationValue = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
+		String locationValue = getDefaultDeployLocationPath();
+		if(locationValue != null){
+			locationPath.setStringValue(locationValue);
+			if(prefLocationValue != null && prefLocationValue.equals(locationValue) && isValidPath(locationValue))
+				store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, locationValue);
+		}
+		else
+			locationPath.setStringValue("");
+		//File locationFile = new File(locationValue);
+		//if (!locationFile.exists() || locationValue == null || locationValue == "")
+		if(locationValue == null || !isValidPath(locationValue))
 			updateTipMessage(MSDPP_PATH_INVALID);
 		//	setValid(false);
 			
@@ -188,12 +209,34 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 	private boolean saveToStoreData() {
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		String locationToStore = getChangedDeployLocation();
-
-		if (locationToStore == null) 
-			return false;
-		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, locationToStore);
+		//String locationToStore = getChangedDeployLocation();
 		
+		String location = locationPath.getStringValue();
+		if(location == null || location == "" || store == null)
+			return false;
+		
+		if(!isValidPath(location))
+			return false;
+		
+		if(!isPathExists(location)) {
+			if(MessageDialog.openConfirm(getShell(), 
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogTitle"), 
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogContent"))){
+				try{
+					File folder = new File(location);
+					if(!folder.mkdirs())
+						return false;							
+				}catch(Exception ex){
+					ex.printStackTrace();
+					return false;
+				}
+			}
+			else
+				return false;
+		}
+		
+		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, location);
+
 		String servToStore = new String();
 
 		for (Iterator<String> it = selServList.iterator(); it.hasNext(); ) {
@@ -228,7 +271,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		lc.setLayout(new GridLayout());
 		lc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		tipText = createTipMsgContent(lc);
-
+		//warnText = createTipMsgContent(lc);
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
 		gd1.horizontalSpan = 3;
 		tipText.setLayoutData(gd1);
@@ -273,21 +316,23 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		Label t = new Label(parent, SWT.NULL);
 		Color c = Display.getCurrent() .getSystemColor(SWT.COLOR_RED);
 		t.setForeground(c);
+		t.setVisible(false);
 		return  t;
 	}
 
 	protected void updateTipMessage(String tip) {
 		tipText.setText(tip);
+		tipText.setVisible(true);
 	}
 
 	private DirectoryFieldEditor createLocationPathContent(Composite parent) {
-
+		
 		locationPath = new DirectoryFieldEditor(MSDPP_EMPTY_STR, MSDPP_DPLY_LOCAL, parent);
 		locationPath.getTextControl(parent).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				locationChanged();
 			}});
-
+		locationPath.getTextControl(parent).setLayoutData(new GridData(200,20));
 		return locationPath;
 	}
 	
@@ -396,11 +441,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	protected void performDefaults() {
-		locationPath.setStringValue("");
+		//locationPath.setStringValue("");
 		galCom.deselectAll();
 		ialCom.deselectAll();
 		
 		initializeByStoreData();
+		locationChanged();
 		super.performDefaults();
 	}
 
@@ -427,5 +473,41 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		return "";
 	}
 	
+	public String getDefaultDeployLocationPath(){
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		if(store == null)
+			return null;
+		if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+		{
+			String prefLocation = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
+			if(prefLocation != null && prefLocation != "" && isValidPath(prefLocation))
+				return prefLocation;	    
+		}
+		
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath();
+	}
+	
+	private boolean isValidPath(String path){
+		Path p = new Path(path);
+		if(p == null)
+			return false;
+		return p.isValidPath(path);
+	}
+	private boolean isPathExists(String path){
+		try{
+			File f = new File(path);
+			if(f == null)
+				return false;
+			return f.exists();
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	private boolean isChangedLocation(String path){
+		if(path == null)
+			return false;
+		return !getDefaultDeployLocationPath().equals(path);
+	}
 }
 
