@@ -355,7 +355,7 @@
        <wizard
              category="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.category"
              class="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
-             icon="icons/mginit.gif"
+             icon="icons/hybridos-import.png"
              id="org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards.MStudioImportProjectWizard"
              name="HybridOS Project">
           <description>
