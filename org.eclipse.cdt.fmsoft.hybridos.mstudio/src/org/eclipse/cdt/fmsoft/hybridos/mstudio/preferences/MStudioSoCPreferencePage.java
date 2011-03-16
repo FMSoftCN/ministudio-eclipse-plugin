@@ -398,7 +398,21 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		
 		MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		String crossToolPrefix = einfo.getToolChainPrefix();
-
+		
+		List<String> depLibList = new ArrayList<String> ();
+		String[] pkgs = new MStudioProject(project).getDepPkgs();
+		if (pkgs != null) {
+			for (int idx = 0; idx < pkgs.length; idx++) {
+				String[] libs = einfo.getPackageLibs(pkgs[idx]);
+				if (libs != null) {
+					for (int c = 0; c < libs.length; c++){
+						depLibList.add(libs[c]);
+					}
+				}
+			}
+		}
+		String[] depLibs = depLibList.toArray(new String[depLibList.size()]);
+		
 		for (int i = 0; i < cur_cfgs.length; i++) {
 
 			// change the configure name
@@ -466,6 +480,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 							}
 							cur_cfgs[i].setOption(t, o, libPaths);
 						}
+						
+						if (null != (o = t.getOptionById("gnu.c.link.option.libs"))){
+							cur_cfgs[i].setOption(t, o, depLibs);
+						}
 					}
 					
 					if (t.getId().contains("cpp.link")) {
@@ -479,6 +497,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 								}
 							}
 							cur_cfgs[i].setOption(t, o, libPaths);
+						}
+						
+						if (null != (o = t.getOptionById("gnu.cpp.link.option.libs"))){
+							cur_cfgs[i].setOption(t, o, depLibs);
 						}
 					}
 				} catch (BuildException e) {
