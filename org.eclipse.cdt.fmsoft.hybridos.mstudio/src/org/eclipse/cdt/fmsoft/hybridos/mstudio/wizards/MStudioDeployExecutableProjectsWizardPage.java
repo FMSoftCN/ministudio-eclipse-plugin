@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 
@@ -80,7 +81,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	public void createControl(Composite parent) {
-
 		Composite topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -110,16 +110,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				if(checkIsDefaultLocation(locationPath.getStringValue())){
-					MessageDialog.openWarning(getShell(),
-							MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
-							MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
-							replace("${DIR}", locationPath.getStringValue()));
-				}
 				validatePage();
 				}});
-
-		//locationPath.getTextControl(parent).setLayoutData(new GridData(150,20));
+		Label locationDes = new Label(bottomPanel2,SWT.NONE);
+		locationDes.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
+		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
+		gd1.horizontalSpan = 3;
+		locationDes.setLayoutData(gd1);
+		locationDes.setText(MStudioMessages.
+				getString("MStudioDeployPreferencePage.locationPath.description"));
+		
 		//bottomPanel3
 		Composite bottomPanel3 = new Composite(topPanel, SWT.NONE);
 		bottomPanel3.setLayout(new GridLayout(4, false));
@@ -167,11 +167,13 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	public boolean checkIsDefaultLocation(String path){
 		if(path == null)
 			return false;
-		return !MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath().equals(path);
+		String curLocation = MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath();
+		if(curLocation == null)
+			return false;
+		return curLocation.equals(path);
 	}
 	
 	public boolean locationChanged() {
-		
 		String localPath = locationPath.getStringValue();
 		if(localPath == null || localPath=="")
 			return false;
@@ -281,7 +283,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 */
 
 	private void initExeProjects() {
-
 		projects = MStudioDeployWizard.getExeProjects();
 		if (projects == null)
 			return;
@@ -301,7 +302,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*\\s*[x*]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
+		String regexString = "[1-9]+[0-9]*\\s*[x*×]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
 		//return Pattern.matches(regexString, resolution);
 		return resolution.matches(regexString);
 	}
@@ -336,7 +337,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	public IProject[] getDeployExeProjects() {
-
 		Object[] exeChecked = ctv.getCheckedElements();
 		IProject[] exeProjects = MStudioDeployWizard.getExeProjects();
 		ArrayList<String> sList = new ArrayList<String>();
@@ -387,13 +387,19 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return gal.getItem(gal.getSelectionIndex()).trim();
 	}
 
+	private static int passCheckLocation = 0;
 	public IWizardPage getNextPage() {
-
 		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 		if (wizard == null)
 			return null;
-
+		if(++passCheckLocation % 2 == 0){
+			if(!checkLocation()){
+				setPageComplete(false);
+				return null;
+			}
+		}
 		//wizard.getDeploySharedLibWizardPage().update();
+		
 		if (MStudioDeployWizard.getModuleProjects().length <= 0
 				&& MStudioDeployWizard.getIALProjects().length <= 0) {
 			return wizard.getNextPage(this).getNextPage();
@@ -403,7 +409,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	protected class SelectedChangeListener implements SelectionListener {
-
 		public void widgetDefaultSelected(SelectionEvent e) {
 			validatePage();
 		}
@@ -428,6 +433,18 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if(p == null)
 			return false;
 		return p.isValidPath(path);
+	}
+
+	private boolean checkLocation(){
+		if(!checkIsDefaultLocation(locationPath.getStringValue())){
+			if(!MessageDialog.openConfirm(getShell(),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
+					replace("${DIR}", locationPath.getStringValue()))){
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

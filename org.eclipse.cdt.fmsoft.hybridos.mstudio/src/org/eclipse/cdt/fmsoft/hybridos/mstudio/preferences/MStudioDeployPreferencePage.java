@@ -137,12 +137,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			updateTipMessage(MSDPP_IAL_INVALID);
 		else
 			updateTipMessage(MSDPP_EMPTY_STR);
-		if(isChangedLocation(locationPath.getStringValue())){
-			MessageDialog.openWarning(this.getShell(),
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
-					replace("${DIR}", locationPath.getStringValue()));
-		}
 	}
 
 	private void initializeByStoreData() {
@@ -208,6 +202,14 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	private boolean saveToStoreData() {
+		if(isChangedLocation(locationPath.getStringValue())){
+			if(!MessageDialog.openConfirm(this.getShell(),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
+					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
+					replace("${DIR}", locationPath.getStringValue())))
+				return false;
+		}
+		
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
 		//String locationToStore = getChangedDeployLocation();
 		
@@ -333,6 +335,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				locationChanged();
 			}});
 		locationPath.getTextControl(parent).setLayoutData(new GridData(200,20));
+		Label locationDes = new Label(parent,SWT.NONE);
+		locationDes.setText(MStudioMessages.getString("MStudioDeployPreferencePage.locationPath.description"));
+		locationDes.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
+		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
+		gd1.horizontalSpan = 3;
+		locationDes.setLayoutData(gd1);
 		return locationPath;
 	}
 	
@@ -446,7 +454,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		ialCom.deselectAll();
 		
 		initializeByStoreData();
-		locationChanged();
+		//locationChanged();
 		super.performDefaults();
 	}
 
@@ -507,7 +515,10 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	private boolean isChangedLocation(String path){
 		if(path == null)
 			return false;
-		return !getDefaultDeployLocationPath().equals(path);
+		String curLocation = getDefaultDeployLocationPath();
+		if(curLocation == null)
+			return false;
+		return !curLocation.equals(path);
 	}
 }
 

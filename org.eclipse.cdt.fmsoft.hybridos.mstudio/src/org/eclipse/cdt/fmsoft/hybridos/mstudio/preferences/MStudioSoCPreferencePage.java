@@ -239,7 +239,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private boolean validateResolution(String resolution) {
 		if(resolution == null)
 			return false;
-		String regexResolution = "[1-9]+[0-9]*\\s*[*x]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
+		String regexResolution = "[1-9]+[0-9]*\\s*[*x×]\\s*[1-9]+[0-9]*\\s*-\\s*[1-9]*bpp";
 		return resolution.matches(regexResolution);
 	}
 
