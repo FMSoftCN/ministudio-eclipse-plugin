@@ -69,6 +69,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private IProject[] projects = null;
 	private DirectoryFieldEditor locationPath = null;
+	
+	private static boolean isChanged = false;
 
 	public MStudioDeployExecutableProjectsWizardPage(String pageName) {
 		super(pageName);
@@ -116,6 +118,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
+				isChanged = true;
 				}});
 		locationPath.getTextControl(bottomPanel2).addFocusListener(new FocusListener(){
 			@Override
@@ -123,8 +126,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			}
 			@Override
 			public void focusLost(FocusEvent e) {
-				checkLocation();
-				validatePage();
+				if(isChanged){
+					checkLocation();
+					validatePage();
+					isChanged = false;
+				}
 			}});
 		Label locationDes = new Label(bottomPanel2,SWT.NONE);
 		locationDes.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
