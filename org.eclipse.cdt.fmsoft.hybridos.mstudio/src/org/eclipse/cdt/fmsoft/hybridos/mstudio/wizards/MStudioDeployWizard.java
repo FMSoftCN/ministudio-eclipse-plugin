@@ -301,6 +301,10 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	
+	public void updateButtons(){
+		System.out.println("te");
+	}
+	
 	private boolean saveDeployInfo(String filename) {		
 		// create a new file
 		try {

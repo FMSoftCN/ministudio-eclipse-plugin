@@ -17,8 +17,10 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -27,6 +29,8 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -39,6 +43,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 
 import org.eclipse.core.resources.IProject;
@@ -48,6 +53,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 
 
@@ -110,8 +116,16 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				validatePage();
 				}});
+		locationPath.getTextControl(bottomPanel2).addFocusListener(new FocusListener(){
+			@Override
+			public void focusGained(FocusEvent e) {
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				checkLocation();
+				validatePage();
+			}});
 		Label locationDes = new Label(bottomPanel2,SWT.NONE);
 		locationDes.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
@@ -136,7 +150,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		Label sizeLabel = new Label(bottomPanel3, SWT.NONE);
 		sizeLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.resolutionLabel"));
-		sizeCombo = new Combo(bottomPanel3, SWT.READ_ONLY/*SWT.NONE*/);// TODO it later
+		sizeCombo = new Combo(bottomPanel3, SWT.READ_ONLY/*SWT.NONE*/);
 		sizeCombo.addSelectionListener(new SelectedChangeListener());
 		sizeCombo.setLayoutData(new GridData(300, 25));
 		sizeCombo.addKeyListener(new ComboKeyListener());
@@ -175,7 +189,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	
 	public boolean locationChanged() {
 		String localPath = locationPath.getStringValue();
-		if(localPath == null || localPath=="")
+		if(localPath == null || localPath.equals(""))
 			return false;
 		if(!isValidPath(localPath)){
 			locationPath.setErrorMessage(MStudioMessages.
@@ -250,38 +264,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		validatePage();
 	}
 
-	/*
-	private String[] getIALProject() {
-
-		String[] ialString = null;
-		ialProject = MStudioDeployWizard.getIALProjects();
-
-		if (ialProject != null) {
-			ialString = new String[ialProject.length];
-			for (int i = 0; i < ialProject.length; i++) {
-				ialString[i] = ialProject[i].getName().toString();
-			}
-		}
-
-		return ialString;
-	}
-
-	private String[] getGALProject() {
-
-		String[] galString = null;
-		galProject = MStudioDeployWizard.getExeProjects();
-
-		if (galProject != null) {
-			galString = new String[galProject.length];
-			for (int i = 0; i < galProject.length; i++) {
-				galString[i] = galProject[i].getName().toString();
-			}
-		}
-
-		return galString;
-	}
-*/
-
 	private void initExeProjects() {
 		projects = MStudioDeployWizard.getExeProjects();
 		if (projects == null)
@@ -306,12 +288,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		//return Pattern.matches(regexString, resolution);
 		return resolution.matches(regexString);
 	}
-	/*
-	private boolean validateColorDepth(String colorDepth){
-		String regexString = "[1-9]+[0-9]*";
-		return Pattern.matches(regexString, colorDepth);
-	}
-*/
+	
 	protected boolean validatePage() {
 		if (sizeCombo == null/* || colorCombo == null*/) {
 			setPageComplete(false);
@@ -332,7 +309,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		}
 		
 		setPageComplete(true);
-
 		return true;
 	}
 
@@ -360,15 +336,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return locationPath.getStringValue().trim();
 //		return filePath.getStringValue();
 	}
-/*
-	public String getColorDepth() {
-//		return colorCombo.getItem(colorCombo.getSelectionIndex()).trim();
-		String color = colorCombo.getText().trim();
-		if(validateColorDepth(color))
-			return color;
-		return null;
-	}
-*/
 	//resolution format: 320x240-16bpp
 	
 	public String getResolution() {
@@ -387,17 +354,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return gal.getItem(gal.getSelectionIndex()).trim();
 	}
 
-	private static int passCheckLocation = 0;
+	//private static int passCheckLocation = 0;
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 		if (wizard == null)
 			return null;
-		if(++passCheckLocation % 2 == 0){
-			if(!checkLocation()){
-				setPageComplete(false);
-				return null;
-			}
-		}
 		//wizard.getDeploySharedLibWizardPage().update();
 		
 		if (MStudioDeployWizard.getModuleProjects().length <= 0
@@ -437,14 +398,37 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private boolean checkLocation(){
 		if(!checkIsDefaultLocation(locationPath.getStringValue())){
-			if(!MessageDialog.openConfirm(getShell(),
+			if(!openConfirm(getShell(),
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
 					replace("${DIR}", locationPath.getStringValue()))){
-				return false;
+					locationPath.setStringValue(getDefaultDeployLocationPath());
 			}
 		}
 		return true;
 	}
+	
+	public String getDefaultDeployLocationPath(){
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		if(store == null)
+			return null;
+		if (store.contains(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION))
+		{
+			String prefLocation = store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);
+			if(prefLocation != null && prefLocation != "" && isValidPath(prefLocation))
+				return prefLocation;	    
+		}
+		
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath();
+	}
+	
+	public final static int QUESTION = 3;
+	public final String OK_LABEL = "&Ok";
+	public final String RETURN_TO_DEFAULT = "&Defaults";
+	public boolean openConfirm(Shell parent, String title, String message) {
+        MessageDialog dialog = new MessageDialog(parent, title, null,
+                message, QUESTION, new String[] { OK_LABEL, RETURN_TO_DEFAULT }, 0);
+        return dialog.open() == 0;
+    }
 }
 
