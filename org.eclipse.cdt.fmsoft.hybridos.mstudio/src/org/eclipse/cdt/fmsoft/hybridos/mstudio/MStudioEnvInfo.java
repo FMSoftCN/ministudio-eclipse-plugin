@@ -697,6 +697,8 @@ public class MStudioEnvInfo {
 		}
 		if (null != keyLib)
 			defaultKeyLib.add(keyLib);
+		else
+			defaultKeyLib.add("freetype");
 	}
 
 	public String[] getDefaultKeyLibrary() {

@@ -15,7 +15,7 @@ key_lib=
 [mginit Module Project]
 key_lib=minigui_procs
 
-[DICustom IAL Engine Project]
+[DlCustom IAL Engine Project]
 key_lib=freetype
 
 [Empty C++ Project]

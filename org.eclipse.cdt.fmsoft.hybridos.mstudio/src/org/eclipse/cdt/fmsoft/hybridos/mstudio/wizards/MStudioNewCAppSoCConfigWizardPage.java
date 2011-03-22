@@ -410,6 +410,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void containsCheckedAffectedElements(List<String> affected) {
+		if (null == defaultDepPkg || 0 == defaultDepPkg.length)
+			return;
+
 		Object[] elements = msEnvInfo.getAllSoftPkgs().keySet().toArray();
 		Object[] obj = ctv.getCheckedElements();
 		List<String> list = new ArrayList<String>();
@@ -510,6 +513,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void containsCheckedDependElements(List<String> depend) {
+		if (null == defaultDepPkg || 0 == defaultDepPkg.length)
+			return;
+
 		Object[] obj = ctv.getCheckedElements();
 		for (int j = 0; j < obj.length; j++) {
 			PackageItem pItem = (PackageItem)obj[j];
@@ -561,7 +567,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private void setDefaultDepPkg() {
-		if (null == defaultDepPkg)
+		if (null == defaultDepPkg || 0 == defaultDepPkg.length)
 			return;
 
 		ctv.setAllChecked(false);
@@ -577,6 +583,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 	}
 
 	private boolean isDefaultDepPkg(String name) {
+		if (null == defaultDepPkg || 0 == defaultDepPkg.length)
+			return false;
+
 		for (int i = 0; i < defaultDepPkg.length; i++) {
 			if (name.equals(defaultDepPkg[i]))
 				return true;
