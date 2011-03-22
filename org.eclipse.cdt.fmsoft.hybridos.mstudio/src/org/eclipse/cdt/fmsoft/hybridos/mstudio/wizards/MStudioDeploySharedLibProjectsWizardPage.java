@@ -59,106 +59,6 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		super(pageName, title, titleImage);
 		init();
 	}
-	
-	public IProject[] getDeployLibraries() {
-		Object[] checked = ctvLabraries.getCheckedElements();
-		IProject[] projects = MStudioDeployWizard.getModuleProjects();
-		ArrayList<String> sList = new ArrayList<String>();
-
-		for (int i = 0; i < checked.length; i++) {
-			sList.add(checked[i].toString());
-		}
-
-		List<IProject> list = new ArrayList<IProject>();
-
-		for (int i = 0; i < projects.length; i++) {
-			if (sList.contains(projects[i].getName())) {
-				list.add(projects[i]);
-			}
-		}
-
-		return (IProject[])(list.toArray(new IProject[list.size()]));
-	}
-	
-	public IProject getDeployIalProject() {
-		Object[] checked = ctvIAL.getCheckedElements();
-		IProject[] projects = MStudioDeployWizard.getIALProjects();
-		
-		if (checked.length <= 0)
-			return null;
-
-		for (int i = 0; i < projects.length; i++) {
-			if (projects[i].getName().equals(checked[0].toString())) {
-				return projects[i];
-			}
-		}
-		return null;
-	}
-	
-	protected boolean validatePage() {
-		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
-		String building = "";
-		
-		if (depWizard.isDebug()){
-			building +="Debug4Host";
-		} else {
-			building +="Release4Host";
-		}
-		
-		IProject[] dPrjs = getDeployLibraries();
-		if (dPrjs != null && dPrjs.length > 0){
-			for (int i = 0; i < dPrjs.length; i++){
-				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(dPrjs[i]).getManagedProject();
-				IConfiguration[] cfg = managedProj.getConfigurations();
-	
-				for (int j = 0; j < cfg.length; j++){
-					if (depWizard.isHost()){
-						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building + " for project [" + dPrjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
-					} else {
-						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building.replace("Host", "Target") + " for project [" + dPrjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
-					}
-				}
-			}
-		}
-		
-		IProject iPrj = getDeployIalProject();
-		if (iPrj != null){
-			IManagedProject managedProj = ManagedBuildManager.getBuildInfo(iPrj).getManagedProject();
-			IConfiguration[] cfg = managedProj.getConfigurations();
-			
-			for (int j = 0; j < cfg.length; j++){
-				if (depWizard.isHost()){
-					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-						setErrorMessage ("You Haven't build the " 
-								+ building + " for project [" + iPrj.getName() + "]");
-						setPageComplete(false);
-						return false;
-					}
-				} else {
-					if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-						setErrorMessage ("You Haven't build the " 
-								+ building.replace("Host", "Target") + " for project [" + iPrj.getName() + "]");
-						setPageComplete(false);
-						return false;
-					}
-				}
-			}
-		}
-		
-		setErrorMessage(null);
-		setPageComplete(true);
-		return true;
-	}
 
 	public void createControl(Composite parent) {	
 		Composite topPanel;
@@ -243,19 +143,83 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		ctvIAL.add(list.toArray(new String[ial.length]));
 	}
 	
+	protected boolean validatePage() {
+		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
+		String building = "";
+		
+		if (depWizard.isDebug()){
+			building +="Debug4Host";
+		} else {
+			building +="Release4Host";
+		}
+		
+		IProject[] dPrjs = getDeploySharedLibProjects();
+		if (dPrjs != null && dPrjs.length > 0){
+			for (int i = 0; i < dPrjs.length; i++){
+				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(dPrjs[i]).getManagedProject();
+				IConfiguration[] cfg = managedProj.getConfigurations();
+	
+				for (int j = 0; j < cfg.length; j++){
+					if (depWizard.isHost()){
+						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building + " for project [" + dPrjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					} else {
+						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building.replace("Host", "Target") + " for project [" + dPrjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		
+		IProject iPrj = getDeployIALProject();
+		if (iPrj != null){
+			IManagedProject managedProj = ManagedBuildManager.getBuildInfo(iPrj).getManagedProject();
+			IConfiguration[] cfg = managedProj.getConfigurations();
+			
+			for (int j = 0; j < cfg.length; j++){
+				if (depWizard.isHost()){
+					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building + " for project [" + iPrj.getName() + "]");
+						setPageComplete(false);
+						return false;
+					}
+				} else {
+					if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building.replace("Host", "Target") + " for project [" + iPrj.getName() + "]");
+						setPageComplete(false);
+						return false;
+					}
+				}
+			}
+		}
+		
+		setErrorMessage(null);
+		setPageComplete(true);
+		return true;
+	}
+	
 	public IProject getDeployIALProject() {
 		IProject[] ial = MStudioDeployWizard.getIALProjects();
 		Object[] s = ctvIAL.getCheckedElements();
 		if(s.length <= 0)
 			return null;
-		else{
-			String sChecked = s[0].toString();
-			for(int i=0; i<ial.length; i++){
-				if(ial[i].getName().equals(sChecked)){
-					return ial[i];
-				}
+		
+		for(int i=0; i<ial.length; i++){
+			if(ial[i].getName().equals(s[0].toString())){
+				return ial[i];
 			}
-		}		
+		}
+		
 		return null;
 	}
 	
