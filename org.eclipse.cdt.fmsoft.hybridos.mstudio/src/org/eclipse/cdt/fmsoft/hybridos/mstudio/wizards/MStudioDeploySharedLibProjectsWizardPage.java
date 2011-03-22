@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -38,9 +41,7 @@ import org.eclipse.swt.widgets.Table;
 
 public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 
-	private Table tableLabraries;
 	private CheckboxTableViewer ctvLabraries;
-	private Table tableIAL;
 	private CheckboxTableViewer ctvIAL;
 	
 	public MStudioDeploySharedLibProjectsWizardPage(String pageName) {
@@ -58,8 +59,107 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		super(pageName, title, titleImage);
 		init();
 	}
+	
+	public IProject[] getDeployLibraries() {
+		Object[] checked = ctvLabraries.getCheckedElements();
+		IProject[] projects = MStudioDeployWizard.getModuleProjects();
+		ArrayList<String> sList = new ArrayList<String>();
 
-	@Override
+		for (int i = 0; i < checked.length; i++) {
+			sList.add(checked[i].toString());
+		}
+
+		List<IProject> list = new ArrayList<IProject>();
+
+		for (int i = 0; i < projects.length; i++) {
+			if (sList.contains(projects[i].getName())) {
+				list.add(projects[i]);
+			}
+		}
+
+		return (IProject[])(list.toArray(new IProject[list.size()]));
+	}
+	
+	public IProject getDeployIalProject() {
+		Object[] checked = ctvIAL.getCheckedElements();
+		IProject[] projects = MStudioDeployWizard.getIALProjects();
+		
+		if (checked.length <= 0)
+			return null;
+
+		for (int i = 0; i < projects.length; i++) {
+			if (projects[i].getName().equals(checked[0].toString())) {
+				return projects[i];
+			}
+		}
+		return null;
+	}
+	
+	protected boolean validatePage() {
+		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
+		String building = "";
+		
+		if (depWizard.isDebug()){
+			building +="Debug4Host";
+		} else {
+			building +="Release4Host";
+		}
+		
+		IProject[] dPrjs = getDeployLibraries();
+		if (dPrjs != null && dPrjs.length > 0){
+			for (int i = 0; i < dPrjs.length; i++){
+				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(dPrjs[i]).getManagedProject();
+				IConfiguration[] cfg = managedProj.getConfigurations();
+	
+				for (int j = 0; j < cfg.length; j++){
+					if (depWizard.isHost()){
+						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building + " for project [" + dPrjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					} else {
+						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building.replace("Host", "Target") + " for project [" + dPrjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					}
+				}
+			}
+		}
+		
+		IProject iPrj = getDeployIalProject();
+		if (iPrj != null){
+			IManagedProject managedProj = ManagedBuildManager.getBuildInfo(iPrj).getManagedProject();
+			IConfiguration[] cfg = managedProj.getConfigurations();
+			
+			for (int j = 0; j < cfg.length; j++){
+				if (depWizard.isHost()){
+					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building + " for project [" + iPrj.getName() + "]");
+						setPageComplete(false);
+						return false;
+					}
+				} else {
+					if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building.replace("Host", "Target") + " for project [" + iPrj.getName() + "]");
+						setPageComplete(false);
+						return false;
+					}
+				}
+			}
+		}
+		
+		setErrorMessage(null);
+		setPageComplete(true);
+		return true;
+	}
+
 	public void createControl(Composite parent) {	
 		Composite topPanel;
 		topPanel = new Composite(parent, SWT.NONE);
@@ -71,25 +171,29 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		label1.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.dynamicTitle"));
 		label1.setLayoutData(new GridData());
 		
-		tableLabraries = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+		Table tableLabraries = new Table(topPanel, 
+				SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 		GridData gd = new GridData(GridData.FILL_BOTH);
 		tableLabraries.setLayoutData(gd);
 		
 		ctvLabraries = new CheckboxTableViewer(tableLabraries);
-		
 		ctvLabraries.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 			}
 		});
 		ctvLabraries.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent event) {
+				validatePage();
 			}
 		});
+		
 		Label label2 = new Label(topPanel,SWT.NONE);
 		label2.setText(MStudioMessages.getString("MStudioDeployWizardPage.selectLibProjects.ialTitle"));
-		tableIAL = new Table(topPanel,SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL |SWT.SINGLE);
+		
+		Table tableIAL = new Table(topPanel, SWT.BORDER | SWT.CHECK | SWT.V_SCROLL | SWT.H_SCROLL |SWT.SINGLE);
 		GridData gd2 = new GridData(GridData.FILL_BOTH);
 		tableIAL.setLayoutData(gd2);
+		
 		ctvIAL = new CheckboxTableViewer(tableIAL);
 		ctvIAL.setAllGrayed(true);
 		ctvIAL.addCheckStateListener(new ICheckStateListener() {
@@ -100,7 +204,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		});
 		ctvIAL.addSelectionChangedListener(new ISelectionChangedListener(){
 			public void selectionChanged(SelectionChangedEvent event) {
-				
+				validatePage();
 			}
 		});
 		
@@ -110,14 +214,6 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		setControl(topPanel);
 		setPageComplete(true);
 	}
-
-	//change the state with the last wizard page select state
-	//public void update(){
-		//ctvLabraries.setItemCount(0);
-		//ctvIAL.setItemCount(0);
-		//initDeploySharedLibTable();		
-		//initIALTable();
-	//}
 	
 	private void initDeploySharedLibTable(){
 		IProject[] libProjects = MStudioDeployWizard.getModuleProjects();
@@ -193,10 +289,10 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	}
 	
 	public IWizardPage getNextPage() {
-		MStudioDeployWizard wizard = (MStudioDeployWizard) getWizard();
+		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 		if(wizard == null)
 			return null;	
-		//wizard.getDeployServiceWizardPage().update();
+		
 		return wizard.getNextPage(this);
 	}
 }

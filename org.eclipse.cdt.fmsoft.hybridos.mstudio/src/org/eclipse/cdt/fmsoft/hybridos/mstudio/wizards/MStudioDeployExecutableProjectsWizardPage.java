@@ -55,12 +55,14 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioDeployPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.IManagedProject;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 
 
 public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	private Combo sizeCombo = null;
-	//private Combo colorCombo = null;
 	private Combo gal = null;
 	private Combo ial = null;
 	private Composite bottomPanel = null;
@@ -70,7 +72,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	private IProject[] projects = null;
 	private DirectoryFieldEditor locationPath = null;
 	
-	private static boolean isChanged = false;
+	private static boolean isDeployPathChanged = false;
 
 	public MStudioDeployExecutableProjectsWizardPage(String pageName) {
 		super(pageName);
@@ -106,7 +108,8 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		ctv.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				validatePage();
-			}});
+			}
+			});
 
 		//bottomPanel2
 		Composite bottomPanel2 = new Composite(topPanel, SWT.NONE);
@@ -118,20 +121,21 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath.setStringValue(MStudioDeployPreferencePage.deployLocation());
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
-				isChanged = true;
-				}});
+				isDeployPathChanged = true;
+				}
+			});
 		locationPath.getTextControl(bottomPanel2).addFocusListener(new FocusListener(){
-			@Override
 			public void focusGained(FocusEvent e) {
 			}
-			@Override
 			public void focusLost(FocusEvent e) {
-				if(isChanged){
+				if(isDeployPathChanged){
 					checkLocation();
 					validatePage();
-					isChanged = false;
+					isDeployPathChanged = false;
 				}
-			}});
+			}
+			});
+		
 		Label locationDes = new Label(bottomPanel2,SWT.NONE);
 		locationDes.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLUE));
 		GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
@@ -204,14 +208,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return false;
 		}
 		return true;
-		/*
-		File file = new File(localPath);
-
-		if (!file.exists())
-			return false;
-		else
-			return true;
-			*/
 	}
 	
 	private void initGALAndIAL(){
@@ -244,15 +240,18 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private void initSizeAndColor() {
-		List<String> li = new ArrayList<String>();
-		li = MStudioPlugin.getDefault().getMStudioEnvInfo().getResolutions();
+		boolean bResolution = false;
+		
+		List<String> li = MStudioEnvInfo.getInstance().getResolutions();
 		if(li == null)
 			return;
+		
 		String[] resolution = li.toArray(new String[li.size()]);
+		
 		String tmpResolution = MStudioEnvInfo.getInstance().getScreenSize();
 		if(tmpResolution == null)
 			return;
-		boolean bResolution = false;
+		
 		for (int i = 0; i < resolution.length; i++) {
 			sizeCombo.add(resolution[i].toString());
 			if (tmpResolution != null && tmpResolution.equals(resolution[i])){
@@ -266,7 +265,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	public void update() {
-		bottomPanel.setVisible(!MStudioDeployWizard.deployTypeIsHost);
+		bottomPanel.setVisible(!((MStudioDeployWizard)(this.getWizard())).isHost());
 		validatePage();
 	}
 
@@ -290,30 +289,70 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private boolean validateResolution(String resolution) {
-		String regexString = "[1-9]+[0-9]*\\s*[x*×]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp";
-		//return Pattern.matches(regexString, resolution);
-		return resolution.matches(regexString);
+		if (resolution == null || resolution == "")
+			return false;
+		
+		return resolution.matches("[1-9]+[0-9]*\\s*[x*×]\\s*[1-9]+[0-9]*\\s*-\\s*\\d{1,2}bpp");
 	}
 	
 	protected boolean validatePage() {
-		if (sizeCombo == null/* || colorCombo == null*/) {
+		if(!locationChanged()) {
+			setErrorMessage("Deploy Path Error !");
 			setPageComplete(false);
 			return false;
 		}
-		if(!locationChanged() || (sizeCombo.getText().trim() == "" || !validateResolution(sizeCombo.getText().trim()))){
-			setPageComplete(false);
-			return false;
-		}
-		//select target
 		
-		if (!MStudioDeployWizard.deployTypeIsHost) {
+		if (sizeCombo.getText() == null 
+				|| !validateResolution(sizeCombo.getText().trim())){
+			setErrorMessage("Resolution Select Error !");
+			setPageComplete(false);
+			return false;
+		}
+
+		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
+		
+		if (!depWizard.isHost()) {
 			if (0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()
 					|| gal == null || ial == null) {
+				setErrorMessage("GAL & IAL setting Error !");
 				setPageComplete(false);
 				return false;
 			}
 		}
+		IProject[] prjs = getDeployExeProjects();
+		if (prjs != null && prjs.length > 0){
+			for (int i = 0; i < prjs.length; i++){
+				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(prjs[i]).getManagedProject();
+				IConfiguration[] cfg = managedProj.getConfigurations();
+
+				String building = "";
+				if (depWizard.isDebug()){
+					building +="Debug4Host";
+				} else {
+					building +="Release4Host";
+				}
+							
+				for (int j = 0; j < cfg.length; j++){
+					if (depWizard.isHost()){
+						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building + " for project [" + prjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					} else {
+						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+							setErrorMessage ("You Haven't build the " 
+									+ building.replace("Host", "Target") + " for project [" + prjs[i].getName() + "]");
+							setPageComplete(false);
+							return false;
+						}
+					}
+				}
+			}
+		}
 		
+		setErrorMessage(null);
 		setPageComplete(true);
 		return true;
 	}
@@ -340,13 +379,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 
 	public String getDeployLocation() {
 		return locationPath.getStringValue().trim();
-//		return filePath.getStringValue();
 	}
-	//resolution format: 320x240-16bpp
 	
 	public String getResolution() {
 		String resolution = sizeCombo.getItem(sizeCombo.getSelectionIndex()).trim();
-		//String resolution = sizeCombo.getText().trim();
 		if (validateResolution(resolution))
 			return resolution;
 		return null;
@@ -360,12 +396,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return gal.getItem(gal.getSelectionIndex()).trim();
 	}
 
-	//private static int passCheckLocation = 0;
 	public IWizardPage getNextPage() {
 		MStudioDeployWizard wizard = (MStudioDeployWizard)getWizard();
 		if (wizard == null)
 			return null;
-		//wizard.getDeploySharedLibWizardPage().update();
 		
 		if (MStudioDeployWizard.getModuleProjects().length <= 0
 				&& MStudioDeployWizard.getIALProjects().length <= 0) {
@@ -430,10 +464,11 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	
 	public final static int QUESTION = 3;
 	public final String OK_LABEL = "&Ok";
-	public final String RETURN_TO_DEFAULT = "&Defaults";
+	public final String RETURN_TO_DEFAULT = "&Set Defaults";
+	
 	public boolean openConfirm(Shell parent, String title, String message) {
         MessageDialog dialog = new MessageDialog(parent, title, null,
-                message, QUESTION, new String[] { OK_LABEL, RETURN_TO_DEFAULT }, 0);
+                message, QUESTION, new String[] { OK_LABEL, RETURN_TO_DEFAULT}, 0);
         return dialog.open() == 0;
     }
 }

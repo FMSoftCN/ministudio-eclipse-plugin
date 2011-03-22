@@ -31,13 +31,16 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 	public MStudioExtenalImportProjectWizardPage(){
 		this("wizardExternalProjectsPage");
 	}
+	
 	public MStudioExtenalImportProjectWizardPage(String pageName){
 		super(pageName);
 		setPageComplete(false);
 		setTitle(MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.ImportProjectsTitle"));
 		setDescription(MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.ImportProjectsDescription"));
 	}
-	public MStudioExtenalImportProjectWizardPage(String pageName, String initialPath, IStructuredSelection currentSelection){
+	
+	public MStudioExtenalImportProjectWizardPage(String pageName, 
+			String initialPath, IStructuredSelection currentSelection){
 		this(pageName);
 	}
 	
@@ -165,7 +168,9 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		}
 		return null;
 	}
-	public boolean collectZipProjectFromProvider(Object entry, int level, ZipLeveledStructureProvider zipProvider, ProjectRecord project) {
+	
+	public boolean collectZipProjectFromProvider(Object entry, int level, 
+			ZipLeveledStructureProvider zipProvider, ProjectRecord project) {
 		List children = zipProvider.getChildren(entry);
 		if (children == null) {
 			children = new ArrayList(1);
@@ -199,7 +204,9 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		}
 		return false;
 	}
-	public boolean collectTarProjectFromProvider(Object entry, int level, TarLeveledStructureProvider tarProvider, ProjectRecord project) {
+	
+	public boolean collectTarProjectFromProvider(Object entry, int level, 
+			TarLeveledStructureProvider tarProvider, ProjectRecord project) {
 		List children = tarProvider.getChildren(entry);
 		if (children == null) {
 			children = new ArrayList(1);

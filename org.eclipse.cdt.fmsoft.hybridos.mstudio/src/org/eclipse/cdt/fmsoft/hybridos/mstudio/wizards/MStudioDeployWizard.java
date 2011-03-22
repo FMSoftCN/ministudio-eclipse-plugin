@@ -40,8 +40,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.SWT;
-
 import org.eclipse.swt.widgets.Display;
+
+
 public class MStudioDeployWizard extends Wizard{
 
 	private MStudioDeployTypeWizardPage deployTypePage;
@@ -50,7 +51,7 @@ public class MStudioDeployWizard extends Wizard{
 	private MStudioDeployServicesWizardPage deployServicesPage;
 	private MStudioDeployAutobootProjectsWizardPage autobootProjectPage;
 	
-	public static boolean deployTypeIsHost = false;
+	//public static boolean deployTypeIsHost = false;
 	private MStudioParserIniFile iniFile = null;
 	private MStudioDeployDialog dialog;
 	private static MStudioEnvInfo einfo = MStudioPlugin.getDefault().getMStudioEnvInfo();
@@ -381,7 +382,7 @@ public class MStudioDeployWizard extends Wizard{
 	
 	private boolean updateCfgFiles() {		
 		// select target
-		if (!deployTypeIsHost) {
+		if (!isHost()) {
 			MStudioParserIniFile targetCfgFile = new MStudioParserIniFile(miniguiTargetCfgNewPath);
 			if (null == targetCfgFile)
 				return false;
@@ -409,7 +410,17 @@ public class MStudioDeployWizard extends Wizard{
 	}
 
 	public boolean isHost() {
-		return deployTypeIsHost;
+		if (deployTypePage != null){
+			return deployTypePage.getTargetType().equals("Host");
+		}
+		return false;
+	}
+	
+	public boolean isDebug() {
+		if (deployTypePage != null){
+			return deployTypePage.getBuildType().equals("Debug");
+		}
+		return false;
 	}
 
 	// get executable projects in workspace
