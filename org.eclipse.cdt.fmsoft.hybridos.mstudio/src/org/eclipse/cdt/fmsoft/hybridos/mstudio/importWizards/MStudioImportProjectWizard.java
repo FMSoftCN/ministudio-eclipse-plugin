@@ -39,8 +39,8 @@ public class MStudioImportProjectWizard extends Wizard implements IImportWizard 
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
 	 */
-	public boolean performFinish() {
-            return mainPage.createProjects();
+	public boolean performFinish() { 
+        return mainPage.createProjects();
 	}
 	 
 	public boolean performCancel() {

@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards.MStudioParserIniFile;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioSoCPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
@@ -40,6 +41,7 @@ import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.internal.provisional.action.ToolBarContributionItem2;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.internal.WorkbenchWindow;
@@ -723,6 +725,12 @@ public class MStudioEnvInfo {
 		}
 	}
 
+	public void setCurrentSoC(String name) {
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		store.putValue(MStudioPreferenceConstants.MSTUDIO_SOC_NAME, name);
+		updateSoCName();
+	}
+	
 	public String getDefaultLocationPath(){
 		MStudioParserIniFile fIniFile = new MStudioParserIniFile(getCurSoCConfFileName());
 		if (fIniFile == null)
