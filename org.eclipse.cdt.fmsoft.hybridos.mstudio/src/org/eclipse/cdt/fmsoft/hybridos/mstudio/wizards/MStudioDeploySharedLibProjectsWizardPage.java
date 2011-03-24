@@ -18,6 +18,7 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.wizards;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
@@ -60,7 +61,7 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 		init();
 	}
 
-	public void createControl(Composite parent) {	
+	public void createControl(Composite parent) {
 		Composite topPanel;
 		topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
@@ -145,12 +146,20 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 	
 	protected boolean validatePage() {
 		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
+		String socName = MStudioEnvInfo.getInstance().getCurSoCName();
 		String building = "";
-		
 		if (depWizard.isDebug()){
-			building +="Debug4Host";
+			if (depWizard.isHost()){
+				building ="Debug4Host";
+			} else {
+				building ="Debug4" + socName;
+			}
 		} else {
-			building +="Release4Host";
+			if (depWizard.isHost()){
+				building ="Release4Host";
+			} else {
+				building ="Release4" + socName;
+			}
 		}
 		
 		IProject[] dPrjs = getDeploySharedLibProjects();
@@ -160,20 +169,11 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 				IConfiguration[] cfg = managedProj.getConfigurations();
 	
 				for (int j = 0; j < cfg.length; j++){
-					if (depWizard.isHost()){
-						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building + " for project [" + dPrjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
-					} else {
-						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building.replace("Host", "Target") + " for project [" + dPrjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
+					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building + " for project [" + dPrjs[i].getName() + "]");
+						setPageComplete(false);
+						return false;
 					}
 				}
 			}
@@ -185,20 +185,11 @@ public class MStudioDeploySharedLibProjectsWizardPage extends WizardPage {
 			IConfiguration[] cfg = managedProj.getConfigurations();
 			
 			for (int j = 0; j < cfg.length; j++){
-				if (depWizard.isHost()){
-					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-						setErrorMessage ("You Haven't build the " 
-								+ building + " for project [" + iPrj.getName() + "]");
-						setPageComplete(false);
-						return false;
-					}
-				} else {
-					if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-						setErrorMessage ("You Haven't build the " 
-								+ building.replace("Host", "Target") + " for project [" + iPrj.getName() + "]");
-						setPageComplete(false);
-						return false;
-					}
+				if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+					setErrorMessage ("You Haven't build the " 
+							+ building + " for project [" + iPrj.getName() + "]");
+					setPageComplete(false);
+					return false;
 				}
 			}
 		}

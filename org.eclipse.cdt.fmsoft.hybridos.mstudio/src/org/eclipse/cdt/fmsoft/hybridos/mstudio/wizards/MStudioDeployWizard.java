@@ -176,11 +176,13 @@ public class MStudioDeployWizard extends Wizard{
 	public void distory(){
 		this.getShell().close();
 	}
-	@Override
+
 	public boolean performFinish() {	
 		if(!checkDeloyLocation())
 			return false;
-		dialog=new MStudioDeployDialog(this.getShell());		
+		
+		dialog = new MStudioDeployDialog(this.getShell());		
+		
 		this.getShell().getDisplay().asyncExec(new Runnable(){
 			public void run(){				
 				dialog.getShell().setText("deploy status");
@@ -303,7 +305,7 @@ public class MStudioDeployWizard extends Wizard{
 
 	
 	public void updateButtons(){
-		System.out.println("te");
+		//System.out.println("te");
 	}
 	
 	private boolean saveDeployInfo(String filename) {		
@@ -739,7 +741,7 @@ public class MStudioDeployWizard extends Wizard{
 		}
 			
 		String[] paths = msp.getDeployPathInfo();
-		if (paths.length == 4){
+		if (paths.length == 4 && paths[0] != null && paths[3] != null){
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
 					KEY_RESPKG_PATH, paths[0], null);
 			prjResFile.setStringProperty(SECTION_PATH_INFO, 
@@ -780,7 +782,7 @@ public class MStudioDeployWizard extends Wizard{
 			return null;
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
-		if (paths.length == 4) {
+		if (paths.length == 4 && paths[1] != null) {
 			return paths[1];
 		}
 		else
@@ -792,7 +794,7 @@ public class MStudioDeployWizard extends Wizard{
 			return null;
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
-		if (paths.length == 4) {
+		if (paths.length == 4 && paths[2] != null) {
 			return paths[2];
 		}
 		else
@@ -808,11 +810,11 @@ public class MStudioDeployWizard extends Wizard{
 			return null;
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
-		if (paths.length == 4) {
+		if (paths.length == 4 && paths[0] != null) {
 			return paths[0] + "/res";
-		}
-		else
+		} else {
 			return DEF_RES_LOCATION + project.getName().trim() + "/res";
+		}
 	}
 
 	private String getDepLibs(IProject project) {
@@ -837,7 +839,7 @@ public class MStudioDeployWizard extends Wizard{
 			return null;
 		MStudioProject mStudioProject = new MStudioProject(project);
 		String[] paths = mStudioProject.getDeployPathInfo();
-		if (paths.length == 4) {
+		if (paths.length == 4 && paths[2] != null) {
 			return paths[2];
 		}
 		else

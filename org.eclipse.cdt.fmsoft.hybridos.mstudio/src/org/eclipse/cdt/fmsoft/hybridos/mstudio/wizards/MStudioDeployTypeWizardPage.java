@@ -76,8 +76,9 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		topPanel = new Composite(parent, SWT.NONE);
 		topPanel.setLayout(new GridLayout());
 		topPanel.setLayoutData(new GridData(GridData.FILL_BOTH));
-		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", MStudioMessages.getString("MStudioDeployWizardPage.selectType.pageName"), 1,
-			     			new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
+		RadioGroupFieldEditor typeRadioGroup = new RadioGroupFieldEditor("deployType", 
+				MStudioMessages.getString("MStudioDeployWizardPage.selectType.pageName"), 1,
+			     new String[][] {{MStudioDeployTargetType.Host.name(), MStudioDeployTargetType.Host.name()},
 							{MStudioDeployTargetType.Target.name(), MStudioDeployTargetType.Target.name()}},topPanel);
 		
 		Composite rg = typeRadioGroup.getRadioBoxControl(topPanel);

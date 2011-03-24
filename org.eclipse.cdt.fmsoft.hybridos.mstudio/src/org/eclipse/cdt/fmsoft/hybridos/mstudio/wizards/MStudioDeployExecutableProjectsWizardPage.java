@@ -320,33 +320,32 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			}
 		}
 		IProject[] prjs = getDeployExeProjects();
+		String socName = MStudioEnvInfo.getInstance().getCurSoCName();
+		String building = "";
+		if (depWizard.isDebug()){
+			if (depWizard.isHost()){
+				building ="Debug4Host";
+			} else {
+				building ="Debug4" + socName;
+			}
+		} else {
+			if (depWizard.isHost()){
+				building ="Release4Host";
+			} else {
+				building ="Release4" + socName;
+			}
+		}
 		if (prjs != null && prjs.length > 0){
 			for (int i = 0; i < prjs.length; i++){
 				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(prjs[i]).getManagedProject();
 				IConfiguration[] cfg = managedProj.getConfigurations();
 
-				String building = "";
-				if (depWizard.isDebug()){
-					building +="Debug4Host";
-				} else {
-					building +="Release4Host";
-				}
-							
 				for (int j = 0; j < cfg.length; j++){
-					if (depWizard.isHost()){
-						if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building + " for project [" + prjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
-					} else {
-						if (!cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-							setErrorMessage ("You Haven't build the " 
-									+ building.replace("Host", "Target") + " for project [" + prjs[i].getName() + "]");
-							setPageComplete(false);
-							return false;
-						}
+					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
+						setErrorMessage ("You Haven't build the " 
+								+ building + " for project [" + prjs[i].getName() + "]");
+						setPageComplete(false);
+						return false;
 					}
 				}
 			}
