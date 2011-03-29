@@ -150,6 +150,12 @@ public class MStudioNewCAppProjectSelectWizardPage extends WizardNewProjectCreat
 
 	protected boolean validatePage() {
 		setMessage(null);
+
+		if (null == mseInfo.getSoCPaths()) {
+			setErrorMessage(MStudioMessages.getString("MGMainWizardPage.errorMessage")); 
+			return false;
+		}
+
 		if (!super.validatePage()) {
 			// setErrorMessage(MStudioMessages.getString("MGMainWizardPage.13"));
 			return false;

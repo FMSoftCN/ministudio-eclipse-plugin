@@ -132,6 +132,9 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		label.setText(MStudioMessages.getString("MStudioNewCAppSoCConfigWizardPage.4"));
 
 		String[] socType = msEnvInfo.getSoCPaths();
+		if (null == socType) {
+			return;
+		}
 		final Combo combo = new Combo(cmpstSocType, SWT.READ_ONLY);
 		combo.setItems(socType);
 		isDispkayPackageDesc = false;
