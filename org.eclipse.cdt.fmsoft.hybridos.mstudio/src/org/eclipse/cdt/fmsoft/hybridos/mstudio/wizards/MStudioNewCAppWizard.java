@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 
 import java.net.URI;
+import java.util.Vector;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.filesystem.EFS;
@@ -41,6 +42,7 @@ import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
@@ -59,6 +61,8 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo.PackageItem;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioPreferenceConstants;
+import org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences.MStudioToolsPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 
@@ -66,6 +70,7 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectNature;
 public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 		IExecutableExtension, IWizardWithMemory {
 
+	private final static String MSEL_GUIBUILDER_PATH = "GUIBUILDER_PATH";
 	private final static String MINIGUI_CFG = "MiniGUI.cfg";
 	private final static String MGNCS_CFG = "mgncs.cfg";
 	private final static String MINIGUI_CFG_TARGET = "MiniGUI.cfg.target";
@@ -238,6 +243,7 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			copyMgncsCFG();
 			copyMiniguiCFGTarget();
 			copyMgncsCFGTarget();
+			storeDefaultEnvPath();
 		}
 		
 		MStudioProject prj = new MStudioProject(newProject);
@@ -447,6 +453,25 @@ public class MStudioNewCAppWizard extends BasicNewResourceWizard implements
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	private boolean storeDefaultEnvPath(){
+		//get the guibuilder path from ENV;
+		String binPath = System.getenv(MSEL_GUIBUILDER_PATH);
+		if(binPath == null || binPath.equals(""))
+			return false;
+		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
+		if(store == null)
+			return false;
+		String defaultVersion = "1";
+		store.setValue(MStudioPreferenceConstants.MSVERSION_DEFAULT, defaultVersion);
+		store.setValue(MStudioPreferenceConstants.MSVERSION_COUNT, 1);
+		store.setValue(MStudioPreferenceConstants.MSVERSION_NAME + "." + Integer.toString(0),
+				defaultVersion);
+		store.setValue(MStudioPreferenceConstants.MSVERSION_BINPATH + "." + Integer.toString(0),
+				binPath);
+		
+		return true;
 	}
 }
 
