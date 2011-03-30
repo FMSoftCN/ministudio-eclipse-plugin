@@ -368,7 +368,8 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private boolean initWidgetValues() {
 		boolean err = true;
 		setCurrentSoC(defaultSoc);
-		err = (initSocTable() && initInfoTable() && initResolutionCombo() && initSkinNameLabel());
+		initSkinNameLabel();
+		err = (initSocTable() && initInfoTable() && initResolutionCombo());
 		if(!err)
 			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
 		return true;
