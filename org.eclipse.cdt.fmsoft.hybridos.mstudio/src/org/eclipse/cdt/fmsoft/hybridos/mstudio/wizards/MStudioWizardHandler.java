@@ -644,7 +644,6 @@ public class MStudioWizardHandler extends CWizardHandler {
 		*/
 		DebugUIPlugin dp = DebugUIPlugin.getDefault();
 		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
-		
 		Map<String, String> map = new HashMap<String, String>(2);
 		
 		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
@@ -655,13 +654,23 @@ public class MStudioWizardHandler extends CWizardHandler {
 			if (configs.length <= 0) {
 				LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
 				String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
-				ILaunchConfigurationType type = lm.getLaunchConfigurationType(stype[0]);
-				wc = type.newInstance(null, 
+				ILaunchConfigurationType type = null;
+				for (int ii = 0; ii < stype.length; ii++)
+				{
+					if(stype[ii].startsWith("org.eclipse.cdt.launch")){
+						type = lm.getLaunchConfigurationType(stype[ii]);
+						break;
+					}
+				}
+				
+				if (type != null)
+					wc = type.newInstance(null, 
 						lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
 			} else {
 				wc = configs[0].getWorkingCopy();
-			}		
-			wc.rename("Debug - " + project.getName());
+			}
+
+			wc.rename("Debug-" + project.getName());
 			wc.setMappedResources(new IResource[] {project});
 			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
 			//FIXME ....
