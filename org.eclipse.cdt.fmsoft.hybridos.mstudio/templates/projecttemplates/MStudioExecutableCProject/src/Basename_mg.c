@@ -77,8 +77,6 @@ int MiniGUIMain(int argc, const char* argv[])
 		DispatchMessage(&Msg);
 	}
 
-	MainWindowThreadCleanup(mWin->hwnd);
-
 	ncsUnloadResPackage(hPackage);
 
 	ncsUninitialize();
