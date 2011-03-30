@@ -176,7 +176,17 @@ public class MStudioSelectSkinDialog extends Dialog {
 		}
 		return selectedSkinName;
 	}
-
+	
+	public static boolean hasSkinFile() {
+		File skinFile = new File(MStudioSoCPreferencePage.SKIN_PATH);
+		String[] names = skinFile.list(new SkinFilter());
+		if (null == names || names.length == 0) {
+			return false;
+		}
+		
+		return true;
+	}
+	
 	// get all valid skin file
 	private String[] getSkinFile() {
 		File skinFile = new File(MStudioSoCPreferencePage.SKIN_PATH);

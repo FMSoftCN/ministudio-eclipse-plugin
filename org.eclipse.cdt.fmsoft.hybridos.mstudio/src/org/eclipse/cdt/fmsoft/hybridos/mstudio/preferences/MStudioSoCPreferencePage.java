@@ -205,6 +205,10 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 			}
 		});
 		
+		if (!MStudioSelectSkinDialog.hasSkinFile()) {
+			skinBtn.setEnabled(false);
+		}
+		
 		defaultSoc = getCurrentSoC();
 		initWidgetValues();
 		return composite;
