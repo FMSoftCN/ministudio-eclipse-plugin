@@ -131,14 +131,13 @@ public class MStudioDeployPreferencePage extends PreferencePage
 				|| locationPath.getStringValue() == null 
 				|| locationPath.getStringValue().equals("")){
 			updateTipMessage(MSDPP_PATH_INVALID);
-			return;
-		}	
-		if(galCom.getSelectionIndex() < 0)
+		} else if(galCom.getSelectionIndex() < 0){
 			updateTipMessage(MSDPP_GAL_INVALID);
-		else if(ialCom.getSelectionIndex() < 0)
+		} else if(ialCom.getSelectionIndex() < 0) {
 			updateTipMessage(MSDPP_IAL_INVALID);
-		else
+		} else {
 			updateTipMessage(MSDPP_EMPTY_STR);
+		}
 	}
 
 	private void initializeByStoreData() {
@@ -151,9 +150,9 @@ public class MStudioDeployPreferencePage extends PreferencePage
 			locationPath.setStringValue(locationValue);
 			if(prefLocationValue != null && prefLocationValue.equals(locationValue) && isValidPath(locationValue))
 				store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, locationValue);
-		}
-		else
+		}else {
 			locationPath.setStringValue("");
+		}
 		//File locationFile = new File(locationValue);
 		//if (!locationFile.exists() || locationValue == null || locationValue == "")
 		if(locationValue == null || !isValidPath(locationValue))
@@ -205,13 +204,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 
 	private boolean saveToStoreData() {
 		if(isChangedLocation(locationPath.getStringValue())){
-			/*
-			if(!MessageDialog.openConfirm(this.getShell(),
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
-					replace("${DIR}", locationPath.getStringValue())))
-				return false;
-				*/
 			MessageDialog.openWarning(this.getShell(),
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarningTitile"),
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathWarning").
@@ -219,7 +211,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		}
 		
 		IPreferenceStore store = MStudioPlugin.getDefault().getPreferenceStore();
-		//String locationToStore = getChangedDeployLocation();
 		
 		String location = locationPath.getStringValue();
 		if(location == null || location == "" || store == null)
@@ -227,24 +218,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		
 		if(!isValidPath(location))
 			return false;
-		/*
-		if(!isPathExists(location)) {
-			if(MessageDialog.openConfirm(getShell(), 
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogTitle"), 
-					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogContent"))){
-				try{
-					File folder = new File(location);
-					if(!folder.mkdirs())
-						return false;							
-				}catch(Exception ex){
-					ex.printStackTrace();
-					return false;
-				}
-			}
-			else
-				return false;
-		}
-		*/
+
 		store.setValue(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION, location);
 
 		String servToStore = new String();
@@ -457,18 +431,14 @@ public class MStudioDeployPreferencePage extends PreferencePage
 	}
 
 	protected void performDefaults() {
-		//locationPath.setStringValue("");
-		galCom.deselectAll();
-		ialCom.deselectAll();
 		
 		initializeByStoreData();
-		//locationChanged();
+
 		super.performDefaults();
 	}
 
 	public boolean performOk() {
 		return saveToStoreData();
-		//return true;
 	}
 	
 	public static String[] systemServices(){
@@ -508,17 +478,6 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		if(p == null)
 			return false;
 		return p.isValidPath(path);
-	}
-	private boolean isPathExists(String path){
-		try{
-			File f = new File(path);
-			if(f == null)
-				return false;
-			return f.exists();
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
-		return false;
 	}
 	private boolean isChangedLocation(String path){
 		if(path == null)
