@@ -296,17 +296,15 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 	
 	protected boolean validatePage() {
+		String tipMessage = "";
+		
 		if(!locationChanged()) {
-			setErrorMessage("Deploy Path Error !");
-			setPageComplete(false);
-			return false;
+			tipMessage += "Deploy Path Error !\n";
 		}
 		
 		if (sizeCombo.getText() == null 
 				|| !validateResolution(sizeCombo.getText().trim())){
-			setErrorMessage("Resolution Select Error !");
-			setPageComplete(false);
-			return false;
+			tipMessage += "Resolution Select Error !\n";
 		}
 
 		MStudioDeployWizard depWizard = (MStudioDeployWizard) this.getWizard();
@@ -314,11 +312,10 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		if (!depWizard.isHost()) {
 			if (0 > gal.getSelectionIndex() || 0 > ial.getSelectionIndex()
 					|| gal == null || ial == null) {
-				setErrorMessage("GAL & IAL setting Error !");
-				setPageComplete(false);
-				return false;
+				tipMessage += "GAL & IAL setting Error !\n";
 			}
 		}
+		
 		IProject[] prjs = getDeployExeProjects();
 		String socName = MStudioEnvInfo.getInstance().getCurSoCName();
 		String building = "";
@@ -336,24 +333,32 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			}
 		}
 		if (prjs != null && prjs.length > 0){
+			String stringPrjs = "";
 			for (int i = 0; i < prjs.length; i++){
 				IManagedProject managedProj = ManagedBuildManager.getBuildInfo(prjs[i]).getManagedProject();
 				IConfiguration[] cfg = managedProj.getConfigurations();
 
 				for (int j = 0; j < cfg.length; j++){
 					if (cfg[j].getName().equals(building) && cfg[j].needsRebuild()){
-						setErrorMessage ("You Haven't build the " 
-								+ building + " for project [" + prjs[i].getName() + "]");
-						setPageComplete(false);
-						return false;
+						stringPrjs += prjs[i].getName() + " "; 
 					}
 				}
 			}
+			
+			if (stringPrjs != "")
+				tipMessage +="You Haven't build the " 
+					+ building + " for project [" + stringPrjs + "]";
 		}
 		
-		setErrorMessage(null);
-		setPageComplete(true);
-		return true;
+		if (tipMessage != ""){
+			setErrorMessage(tipMessage);
+			setPageComplete(false);
+			return false;
+		} else {
+			setErrorMessage(null);
+			setPageComplete(true);
+			return true;
+		}
 	}
 
 	public IProject[] getDeployExeProjects() {
