@@ -94,6 +94,8 @@ public class MStudioDeployWizard extends Wizard{
 	private final static String RESPACK_DEPLOY_PROPERTY = "respack_deploy";
 	private final static String DEPLIBS_PROPERTY = "deplibs";
 	private final static String DEPLIBS_DEPLOY_PROPERTY = "deplibs_deploy";
+	private final static String CUSTOMFILES_PROPERTY = "customfiles";
+	private final static String CUSTOMFILES_DEPLOY_PROPERTY = "customfiles_deploy";
 
 	private final static String APPS_NUMBER_PROPERTY = "apps_number";
 	private final static String APPS_NAME_PROPERTY = "name";
@@ -569,6 +571,13 @@ public class MStudioDeployWizard extends Wizard{
 		}
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY,
 				dlcustom == null ? "" : dlcustom, null);
+		
+		String temp = getCustomfiles(project);
+		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, CUSTOMFILES_PROPERTY,
+				temp == null ? "" : temp, null);
+		temp = getCustomfilesDeploy(project);
+		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, CUSTOMFILES_DEPLOY_PROPERTY,
+				temp == null ? "" : temp, null);
 	}
 
 	private void setModulesSection() {
@@ -615,6 +624,13 @@ public class MStudioDeployWizard extends Wizard{
 					temp == null ? "" : temp, null);
 			temp = getDeplibsDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
+
+			temp = getCustomfiles(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), CUSTOMFILES_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getCustomfilesDeploy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), CUSTOMFILES_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 		}
 	}
@@ -678,6 +694,13 @@ public class MStudioDeployWizard extends Wizard{
 					temp == null ? "" : temp, null);
 			temp = getDeplibsDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_DEPLOY_PROPERTY,
+					temp == null ? "" : temp, null);
+
+			temp = getCustomfiles(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), CUSTOMFILES_PROPERTY,
+					temp == null ? "" : temp, null);
+			temp = getCustomfilesDeploy(projects[i]);
+			iniFile.setStringProperty(projects[i].getName(), CUSTOMFILES_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
 		}
 	}
@@ -801,6 +824,32 @@ public class MStudioDeployWizard extends Wizard{
 			return MODULES_DEPLOY_PATH;
 	}
 	
+	private String getCustomfilesDeploy(IProject project) {
+		
+		if (project == null)
+			return null;
+		MStudioProject mStudioProject = new MStudioProject(project);
+		String[] paths = mStudioProject.getDeployPathInfo();
+		if (paths.length == 4 && paths[3] != null) {
+			return paths[3];
+		}
+		else
+			return DEF_CUSTOM_FILE_LOCATION + "/" + project.getName();
+	}
+	
+	private String getCustomfiles(IProject project) {
+		
+		if (project == null)
+			return null;
+		MStudioProject mprj = new MStudioProject(project);
+		String[] customfiles = mprj.getDeployCustomFiles();
+		String customfilesStr = "";
+		for (int i = 0; i < customfiles.length; i++) {
+				customfilesStr += customfiles[i] + " ";
+		}
+		return customfilesStr;
+	}
+
 	private String getResPack(IProject project) {
 		return project.getLocation().toOSString().trim() + "/res/";
 	}
@@ -872,6 +921,7 @@ public class MStudioDeployWizard extends Wizard{
 		}
 		return true;
 	}
+	
 	private boolean isPathExists(String path){
 		try{
 			File f = new File(path);
