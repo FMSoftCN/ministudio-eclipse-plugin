@@ -71,7 +71,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private Button skinBtn = null;
 	private String[] socType = null;
 	private String[] socInfo = null;
-//	private String[] resolution = null;
 	private Label skinNameLabel = null;
 	private int socTypeCheckedPos = -1;
 	private final static String SOC_PATH_PREFIX = "/opt/hybridos/";
@@ -205,7 +204,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 				}
 			}
 		});
-//		skinBtn.setEnabled(false); // TODO it later
+		
 		defaultSoc = getCurrentSoC();
 		initWidgetValues();
 		return composite;
@@ -581,6 +580,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 					break;
 				}
 				setProjectsSoC(newSoc);
+				defaultSoc = newSoc;
 			}
 
 			// update MiniGUI.cfg.target file
@@ -637,4 +637,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	public boolean performOk() {
 		return saveWidgetValues();
 	}
+	
+   public boolean performCancel() {
+		setCurrentSoC(defaultSoc);
+      return super.performCancel();
+    }
 }
