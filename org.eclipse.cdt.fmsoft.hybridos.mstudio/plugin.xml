@@ -291,7 +291,7 @@
 
     <extension point="org.eclipse.ui.commands">
         <command
-            categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.command.category"
+            categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.category"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.updatechecks"
             name="%MStudioCommand.update.name">
         </command>
@@ -301,7 +301,7 @@
             name="%MStudioCommand.mginitService.name">
         </command>
         <command
-            categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.command.category"
+            categoryId="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.category"
             id="org.eclipse.cdt.fmsoft.hybridos.mstudio.commands.deploy"
             name="%MStudioCommand.deploy.name">
         </command>
@@ -362,6 +362,11 @@
              Import a extenal project from the local file system into the workspace.
           </description>
        </wizard>
+    </extension>
+    <extension
+          point="org.eclipse.ui.startup">
+       <startup
+             class="org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioStartup"></startup>
     </extension>
 
 
