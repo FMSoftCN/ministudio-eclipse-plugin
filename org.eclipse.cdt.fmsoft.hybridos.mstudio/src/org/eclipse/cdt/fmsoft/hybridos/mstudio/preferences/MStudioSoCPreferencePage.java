@@ -367,7 +367,6 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	// according to MiniGUI.cfg, get resolution, gvfb skin setting, etc.
 	private boolean initWidgetValues() {
 		boolean err = true;
-		setCurrentSoC(defaultSoc);
 		initSkinNameLabel();
 		err = (initSocTable() && initInfoTable() && initResolutionCombo());
 		if(!err)
@@ -635,6 +634,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		resolutionCombo.removeAll();
 		skinNameLabel.setText("");
 
+		setCurrentSoC(defaultSoc);
 		initWidgetValues();
 		super.performDefaults();
 	}
