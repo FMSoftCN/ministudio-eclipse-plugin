@@ -128,22 +128,24 @@ public class MStudioDeployServicesWizardPage extends WizardPage {
 	private void initServiceTable(){
 		MStudioEnvInfo info = MStudioPlugin.getDefault().getMStudioEnvInfo();
 		List<String> s = info.getServices();
-		if (info.getMgRunMode() != "process" && s.contains("mginit")){
+		if (null == s) {
+			return;
+		}
+		if (info.getMgRunMode() != "process" && s.contains("mginit")) {
 			s.remove("mginit");
 		}
-		if(null != s){
-			String[] serv = (String[])s.toArray(new String[s.size()]);
-			if(serv.length > 0){
-				ctv.add(serv);						
-				if (null == MStudioSoCPreferencePage.getCurrentSoC())
-					return;
-				String[] defaultSelServ = MStudioDeployPreferencePage.systemServices();
-				if (defaultSelServ.length > 0){
-					ctv.setCheckedElements(defaultSelServ);
-				}
-				if (info.getMgRunMode() == "process"){
-					ctv.setChecked("mginit", true);
-				}
+
+		String[] serv = (String[])s.toArray(new String[s.size()]);
+		if(serv.length > 0){
+			ctv.add(serv);						
+			if (null == MStudioSoCPreferencePage.getCurrentSoC())
+				return;
+			String[] defaultSelServ = MStudioDeployPreferencePage.systemServices();
+			if (defaultSelServ.length > 0){
+				ctv.setCheckedElements(defaultSelServ);
+			}
+			if (info.getMgRunMode() == "process"){
+				ctv.setChecked("mginit", true);
 			}
 		}
 	}

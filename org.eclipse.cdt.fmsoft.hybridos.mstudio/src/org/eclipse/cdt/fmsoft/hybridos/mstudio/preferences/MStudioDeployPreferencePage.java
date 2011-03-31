@@ -108,6 +108,9 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		setTitle(MStudioMessages.getString("MStudioDeployPreferencePage.title"));
 		
 		List<String> s = envInfo.getServices();
+		if (null == s) {
+			return;
+		}
 		if (envInfo.getMgRunMode() != "process" && s.contains("mginit")){
 			s.remove("mginit");
 		} else {
@@ -170,7 +173,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		ctv.setCheckedElements(defaultSelServ);
 			
 		if (envInfo.getMgRunMode() == "process" 
-			&& allServList.contains("mginit")){
+				&& allServList.contains("mginit")) {
 			Object mginitEle = ctv.getElementAt(allServList.indexOf("mginit"));
 			ctv.setChecked(mginitEle, true);
 		}
