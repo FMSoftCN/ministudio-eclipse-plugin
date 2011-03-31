@@ -609,6 +609,7 @@ public class MStudioEnvInfo {
 		return dxwxh;
 	}
 	
+	@SuppressWarnings("restriction")
 	public void updateMginitMemus () {
 		
 		boolean beShow = MiniGUIRunMode.process.equals(mgRunMode);
@@ -628,6 +629,13 @@ public class MStudioEnvInfo {
 			    	if (itm instanceof CommandContributionItem) {
 			    		CommandContributionItem cci = (CommandContributionItem)itm;
 			    		cci.setVisible(beShow);
+			    		hybridMenu.update(true);
+			    	}
+			    	String deployId = "org.eclipse.cdt.fmsoft.hybridos.mstudio.menu.deploy";
+			    	itm = hybridMenu.find (deployId);
+			    	if (itm instanceof CommandContributionItem) {
+			    		CommandContributionItem cci = (CommandContributionItem)itm;
+			    		cci.setVisible(SoCName != null);
 			    		hybridMenu.update(true);
 			    	}
 			    }

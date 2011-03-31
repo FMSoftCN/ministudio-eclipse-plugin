@@ -108,13 +108,12 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		setTitle(MStudioMessages.getString("MStudioDeployPreferencePage.title"));
 		
 		List<String> s = envInfo.getServices();
-		if (null == s) {
-			return;
-		}
-		if (envInfo.getMgRunMode() != "process" && s.contains("mginit")){
-			s.remove("mginit");
-		} else {
-			selServList.add("mginit");
+		if (s != null){
+			if (envInfo.getMgRunMode() != "process" && s.contains("mginit")){
+				s.remove("mginit");
+			} else {
+				selServList.add("mginit");
+			}
 		}
 		allServList = s;
 	}
