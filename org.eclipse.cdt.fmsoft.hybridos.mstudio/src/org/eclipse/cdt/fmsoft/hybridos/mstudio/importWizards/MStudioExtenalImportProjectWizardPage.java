@@ -134,7 +134,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		socs.clear();
 		validProjects.clear();
 		
-		ProjectRecord[] selectedProjects = super./*getProjectRecords();/*/.getValidProjects();//*/// for eclipse 3.4
+		ProjectRecord[] selectedProjects = super./*getProjectRecords();/*/getValidProjects();//*/// for eclipse 3.4
 		
 		boolean dirSelected = dirRadioButton.getSelection();
 		if(dirSelected){
