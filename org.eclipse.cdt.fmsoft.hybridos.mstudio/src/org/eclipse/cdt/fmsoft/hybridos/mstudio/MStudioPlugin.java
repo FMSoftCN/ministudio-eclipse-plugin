@@ -70,7 +70,6 @@ public class MStudioPlugin extends AbstractUIPlugin {
 		listener = new MStudioResourceChangeListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, 
 				IResourceChangeEvent.POST_CHANGE);
-		MStudioEnvInfo.getInstance().updateMginitMemus();
 	}
 
 	/*
