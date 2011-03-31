@@ -569,7 +569,8 @@ public class MStudioDeployWizard extends Wizard{
 				+ getConfigureName(project) + File.separatorChar + LIB_PREFIX_NAME 
 				+ project.getName() + LIB_SUFFIX_NAME;
 		}
-		if (!isPathExists(dlcustom)){
+		
+		if (null != dlcustom && !isPathExists(dlcustom)) {
 			MessageDialog.openError(getShell(), "Error", 
 				"The file [" + dlcustom + "] is not existed, Please check it!");
 		}
@@ -606,12 +607,12 @@ public class MStudioDeployWizard extends Wizard{
 			program = projects[i].getLocation().toOSString() + File.separatorChar
 					+ getConfigureName(projects[i]) + File.separatorChar + LIB_PREFIX_NAME 
 					+ projects[i].getName() + LIB_SUFFIX_NAME;
-			if (!isPathExists(program)){
+			if (null != program && !isPathExists(program)) {
 				MessageDialog.openError(getShell(), "Error", 
 					"The file [" + program + "] is not existed, Please check it!");
 			}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					program, null);
+					program == null ? "" : program, null);
 			
 			String temp = getModuleDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
@@ -681,12 +682,12 @@ public class MStudioDeployWizard extends Wizard{
 			iniFile.addSection(projects[i].getName(), null);			
 			program = projects[i].getLocation().toOSString() + File.separatorChar
 					+ getConfigureName(projects[i]) + File.separatorChar + projects[i].getName();			
-			if (!isPathExists(program)){
+			if (null != program && !isPathExists(program)) {
 				MessageDialog.openError(getShell(), "Error", 
 					"The file [" + program + "] is not existed, Please check it!");
 			}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
-					program, null);
+					program == null ? "" : program, null);
 			
 			saveProjectResCfgs(projects[i]);
 			String temp = getProjectResCfgs(projects[i]);
@@ -699,7 +700,7 @@ public class MStudioDeployWizard extends Wizard{
 			
 			temp = getResPack(projects[i]);
 			String respkgFile = temp + projects[i].getName() + ".res";
-			if (!isPathExists(respkgFile)){
+			if (null != respkgFile && !isPathExists(respkgFile)){
 				MessageDialog.openError(getShell(), "Error", 
 					"The file [" + respkgFile + "] is not existed, Please check it!");
 			}
@@ -917,7 +918,7 @@ public class MStudioDeployWizard extends Wizard{
 
 	private boolean checkDeloyLocation(){
 		String location = this.getDeployExecuteableWizardPage().getDeployLocation();
-		if(!isPathExists(location)){
+		if(null != location && !isPathExists(location)) {
 			if(MessageDialog.openConfirm(getShell(), 
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogTitle"), 
 					MStudioMessages.getString("MStudioDeployPreferencePage.pathNotExists.DialogContent"))){
