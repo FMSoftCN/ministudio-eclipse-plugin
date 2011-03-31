@@ -1,5 +1,6 @@
 package org.eclipse.cdt.fmsoft.hybridos.mstudio.importWizards;
 
+import java.awt.Event;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import javax.swing.event.DocumentEvent.EventType;
+
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioPlugin;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProjectProperties;
@@ -18,23 +21,33 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckable;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.ITreeViewerListener;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TreeExpansionEvent;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.internal.handlers.WizardHandler.New;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
+import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage.ProjectRecord;
 
 public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportPage{
 	private static final String PROJECT_FILE_NAME = ".hproject";
 	private static final String SOCNAME_PROPERTY = "socName";
 	private List<ProjectRecord> validProjects = new ArrayList<ProjectRecord>();
+	private List<String> socs = new ArrayList<String>();
 	private String[] allSoc = MStudioPlugin.getDefault().getMStudioEnvInfo().getSoCPaths();
 	private String curSocName = MStudioPlugin.getDefault().getMStudioEnvInfo().getCurSoCName();
 	private String selectSocName = curSocName;
@@ -44,7 +57,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 
 	private String tarFileSocName = null;
 	private String zipFileSocName = null;
-	
 	
 	public MStudioExtenalImportProjectWizardPage(){
 		this("wizardExternalProjectsPage");
@@ -64,15 +76,43 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 	
 	public void createControl(Composite parent) {
 		super.createControl(parent);
-		
 		projectListBox = super.getProjectsList();
 		dirRadioButton = super.getProjectFromDirectoryRadio();
 		projectListBox.addCheckStateListener(new ProjectListCheckStateListener());
+		projectListBox.setInput(this);
+		projectListBox.setContentProvider(new ITreeContentProvider() {
+			public Object[] getChildren(Object parentElement) {
+				return null;
+			}
+			public Object[] getElements(Object inputElement) {
+				return getValidProjects();
+			}
+			public boolean hasChildren(Object element) {
+				return false;
+			}
+			public Object getParent(Object element) {
+				return null;
+			}
+			public void dispose() {
+
+			}
+			public void inputChanged(Viewer viewer, Object oldInput,
+					Object newInput) {
+			}
+		});
+		projectListBox.setLabelProvider(new LabelProvider() {
+			public String getText(Object element) {
+				return ((ProjectRecord) element).getProjectLabel();
+			}
+		});
+		projectListBox.addCheckStateListener(new ICheckStateListener() {
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				setPageComplete(projectListBox.getCheckedElements().length > 0);
+			}
+		});
 	}
 	
 	private boolean checkHasSoc(String socName){
-		if(allSoc == null)
-			return false;
 		for(int j = 0; j < allSoc.length; j++){
 			if(allSoc[j].contains(socName)){
 				return true;
@@ -80,22 +120,34 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		}
 		return false;
 	}
-	
+	//@rewrite parent updateProjectsList
 	public void updateProjectsList(final String path){
+		if(allSoc.length <= 0){
+			MessageDialog.openConfirm(getShell(), 
+					MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.notInstallSoc.errorTitle"), 
+					MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.notInstallSoc.errorContent"));
+			return;
+		}
+		
 		this.selectPath = path;
 		super.updateProjectsList(path);	
-		
+		socs.clear();
 		validProjects.clear();
-		ProjectRecord[] selectedProjects = super.getValidProjects();//.getProjectRecords(); for eclipse 3.7
+		
+		ProjectRecord[] selectedProjects = super./*getProjectRecords();/*/.getValidProjects();//*/// for eclipse 3.4
+		
 		boolean dirSelected = dirRadioButton.getSelection();
 		if(dirSelected){
 			for (int i = 0; i < selectedProjects.length; i++) {
+				//get the project socname form the project label
 				String projectSocName = getProjectSocName(selectedProjects[i]);
 				if(projectSocName == null || projectSocName.equals(""))
 					continue;
 				if((curSocName == null && checkHasSoc(projectSocName)) ||
 						(curSocName != null && curSocName.equals(projectSocName))){
 					validProjects.add(selectedProjects[i]);
+					if(checkDifferentSoc(projectSocName))
+						socs.add(projectSocName);
 				}
 			}
 		}
@@ -122,12 +174,16 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 			}
 		}
 		
+		if(socs.size() > 1 && curSocName == null){
+			MessageDialog.openConfirm(getShell(),
+					MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.selectProjects.errorTitle"), 
+					MStudioMessages.getString("MStudioExtenalImportProjectWizardPage.selectProjects.errorContent"));
+			validProjects.clear();
+		}
+		
 		projectListBox.refresh(true);
 		projectListBox.setCheckedElements(new Object[0]);
-		Object[] element = (Object[])(projectListBox.getCheckedElements());
-		for(int i = 0; i < element.length; i++){
-			projectListBox.setChecked(element[i], false);
-		}
+		setPageComplete(projectListBox.getCheckedElements().length > 0);
 	}
 	
 	public ProjectRecord[] getValidProjects() {
@@ -218,6 +274,14 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		return null;
 	}
 	
+	private boolean checkDifferentSoc(String socName){
+		//socs.add(socName);
+		if(socs.size() <= 0)
+			return true;
+		if(socs.contains(socName))
+			return false;
+		return true;
+	}
 	private boolean collectZipProjectFromProvider(Object entry, int level, 
 			ZipLeveledStructureProvider zipProvider, ProjectRecord project) {
 		List children = zipProvider.getChildren(entry);
@@ -244,6 +308,8 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 							if((curSocName == null && checkHasSoc(socName)) ||
 									(curSocName != null && curSocName.equals(socName))){
 								validProjects.add(project);
+								if(checkDifferentSoc(socName))
+									socs.add(socName);
 								break;
 							}
 						}
@@ -283,6 +349,8 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 							if((curSocName == null && checkHasSoc(socName)) ||
 									(curSocName != null && curSocName.equals(socName))){
 								validProjects.add(project);
+								if(checkDifferentSoc(socName))
+									socs.add(socName);
 								break;
 							}
 						}
@@ -327,7 +395,6 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 							InputStream is = tarProvider.getContents(pc);
 							if(is == null)
 								return null;
-							//return getProviderSocName(is, MStudioExtenalImportProjectWizardPage.SOCNAME_PROPERTY);
 							tarFileSocName = getProviderSocName(is, MStudioExtenalImportProjectWizardPage.SOCNAME_PROPERTY);
 							return tarFileSocName;
 						}
@@ -378,6 +445,7 @@ public class MStudioExtenalImportProjectWizardPage extends WizardProjectsImportP
 		}
 		return zipFileSocName;		
 	}
+	
 	
 	public class ProjectListCheckStateListener implements ICheckStateListener{
 		@Override
