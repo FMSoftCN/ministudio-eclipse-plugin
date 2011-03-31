@@ -127,7 +127,7 @@ public class MStudioCheckUpdate extends AbstractHandler implements IHandler {
 
 	private String getUrl() {
 		return String.format("%s%s%s-%s%s", 
-				MSCU_BASE_URL, MSCU_GUIBUILDER, builderVersion, "msplus", pluginVersion);
+				MSCU_BASE_URL, MSCU_GUIBUILDER, builderVersion, "hsplugin", pluginVersion);
 	}
 
 	@Override
