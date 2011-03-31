@@ -352,8 +352,8 @@ public class MStudioDeployWizard extends Wizard{
 
 		if(!copyFile(oldFilePath, newFilePath))
 		{
-			MessageDialog.openError(getShell(), "error", 
-					"the mginit.cfg file is not exist, please reset up the SOC pakage or check the file");
+			MessageDialog.openError(getShell(), "Error", 
+					"The mginit.cfg file is not existed, Please reset the SOC pakage or check the file !");
 			return false;
 		}
 		targetCfgFile = new MStudioParserIniFile(newFilePath);
@@ -569,6 +569,10 @@ public class MStudioDeployWizard extends Wizard{
 				+ getConfigureName(project) + File.separatorChar + LIB_PREFIX_NAME 
 				+ project.getName() + LIB_SUFFIX_NAME;
 		}
+		if (!isPathExists(dlcustom)){
+			MessageDialog.openError(getShell(), "Error", 
+				"The file [" + dlcustom + "] is not existed, Please check it!");
+		}
 		iniFile.setStringProperty(DEPLOY_DLCUSTOM_SECTION, DLCUSTOM_PROGRAM_PROPERTY,
 				dlcustom == null ? "" : dlcustom, null);
 		
@@ -602,8 +606,13 @@ public class MStudioDeployWizard extends Wizard{
 			program = projects[i].getLocation().toOSString() + File.separatorChar
 					+ getConfigureName(projects[i]) + File.separatorChar + LIB_PREFIX_NAME 
 					+ projects[i].getName() + LIB_SUFFIX_NAME;
+			if (!isPathExists(program)){
+				MessageDialog.openError(getShell(), "Error", 
+					"The file [" + program + "] is not existed, Please check it!");
+			}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					program, null);
+			
 			String temp = getModuleDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
@@ -671,7 +680,11 @@ public class MStudioDeployWizard extends Wizard{
 			
 			iniFile.addSection(projects[i].getName(), null);			
 			program = projects[i].getLocation().toOSString() + File.separatorChar
-					+ getConfigureName(projects[i]) + File.separatorChar + projects[i].getName();
+					+ getConfigureName(projects[i]) + File.separatorChar + projects[i].getName();			
+			if (!isPathExists(program)){
+				MessageDialog.openError(getShell(), "Error", 
+					"The file [" + program + "] is not existed, Please check it!");
+			}
 			iniFile.setStringProperty(projects[i].getName(), PROGRAM_PROPERTY,
 					program, null);
 			
@@ -683,12 +696,19 @@ public class MStudioDeployWizard extends Wizard{
 			temp = getAppDeploy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName().trim(), PROGRAM_DEPLOY_PROPERTY, 
 					temp == null ? "" : temp, null);
+			
 			temp = getResPack(projects[i]);
+			String respkgFile = temp + projects[i].getName() + ".res";
+			if (!isPathExists(respkgFile)){
+				MessageDialog.openError(getShell(), "Error", 
+					"The file [" + respkgFile + "] is not existed, Please check it!");
+			}
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_PROPERTY, 
 					temp == null ? "" : temp, null);
 			temp = getResPackDepoloy(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), RESPACK_DEPLOY_PROPERTY,
 					temp == null ? "" : temp, null);
+			
 		    temp = getDepLibs(projects[i]);
 			iniFile.setStringProperty(projects[i].getName(), DEPLIBS_PROPERTY,
 					temp == null ? "" : temp, null);
