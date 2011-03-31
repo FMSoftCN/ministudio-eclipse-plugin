@@ -146,6 +146,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 		} else {
 			combo.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
+					buttonCheck.setEnabled(true);
 					socName = combo.getText();
 					MStudioSoCPreferencePage.setCurrentSoC(socName);
 					socCancelOnlyOne = true;
@@ -258,6 +259,10 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				update();
 			}
 		});
+		
+		if (combo.getSelectionIndex() < 0){
+			buttonCheck.setEnabled(false);
+		}
 
 		setControl(msSocParent);
 	}
