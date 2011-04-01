@@ -137,7 +137,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		Label topLabel1 = new Label(col1,SWT.NONE);
 		topLabel1.setLayoutData(new GridData(GridData.FILL));
 		topLabel1.setText(MStudioMessages.getString("MStudioDeployPropertyPage.srcListTitle"));
-		srcList = new List(col1,SWT.V_SCROLL|SWT.MULTI|SWT.BORDER);
+		srcList = new List(col1,SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
 		srcList.setLayoutData(new GridData(200,200));
 		srcList.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -186,7 +186,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 		Label topLabel2 = new Label(col3,SWT.NONE);
 		topLabel2.setLayoutData(new GridData(GridData.FILL));
 		topLabel2.setText(MStudioMessages.getString("MStudioDeployPropertyPage.destListTitle"));
-		destList = new List(col3,SWT.V_SCROLL | SWT.MULTI | SWT.BORDER);
+		destList = new List(col3,SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
 		destList.setLayoutData(new GridData(200,200));
 		destList.addSelectionListener(new SelectionListener(){
 			public void widgetDefaultSelected(SelectionEvent e){
@@ -272,7 +272,7 @@ public class MStudioDeployPropertyPage extends PropertyPage
 					listProjectFiles(dirList[i]);
 			}
 			else{
-				filesName.add(f.getName());
+				filesName.add(f.getPath());
 			}
 		}catch(Exception e){
 			e.printStackTrace();
