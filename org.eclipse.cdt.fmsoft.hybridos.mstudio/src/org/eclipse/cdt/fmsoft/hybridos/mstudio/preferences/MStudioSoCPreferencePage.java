@@ -366,11 +366,18 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 	// according to MiniGUI.cfg, get resolution, gvfb skin setting, etc.
 	private boolean initWidgetValues() {
-		boolean err = true;
-		initSkinNameLabel();
-		err = (initSocTable() && initInfoTable() && initResolutionCombo());
-		if(!err)
-			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues"));
+		String err = "";
+		if (initSocTable())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocTypeTable");
+		if (initInfoTable())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocInfoTable");
+		if(initResolutionCombo())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initResolutionCombo");;
+		if(initSkinNameLabel())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSkinNameLabel");
+		if(!err.equals(""))
+			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues") +
+					err + MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValuesb"));
 		return true;
 	}
 
