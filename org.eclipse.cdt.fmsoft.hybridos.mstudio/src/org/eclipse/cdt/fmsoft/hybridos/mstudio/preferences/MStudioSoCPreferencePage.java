@@ -210,6 +210,9 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		}
 		
 		defaultSoc = getCurrentSoC();
+		if (null == defaultSoc) {
+			defaultSoc = "";
+		}
 		initWidgetValues();
 		return composite;
 	}
