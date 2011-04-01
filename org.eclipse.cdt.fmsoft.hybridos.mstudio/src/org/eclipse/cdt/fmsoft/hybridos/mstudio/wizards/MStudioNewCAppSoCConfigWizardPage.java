@@ -402,7 +402,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				containsCheckedAffectedElements(affected);
 
 				if (!dailogPkgsChecked(AFFECTED, affectedPkgs, affected))
-					return;
+					break;
 
 				for (int i = 0; i < affected.size(); i++) {
 					String affString = affected.get(i);
@@ -472,7 +472,7 @@ public class MStudioNewCAppSoCConfigWizardPage extends WizardPage {
 				containsCheckedDependElements(dep);
 
 				if (!dailogPkgsChecked(DEPEND, depPkgs, dep))
-					return;
+					break;
 
 				for (int i = 0; i < dep.size(); i++) {
 					String depString = dep.get(i);
