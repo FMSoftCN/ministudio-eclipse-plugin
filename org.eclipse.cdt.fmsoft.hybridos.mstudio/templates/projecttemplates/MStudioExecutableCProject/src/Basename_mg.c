@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 
 #include <minigui/common.h>
 #include <minigui/minigui.h>
@@ -36,7 +37,7 @@ int MiniGUIMain(int argc, const char* argv[])
 	char res_path [MAX_PATH];
 	char f_package[MAX_PATH];
 
-	ncsSetAppIniInfo(ncsLoadAppIniInfo(basename(argv[0])));
+	ncsSetAppIniInfo(ncsLoadAppIniInfo((const char *)basename((char *)argv[0])));
 
 	ncsInitialize();
 
