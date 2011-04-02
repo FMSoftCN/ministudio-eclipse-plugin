@@ -647,8 +647,8 @@ public class MStudioWizardHandler extends CWizardHandler {
 		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
 		Map<String, String> map = new HashMap<String, String>(2);
 		
-		map.put("MG_CFG_PATH", MSMS_ENVINFO + einfo.getWorkSpaceMetadataPath());
-		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
+		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
+		map.put("LD_LIBRARY_PATH", MSMS_ENVINFO + pcLibPath[0]);
 		
 		for (int i = 0; i < 2; i++) {
 			ILaunchConfigurationWorkingCopy wc = null;
