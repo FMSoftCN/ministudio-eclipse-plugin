@@ -84,12 +84,13 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		Composite rg = typeRadioGroup.getRadioBoxControl(topPanel);
 		Control[] radioButton = (Control[])(rg.getChildren());	
 		//MStudioDeployWizard.deployTypeIsHost = false;
-		
-		if(radioButton.length == 1){
+		if(targetType.name().equals(MStudioDeployTargetType.Host.name())){
 			((Button)radioButton[0]).setSelection(true);
+			((Button)radioButton[0]).setFocus();
 		}
-		else if(radioButton.length > 1){
+		else{
 			((Button)radioButton[1]).setSelection(true);
+			((Button)radioButton[1]).setFocus();
 		}
 		typeRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
@@ -104,15 +105,18 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 					}
 				}
 			}});
-		new Label(topPanel,SWT.FULL_SELECTION|SWT.LINE_SOLID);
+		new Label(topPanel,SWT.FULL_SELECTION | SWT.LINE_SOLID);
 		RadioGroupFieldEditor rootfsRadioGroup = new RadioGroupFieldEditor("rootfs",MStudioMessages.getString("MStudioDeployWizardPage.selectRootfs.pageName"),1,
 							new String[][]{{MStudioDeployBuildType.Release.name(),MStudioDeployBuildType.Release.name()},
 							{MStudioDeployBuildType.Debug.name(),MStudioDeployBuildType.Debug.name()}},topPanel);
 		//set the default choice value
 		Composite tt = rootfsRadioGroup.getRadioBoxControl(topPanel);
 		Control[] radioButtons = (Control[])(tt.getChildren());
-		if(radioButtons.length>0){
+		if(buildType.name().equals(MStudioDeployBuildType.Debug.name())){
 			((Button)radioButtons[0]).setSelection(true);
+		}
+		else {
+			((Button)radioButtons[1]).setSelection(true);
 		}
 		rootfsRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
