@@ -17,7 +17,9 @@ package org.eclipse.cdt.fmsoft.hybridos.mstudio.preferences;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioEnvInfo;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.MStudioMessages;
@@ -54,10 +56,17 @@ import org.eclipse.cdt.managedbuilder.core.IOption;
 import org.eclipse.cdt.managedbuilder.core.ITool;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.core.LaunchManager;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
+
 
 public class MStudioSoCPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
@@ -524,6 +533,25 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 
 		if (cur_cfgs.length > 0)
 			ManagedBuildManager.saveBuildInfo(project, false);
+
+		DebugUIPlugin dp = DebugUIPlugin.getDefault();
+		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
+		Map<String, String> map = new HashMap<String, String>(2);
+		String[] pcLibPath = {einfo.getPCLibraryPath()};
+		
+		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
+		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
+		
+		ILaunchConfigurationWorkingCopy wc = null;
+		try {
+			wc = configs[0].getWorkingCopy();
+			if (null != wc) {
+				wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+				wc.doSave();
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 
 		return true;
 	}
