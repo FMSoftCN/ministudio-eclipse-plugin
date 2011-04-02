@@ -95,6 +95,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String GAL_ENGINE_PROPERTY = "gal_engine";
 	private final static String FBCON_SECTION = "fbcon";
 	private String defaultSoc = null;
+	private static final String MSMS_ENVINFO = "/lib:/usr/lib:/usr/local/lib:";
 
 	public MStudioSoCPreferencePage() {
 	}
@@ -540,7 +541,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		String[] pcLibPath = {einfo.getPCLibraryPath()};
 		
 		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
-		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
+		map.put("LD_LIBRARY_PATH", MSMS_ENVINFO + pcLibPath[0]);
 		
 		for (int i = 0; i < configs.length; i++) {
 			ILaunchConfigurationWorkingCopy wc = null;

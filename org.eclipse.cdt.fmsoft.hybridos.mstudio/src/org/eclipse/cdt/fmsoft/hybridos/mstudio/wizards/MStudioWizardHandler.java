@@ -117,6 +117,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 	protected CfgHolder[] cfgs = null;
 	protected MStudioNewCAppSoCConfigWizardPage fConfigPage = null;
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
+	private static final String MSMS_ENVINFO = "/lib:/usr/lib:/usr/local/lib:";
 
 	protected static final class EntryInfo {
 
@@ -646,7 +647,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 		ILaunchConfiguration[] configs = dp.getLaunchConfigurationManager().getApplicableLaunchConfigurations(null, project);
 		Map<String, String> map = new HashMap<String, String>(2);
 		
-		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
+		map.put("MG_CFG_PATH", MSMS_ENVINFO + einfo.getWorkSpaceMetadataPath());
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
 		for (int i = 0; i < 2; i++) {
@@ -711,9 +712,9 @@ public class MStudioWizardHandler extends CWizardHandler {
 		String tempName = template.getTemplateId();
 		boolean isMgProject = false;
 		MStudioProjectTemplateType MgType = MStudioProjectTemplateType.exe;
-		String[] pkgs = mprj.getDepPkgs();
+/*		String[] pkgs = mprj.getDepPkgs();
 
-/*
+
 		for (int i = 0; i < pkgs.length; i++){
 			if (pkgs[i].equals("minigui")){
 				isMgProject = true;
