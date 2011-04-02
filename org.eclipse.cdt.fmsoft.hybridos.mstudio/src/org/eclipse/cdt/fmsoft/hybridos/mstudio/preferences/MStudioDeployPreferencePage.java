@@ -458,7 +458,7 @@ public class MStudioDeployPreferencePage extends PreferencePage
 		{
 		    return store.getString(MStudioPreferenceConstants.MSTUDIO_DEPLOY_LOCATION);	    
 		}		
-		return "";
+		return MStudioPlugin.getDefault().getMStudioEnvInfo().getDefaultLocationPath();
 	}
 	
 	public String getDefaultDeployLocationPath(){

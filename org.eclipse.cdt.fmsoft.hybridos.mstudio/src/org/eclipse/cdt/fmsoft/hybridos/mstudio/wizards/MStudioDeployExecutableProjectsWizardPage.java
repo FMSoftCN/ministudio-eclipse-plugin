@@ -122,6 +122,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		locationPath.getTextControl(bottomPanel2).addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
 				isDeployPathChanged = true;
+				validatePage();
 				}
 			});
 		locationPath.getTextControl(bottomPanel2).addFocusListener(new FocusListener(){
@@ -130,7 +131,6 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			public void focusLost(FocusEvent e) {
 				if(isDeployPathChanged){
 					checkLocation();
-					validatePage();
 					isDeployPathChanged = false;
 				}
 			}
@@ -173,12 +173,12 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		galLabel.setText(MStudioMessages
 				.getString("MStudioDeployWizardPage.selectExeProjects.galLabel"));
 		gal = new Combo(bottomPanel, SWT.READ_ONLY);
-		gal.addSelectionListener(new SelectedChangeListener());
+		//gal.addSelectionListener(new SelectedChangeListener());
 		Label ialLabel=new Label(bottomPanel, SWT.NONE);
 		ialLabel.setText(MStudioMessages.
 				getString("MStudioDeployWizardPage.selectExeProjects.ialLabel"));
 		ial = new Combo(bottomPanel, SWT.READ_ONLY);
-		ial.addSelectionListener(new SelectedChangeListener());
+		//ial.addSelectionListener(new SelectedChangeListener());
 
 		initExeProjects();
 		initSizeAndColor();
@@ -197,7 +197,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 		return curLocation.equals(path);
 	}
 	
-	public boolean locationChanged() {
+	public boolean isLocationNormal() {
 		String localPath = locationPath.getStringValue();
 		if(localPath == null || localPath.equals(""))
 			return false;
@@ -219,23 +219,31 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 			return;
 		String tagetMgconfigureFile = MStudioEnvInfo.getInstance().getWorkSpaceMetadataPath() + "MiniGUI.cfg.target";
 		MStudioParserIniFile file = new MStudioParserIniFile(tagetMgconfigureFile);
-		if(file == null)
-			return;
-		selectedGalEngine = file.getStringProperty("system", "gal_engine");
-		selectedIalEngine = file.getStringProperty("system", "ial_engine");	
-		if(selectedGalEngine == null || selectedIalEngine == null)
-			return;
+		if(file != null){
+			selectedGalEngine = file.getStringProperty("system", "gal_engine");
+			selectedIalEngine = file.getStringProperty("system", "ial_engine");	
+		}
+		boolean set = false;
 		for(int i = 0; i < galP.length; i++){
 			gal.add(galP[i]);
 			if (selectedGalEngine != null && selectedGalEngine.equals(galP[i])){
 				gal.select(i);
+				set = true;
 			}
 		}	
+		if (!set){
+			gal.select(0);
+		}
+		set = false;
 		for(int i = 0; i < ialP.length; i++){
 			ial.add(ialP[i]);
 			if (selectedIalEngine != null && selectedIalEngine.equals(ialP[i])){
 				ial.select(i);
+				set = true;
 			}
+		}
+		if (!set){
+			ial.select(0);
 		}
 	}
 
@@ -298,7 +306,7 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	protected boolean validatePage() {
 		String tipMessage = "";
 		
-		if(!locationChanged()) {
+		if(!isLocationNormal()) {
 			tipMessage += "Deploy Path Error !\n";
 		}
 		
