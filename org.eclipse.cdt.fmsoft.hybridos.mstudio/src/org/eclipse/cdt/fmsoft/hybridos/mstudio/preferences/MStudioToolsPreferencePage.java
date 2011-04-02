@@ -118,6 +118,9 @@ public class MStudioToolsPreferencePage extends PreferencePage
 	private final static String MSTPP_REBUILD = "Rebuild projects";
 	private final static String MSTPP_PIONT = ".";
 	private final static String MSTPP_EMPTY = "";
+	
+	public final String DEFAULT_GUIBUILDER_VERSION = "1.0.8";
+	public final String DEFAULT_GUIBUILDER_PATH = "/usr/local/bin";
 
 	private Label label = null;
 	private Table table = null;
@@ -129,6 +132,7 @@ public class MStudioToolsPreferencePage extends PreferencePage
 	}
 
 	public void init(IWorkbench workbench) {
+		
 	}
 
 	public static String[] getMStudioVersions() {
@@ -191,6 +195,10 @@ public class MStudioToolsPreferencePage extends PreferencePage
 
 		addMsBuildsSection(composite);
 		updateItems();
+		if (table.getItemCount() <= 0 
+				&& System.getProperty("os.name").toLowerCase().indexOf("window") >= 0){
+			addItem (DEFAULT_GUIBUILDER_VERSION, DEFAULT_GUIBUILDER_PATH);
+		}
 		enableButtons(table.getSelectionCount() > 0);
 
 		return composite;
