@@ -649,38 +649,49 @@ public class MStudioWizardHandler extends CWizardHandler {
 		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
-		ILaunchConfigurationWorkingCopy wc = null;
-		try {
-			if (configs.length <= 0) {
-				LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
-				String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
-				ILaunchConfigurationType type = null;
-				for (int ii = 0; ii < stype.length; ii++)
-				{
-					if(stype[ii].startsWith("org.eclipse.cdt.launch")){
-						type = lm.getLaunchConfigurationType(stype[ii]);
-						break;
+		for (int i = 0; i < 2; i++) {
+			ILaunchConfigurationWorkingCopy wc = null;
+			try {
+				if (configs.length <= 0) {
+					LaunchManager lm = (LaunchManager) DebugPlugin.getDefault().getLaunchManager();
+					String stype[] = dp.getLaunchConfigurationManager().getApplicableConfigurationTypes(project);
+					ILaunchConfigurationType type = null;
+					for (int ii = 0; ii < stype.length; ii++)
+					{
+						if(stype[ii].startsWith("org.eclipse.cdt.launch")){
+							type = lm.getLaunchConfigurationType(stype[ii]);
+							break;
+						}
 					}
+					
+					if (type != null)
+						wc = type.newInstance(null, 
+							lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
+				} else {
+					wc = configs[i].getWorkingCopy();
+				}
+	
+				wc.setMappedResources(new IResource[] {project});
+				wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
+				//FIXME ....
+				//String programName = bin.getResource().getProjectRelativePath().toString();
+				
+				String programName = null;
+				if (i == 0) {
+					wc.rename("Debug-" + project.getName());
+					programName = "Debug4Host/" + project.getName();
+				}
+				else {
+					wc.rename("Release-" + project.getName());
+					programName = "Release4Host/" + project.getName();
 				}
 				
-				if (type != null)
-					wc = type.newInstance(null, 
-						lm.generateUniqueLaunchConfigurationNameFrom("New_configuration"));
-			} else {
-				wc = configs[0].getWorkingCopy();
+				wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROGRAM_NAME, programName);
+				wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+				wc.doSave();
+			} catch (CoreException e) {
+				e.printStackTrace();
 			}
-
-			wc.rename("Debug-" + project.getName());
-			wc.setMappedResources(new IResource[] {project});
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
-			//FIXME ....
-			//String programName = bin.getResource().getProjectRelativePath().toString();
-			String programName = "Debug4Host/" + project.getName();
-			wc.setAttribute(ICDTLaunchConfigurationConstants.ATTR_PROGRAM_NAME, programName);
-			wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
-			wc.doSave();
-		} catch (CoreException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -542,15 +542,17 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 		map.put("MG_CFG_PATH", einfo.getWorkSpaceMetadataPath());
 		map.put("LD_LIBRARY_PATH", pcLibPath[0]);
 		
-		ILaunchConfigurationWorkingCopy wc = null;
-		try {
-			wc = configs[0].getWorkingCopy();
-			if (null != wc) {
-				wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
-				wc.doSave();
+		for (int i = 0; i < configs.length; i++) {
+			ILaunchConfigurationWorkingCopy wc = null;
+			try {
+				wc = configs[i].getWorkingCopy();
+				if (null != wc) {
+					wc.setAttribute(ILaunchManager.ATTR_ENVIRONMENT_VARIABLES, map);
+					wc.doSave();
+				}
+			} catch (CoreException e) {
+				e.printStackTrace();
 			}
-		} catch (CoreException e) {
-			e.printStackTrace();
 		}
 
 		return true;
