@@ -95,7 +95,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String GAL_ENGINE_PROPERTY = "gal_engine";
 	private final static String FBCON_SECTION = "fbcon";
 	private String defaultSoc = null;
-	private static final String MSMS_ENVINFO = "/lib:/usr/lib:/usr/local/lib:";
+	private static final String MSMS_ENVINFO = "/lib:/usr/lib:";
 
 	public MStudioSoCPreferencePage() {
 	}
