@@ -117,7 +117,7 @@ public class MStudioWizardHandler extends CWizardHandler {
 	protected CfgHolder[] cfgs = null;
 	protected MStudioNewCAppSoCConfigWizardPage fConfigPage = null;
 	protected SortedMap<String, IToolChain> full_tcs = new TreeMap<String, IToolChain>();
-	private static final String MSMS_ENVINFO = "/lib:/usr/lib:/usr/local/lib:";
+	private static final String MSMS_ENVINFO = "/lib:/usr/lib:";
 
 	protected static final class EntryInfo {
 
