@@ -392,6 +392,8 @@ public class MStudioEnvInfo {
 		SoCName = MStudioSoCPreferencePage.getCurrentSoC();
 //		System.out.println("in MStudioEnfInfo updateSoCName : SoCName -- " + SoCName);
 		if (SoCName == null || SoCName.equals(nullString)) {
+			mgRunMode = MiniGUIRunMode.thread;
+			updateMginitMemus();
 			SoCName = null;
 			iniFile = null;
 			return;
