@@ -195,8 +195,7 @@ public class MStudioToolsPreferencePage extends PreferencePage
 
 		addMsBuildsSection(composite);
 		updateItems();
-		if (table.getItemCount() <= 0 
-				&& System.getProperty("os.name").toLowerCase().indexOf("window") >= 0){
+		if (table.getItemCount() <= 0){
 			addItem (DEFAULT_GUIBUILDER_VERSION, DEFAULT_GUIBUILDER_PATH);
 		}
 		enableButtons(table.getSelectionCount() > 0);
