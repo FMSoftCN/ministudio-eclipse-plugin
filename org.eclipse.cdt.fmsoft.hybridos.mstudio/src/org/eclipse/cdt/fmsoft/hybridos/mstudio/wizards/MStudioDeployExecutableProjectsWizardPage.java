@@ -248,27 +248,28 @@ public class MStudioDeployExecutableProjectsWizardPage extends WizardPage {
 	}
 
 	private void initSizeAndColor() {
-		boolean bResolution = false;
 		
 		List<String> li = MStudioEnvInfo.getInstance().getResolutions();
-		if(li == null)
+		if (li == null)
 			return;
 		
 		String[] resolution = li.toArray(new String[li.size()]);
+		for (int i = 0; i < resolution.length; i++) {
+			sizeCombo.add(resolution[i].toString());
+			if (0 == i) {
+				sizeCombo.select(0);
+			}
+		}
 		
 		String tmpResolution = MStudioEnvInfo.getInstance().getScreenSize();
-		if(tmpResolution == null)
+		if (tmpResolution == null)
 			return;
 		
 		for (int i = 0; i < resolution.length; i++) {
-			sizeCombo.add(resolution[i].toString());
-			if (tmpResolution != null && tmpResolution.equals(resolution[i])){
+			if (tmpResolution.equals(resolution[i])) {
 				sizeCombo.select(i);
-				bResolution = true;
+				break;
 			}
-		}
-		if (!bResolution) {
-			sizeCombo.select(0);
 		}
 	}
 
