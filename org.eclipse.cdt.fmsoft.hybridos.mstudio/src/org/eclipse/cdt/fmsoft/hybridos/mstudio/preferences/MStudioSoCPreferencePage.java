@@ -64,7 +64,6 @@ import org.eclipse.cdt.fmsoft.hybridos.mstudio.project.MStudioProject;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.core.LaunchManager;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 
 
@@ -96,6 +95,7 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	private final static String FBCON_SECTION = "fbcon";
 	private String defaultSoc = null;
 	private static final String MSMS_ENVINFO = "/lib:/usr/lib:";
+	private static final String BLANK_STR = " ";
 
 	public MStudioSoCPreferencePage() {
 	}
@@ -380,14 +380,14 @@ public class MStudioSoCPreferencePage extends PreferencePage implements
 	// according to MiniGUI.cfg, get resolution, gvfb skin setting, etc.
 	private boolean initWidgetValues() {
 		String err = "";
-		if (initSocTable())
-			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocTypeTable");
-		if (initInfoTable())
-			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocInfoTable");
-		if(initResolutionCombo())
-			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initResolutionCombo");;
-		if(initSkinNameLabel())
-			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSkinNameLabel");
+		if (!initSocTable())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocTypeTable") + BLANK_STR;
+		if (!initInfoTable())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSocInfoTable") + BLANK_STR;
+		if(!initResolutionCombo())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initResolutionCombo") + BLANK_STR;
+		if(!initSkinNameLabel())
+			err += MStudioMessages.getString("MStudioSoCPreferencePage.error.initSkinNameLabel") + BLANK_STR;
 		if(!err.equals(""))
 			setErrorMessage(MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValues") +
 					err + MStudioMessages.getString("MStudioSoCPreferencePage.error.initWidgetValuesb"));
