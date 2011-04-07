@@ -113,10 +113,10 @@ public class MStudioDeployTypeWizardPage extends WizardPage {
 		Composite tt = rootfsRadioGroup.getRadioBoxControl(topPanel);
 		Control[] radioButtons = (Control[])(tt.getChildren());
 		if(buildType.name().equals(MStudioDeployBuildType.Debug.name())){
-			((Button)radioButtons[0]).setSelection(true);
+			((Button)radioButtons[1]).setSelection(true);
 		}
 		else {
-			((Button)radioButtons[1]).setSelection(true);
+			((Button)radioButtons[0]).setSelection(true);
 		}
 		rootfsRadioGroup.setPropertyChangeListener(new IPropertyChangeListener(){
 			public void propertyChange(PropertyChangeEvent event) {
