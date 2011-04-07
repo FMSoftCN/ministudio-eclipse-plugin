@@ -130,6 +130,7 @@ public class MStudioDeployWizard extends Wizard{
 
 	public MStudioDeployWizard() {
 		setWindowTitle(MStudioMessages.getString("MStudioDeployWizard.title"));
+		setHelpAvailable(false);
 	}
 
 	public void addPages() {
