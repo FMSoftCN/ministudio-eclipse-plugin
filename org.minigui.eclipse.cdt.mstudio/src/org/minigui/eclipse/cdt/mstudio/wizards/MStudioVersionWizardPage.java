@@ -24,7 +24,7 @@ public class MStudioVersionWizardPage extends WizardPage {
 
 	public MStudioVersionWizardPage(String pageName) {
 		super(pageName);
-		setTitle("Select MStudio Version");
+		setTitle("Select miniStudio Version");
 		setDescription("Specify the Name and Binary of the guibuilder.");
 	}
 

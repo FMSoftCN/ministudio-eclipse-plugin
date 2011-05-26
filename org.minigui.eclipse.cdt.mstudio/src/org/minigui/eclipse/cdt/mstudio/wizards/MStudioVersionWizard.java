@@ -15,7 +15,7 @@ public class MStudioVersionWizard	extends Wizard {
 		}
 
 		public void addPages() {
-			wizardPage = new MStudioVersionWizardPage("MStudio Version");
+			wizardPage = new MStudioVersionWizardPage("miniStudio Version");
 			addPage(wizardPage);
 		}
 		

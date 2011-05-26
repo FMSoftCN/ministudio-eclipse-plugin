@@ -63,7 +63,7 @@ class MsVersionListener extends SelectionAdapter
 			WizardDialog versionDialog = new WizardDialog(m_prefpage.getShell(), versionWizard);
 			versionDialog.create();
 
-			versionDialog.setTitle("Add new MStudio version");
+			versionDialog.setTitle("Add new miniStudio version");
 			if (versionDialog.open() == WizardDialog.OK) {
 				m_prefpage.addItem(versionWizard.getVersionName(), 
 						versionWizard.getBinPath());
@@ -78,7 +78,7 @@ class MsVersionListener extends SelectionAdapter
 			versionWizard.setVersionName(current[0]);
 			versionWizard.setBinPath(current[1]);
 
-			versionDialog.setTitle("Edit MStudio Version");
+			versionDialog.setTitle("Edit miniStudio Version");
 			if (versionDialog.open() == WizardDialog.OK) {
 				m_prefpage.updateItem(versionWizard.getVersionName(), 
 						versionWizard.getBinPath());
@@ -176,7 +176,7 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 		GridData gridData;
 
 		label = new Label(parent, SWT.CENTER);
-		label.setText("MStudio Versions:");
+		label.setText("miniStudio Versions:");
 		gridData = new GridData();
 		gridData.horizontalAlignment = GridData.HORIZONTAL_ALIGN_BEGINNING;
 		gridData.horizontalSpan = 2;
@@ -412,8 +412,8 @@ public class MStudioPreferencePage extends PreferencePage implements IWorkbenchP
 	
 	private void askForRebuild(final Vector<IProject> projects) {
 		Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-		MessageDialog dialog = new MessageDialog(shell, "MStudio Versions Changed", null,
-				"Some projects' mStudio versions have changed. A rebuild of the projects is required for changes to take effect. Do a full rebuild now?", 
+		MessageDialog dialog = new MessageDialog(shell, "miniStudio Versions Changed", null,
+				"Some projects' miniStudio versions have changed. A rebuild of the projects is required for changes to take effect. Do a full rebuild now?", 
 				MessageDialog.QUESTION, 
 				new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL}, 0);
 		if (dialog.open() == 0) {

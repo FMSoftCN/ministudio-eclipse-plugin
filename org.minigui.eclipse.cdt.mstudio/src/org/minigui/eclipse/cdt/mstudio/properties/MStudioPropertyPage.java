@@ -55,7 +55,7 @@ public class MStudioPropertyPage extends PropertyPage {
 		composite.setLayoutData(data);
 
 		Label label = new Label(composite, SWT.NONE);
-		label.setText("Use MStudio Version: ");
+		label.setText("Use miniStudio Version: ");
 		versioncombo = new Combo(composite, SWT.READ_ONLY);
 
 		data = new GridData();
@@ -118,8 +118,8 @@ public class MStudioPropertyPage extends PropertyPage {
 	private boolean requestFullBuild() {
 		boolean accepted = false;
 		Shell shell = PlatformUI.getWorkbench().getDisplay().getActiveShell();
-		MessageDialog dialog = new MessageDialog (shell, "MStudio Version Changed", null,
-				"The project's MStudio version has changed. A rebuild of the project is required for changes to take effect. Do a full rebuild now?",
+		MessageDialog dialog = new MessageDialog (shell, "miniStudio Version Changed", null,
+				"The project's miniStudio version has changed. A rebuild of the project is required for changes to take effect. Do a full rebuild now?",
 				MessageDialog.QUESTION, new String[] {
 						IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL }, 2);
 		switch (dialog.open()) {

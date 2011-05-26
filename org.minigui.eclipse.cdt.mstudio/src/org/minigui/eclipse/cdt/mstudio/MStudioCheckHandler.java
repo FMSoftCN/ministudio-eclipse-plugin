@@ -106,7 +106,7 @@ public class MStudioCheckHandler extends AbstractHandler implements IHandler {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 		if (!getVersion()) {
 			MessageDialog.openInformation(
-    				window.getShell(), "mStudio Plug-in",
+    				window.getShell(), "miniStudio Plug-in",
     				MiniGUIMessages.getString("MStudioUpdateError.desc"));
 			return null;
 		}
