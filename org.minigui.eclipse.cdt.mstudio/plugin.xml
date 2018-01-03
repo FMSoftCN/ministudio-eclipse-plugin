@@ -171,6 +171,12 @@
             </description>
       </wizard>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.minigui.eclipse.cdt.mstudio.MStudioStartup">
+      </startup>
+   </extension>
 
  
 </plugin>

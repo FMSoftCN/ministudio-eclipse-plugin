@@ -25,3 +25,5 @@ Export-Package: org.minigui.eclipse.cdt.mstudio,
  org.minigui.eclipse.cdt.mstudio.wizards
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/json.jar,
+ .
