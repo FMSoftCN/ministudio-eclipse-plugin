@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-  	<extension-point id="MGWizard" name="MGWizard" schema="schema/MGWizard.exsd"/>
+  	<extension-point id="MGWizard" name="%extension-point.name" schema="schema/MGWizard.exsd"/>
    
    <extension  
           id="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"  
@@ -40,15 +40,15 @@
 		
    <extension
          id="org.minigui.eclipse.cdt.mstudio.project"
-         name="minigui"
+         name="%extension.name"
          point="org.eclipse.cdt.managedbuilder.core.buildProperties">
          
-     <propertyType id="org.minigui.eclipse.cdt.mstudio.projectType" name="MiniGUI project"/>
+     <propertyType id="org.minigui.eclipse.cdt.mstudio.projectType" name="%propertyType.name"/>
      
      <propertyValue 
          property="org.minigui.eclipse.cdt.mstudio.projectType" 
          id="org.eclipse.cdt.build.core.buildArtefactType.exe" 
-         name="MiniGUI Project"/>	
+         name="%propertyValue.name"/>	
   	</extension> 
   	
   	<extension 
@@ -91,7 +91,7 @@
      	<page
             class="org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage"
             id="org.minigui.eclipse.cdt.mstudio.preferences.MStudioPreferencePage"
-            name="MiniGUI"/>
+            name="%page.name"/>
   	</extension>
   	
   	<extension
@@ -99,7 +99,7 @@
      <page
             class="org.minigui.eclipse.cdt.mstudio.properties.MStudioPropertyPage"
             id="org.minigui.eclipse.cdt.mstudio.properties.MStudioProperyPage"
-            name="MiniGUI Properties">
+            name="%page.name.0">
 			  <filter name="nature" value="org.minigui.eclipse.cdt.mstudio.project.MgProjectNature"/>
 	   </page>
    </extension>

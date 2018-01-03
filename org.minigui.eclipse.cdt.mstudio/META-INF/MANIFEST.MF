@@ -17,6 +17,11 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.filesystem;bundle-version="1.2.0",
  org.eclipse.ui.workbench.texteditor;bundle-version="3.4.0"
 Export-Package: org.minigui.eclipse.cdt.mstudio,
+ org.minigui.eclipse.cdt.mstudio.editor,
+ org.minigui.eclipse.cdt.mstudio.preferences,
+ org.minigui.eclipse.cdt.mstudio.project,
+ org.minigui.eclipse.cdt.mstudio.properties,
+ org.minigui.eclipse.cdt.mstudio.template,
  org.minigui.eclipse.cdt.mstudio.wizards
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
