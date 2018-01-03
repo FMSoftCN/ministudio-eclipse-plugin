@@ -197,11 +197,11 @@ public class MStudioStartup implements IStartup {
 	}
 
 	public VersionDesc getLatestVersion() {
-		String url = "http://www.minigui.com/index.php/tools/packages/statistics/api/v1/stat_latest_apps?app=mstudio&os=windows&os_ver=7";
+		String url = "http://www.minigui.com/index.php/tools/packages/statistics/api/v1/stat_latest_apps";
 		StringBuilder sb = new StringBuilder();
 		sb.append(url).append("?").append("app=mstudio").append("&").append("os=").append(this.getOsName()).append("&")
 				.append("os_ver=").append(this.getOsVersion());
-		String res = this.doGet(url);
+		String res = this.doGet(sb.toString());
 		if (res == null || res.length() == 0) {
 			return null;
 		}
