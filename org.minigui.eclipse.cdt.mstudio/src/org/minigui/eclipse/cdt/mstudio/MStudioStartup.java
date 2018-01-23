@@ -23,8 +23,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
 public class MStudioStartup implements IStartup {
-	// private static long VERSION_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
-	private static long VERSION_CHECK_INTERVAL = 3 * 60 * 1000;
+	private static long VERSION_CHECK_INTERVAL = 24 * 60 * 60 * 1000;
+	//private static long VERSION_CHECK_INTERVAL = 3 * 60 * 1000;
 
 	@Override
 	public void earlyStartup() {
