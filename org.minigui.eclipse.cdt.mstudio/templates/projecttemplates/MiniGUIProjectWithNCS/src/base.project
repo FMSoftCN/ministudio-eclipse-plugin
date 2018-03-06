@@ -1,6 +1,6 @@
 
 <!--MiniGUI resource file used by mstudio to start the guibuilder, please don't modify it -->
-<res-project version="1.0.8">
+<res-project version="1.2.1">
 	<configuration name="minigui-3-x-x-ncs" caption="MiniGUI 3.0 With New Control Set">
 		<minigui-version>3.x.x</minigui-version>
 		<control-set>ncs</control-set>
